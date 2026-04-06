@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fantasy Majors League</title>
+  <title>Phil's Fantasy Golf League</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
@@ -11,14 +11,21 @@
     body {
       font-family: 'Inter', system-ui, sans-serif;
       background-image: linear-gradient(rgba(10, 61, 42, 0.88), rgba(10, 61, 42, 0.92)), 
-                        url('https://picsum.photos/id/1015/2000/1200');
+                        url('https://picsum.photos/id/29/2000/1200');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
     }
-    .card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2); }
-    .leaderboard-table tr:hover { background-color: #f3f4f6; }
+    .card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
+    }
+    .leaderboard-table tr:hover {
+      background-color: #f3f4f6;
+    }
     .rank-1 { color: #d4af77; }
     .rank-2 { color: #c0c0c0; }
     .rank-3 { color: #cd7f32; }
@@ -26,26 +33,31 @@
 </head>
 <body class="text-white min-h-screen">
   <div class="max-w-6xl mx-auto p-4">
-    <!-- Header (same as before) -->
+    <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
       <div class="flex items-center gap-3">
         <i class="fa-solid fa-golf-ball text-5xl text-[#d4af77]"></i>
         <div>
-          <h1 class="text-4xl font-bold tracking-tight">Fantasy Majors</h1>
-          <p class="text-green-300 text-sm -mt-1">Live • Real-time • Augusta-ready</p>
+          <h1 class="text-4xl font-bold tracking-tight">Phil's Fantasy Golf League</h1>
+          <p class="text-green-300 text-sm -mt-1">Live (the sheet is always updated, Doug) Leaderboard</p>
         </div>
       </div>
+      
+      <!-- Tournament Selector -->
       <div class="flex items-center gap-3">
-        <select id="tournament-select" onchange="switchTournament(this.value)" class="bg-white/10 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium focus:outline-none focus:border-[#d4af77]">
+        <select id="tournament-select" onchange="switchTournament(this.value)" 
+                class="bg-white/10 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium focus:outline-none focus:border-[#d4af77] shadow-inner">
         </select>
-        <button onclick="showAddTournamentModal()" class="bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] px-6 py-3 rounded-3xl flex items-center gap-2 font-semibold shadow-md">
+        <button onclick="showAddTournamentModal()" 
+                class="bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] px-6 py-3 rounded-3xl flex items-center gap-2 font-semibold shadow-md">
           <i class="fa-solid fa-plus"></i> New Tournament
         </button>
       </div>
+      
       <div class="text-sm text-green-300 font-medium" id="last-updated"></div>
     </div>
 
-    <!-- Tabs (same) -->
+    <!-- Tabs -->
     <div class="flex border-b border-white/30 mb-8 overflow-x-auto pb-1">
       <button onclick="showTab(0)" class="tab-button px-8 py-4 font-semibold border-b-4 border-transparent text-lg hover:text-[#d4af77]" id="tab-0">Leaderboard</button>
       <button onclick="showTab(1)" class="tab-button px-8 py-4 font-semibold border-b-4 border-transparent text-lg hover:text-[#d4af77]" id="tab-1">Detailed Rosters</button>
@@ -53,22 +65,40 @@
       <button onclick="showTab(3)" class="tab-button px-8 py-4 font-semibold border-b-4 border-transparent text-lg hover:text-[#d4af77]" id="tab-3">Manage Tournaments</button>
     </div>
 
-    <!-- Tab 0 & 1 unchanged for brevity – full code includes them exactly as before -->
-    <div id="tab-content-0"> ... </div> <!-- (leaderboard table) -->
-    <div id="tab-content-1" class="hidden"> <div id="detailed-rosters" class="space-y-8"></div> </div>
+    <!-- Tab 0: Leaderboard -->
+    <div id="tab-content-0">
+      <div class="card bg-white/10 backdrop-blur-xl rounded-3xl p-1 shadow-2xl">
+        <table class="w-full leaderboard-table bg-transparent rounded-3xl overflow-hidden">
+          <thead class="bg-gradient-to-r from-green-800 to-[#0a3d2a]">
+            <tr>
+              <th class="px-8 py-5 text-left font-medium">Rank</th>
+              <th class="px-8 py-5 text-left font-medium">Team</th>
+              <th class="px-8 py-5 text-right font-medium">Score (best 4)</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body" class="text-xl"></tbody>
+        </table>
+      </div>
+    </div>
 
-    <!-- Tab 2: Admin - Rosters (UPDATED PLAYER PICKER) -->
+    <!-- Tab 1: Detailed Rosters -->
+    <div id="tab-content-1" class="hidden">
+      <div id="detailed-rosters" class="space-y-8"></div>
+    </div>
+
+    <!-- Tab 2: Admin - Manage Rosters -->
     <div id="tab-content-2" class="hidden card bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl">
       <h2 class="text-2xl font-semibold mb-6">Manage Rosters – <span id="admin-tournament-name" class="text-[#d4af77]"></span></h2>
       
       <div class="mb-6">
         <label class="block text-sm mb-2 font-medium">Team</label>
-        <select id="admin-team-select" onchange="renderCurrentRoster()" class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white"></select>
+        <select id="admin-team-select" onchange="renderCurrentRoster()" 
+                class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white"></select>
       </div>
 
       <div id="current-roster" class="mb-10"></div>
 
-      <!-- Player Picker – NOW WITH CLEAR STATUS MESSAGES -->
+      <!-- Player Picker -->
       <div class="border-t border-white/20 pt-8">
         <div class="flex justify-between mb-4">
           <h3 class="font-semibold text-lg">Add players from this tournament</h3>
@@ -76,26 +106,329 @@
             <i class="fa-solid fa-rotate"></i> Refresh List
           </button>
         </div>
-        <input id="player-search" type="text" placeholder="Search players..." onkeyup="filterPlayerPicker()" 
+        <input id="player-search" type="text" placeholder="Search players..." 
+               onkeyup="filterPlayerPicker()" 
                class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white mb-6 focus:outline-none focus:border-[#d4af77]">
         <div id="player-picker" class="flex flex-wrap gap-3 max-h-80 overflow-y-auto min-h-[120px]"></div>
       </div>
 
       <div class="flex gap-4 mt-12">
-        <button onclick="exportFullConfig()" class="flex-1 py-4 bg-white text-[#0a3d2a] rounded-3xl font-semibold">Export Config</button>
+        <button onclick="exportFullConfig()" class="flex-1 py-4 bg-white text-[#0a3d2a] rounded-3xl font-semibold">Export Config (share with league)</button>
         <button onclick="showImportModal()" class="flex-1 py-4 bg-white/20 hover:bg-white/30 rounded-3xl font-medium">Import Config</button>
       </div>
     </div>
 
-    <!-- Tab 3 unchanged -->
-    <div id="tab-content-3" class="hidden card bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl"> ... </div>
+    <!-- Tab 3: Manage Tournaments -->
+    <div id="tab-content-3" class="hidden card bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl">
+      <h2 class="text-2xl font-semibold mb-6">Your Tournaments</h2>
+      <div id="tournaments-list" class="space-y-4"></div>
+    </div>
   </div>
 
-  <!-- Modals (same as last version) – omitted for brevity but included in full code you paste -->
+  <!-- Add Tournament Modal -->
+  <div id="add-modal" onclick="if(event.target===this)hideAddModal()" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div onclick="event.stopImmediatePropagation()" class="card bg-[#0a3d2a] border border-[#d4af77] rounded-3xl p-8 w-full max-w-lg mx-4">
+      <h3 class="text-3xl font-bold mb-8">Create New Tournament</h3>
+      
+      <input id="new-name" placeholder="Tournament Name (e.g. 2026 Masters)" 
+             class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 mb-6 text-white placeholder:text-white/60">
+      
+      <input id="new-id" placeholder="ESPN Tournament ID" 
+             class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 mb-6 text-white placeholder:text-white/60">
+      
+      <label class="block text-sm mb-3 font-medium">League Participants (one name per line)</label>
+      <textarea id="new-teams" rows="6" placeholder="Gerald&#10;Josh&#10;Phil&#10;Patrick&#10;Wallace&#10;Ricky&#10;Roger&#10;Graham&#10;Doug&#10;Nick" 
+                class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white resize-none"></textarea>
+      
+      <div class="flex gap-4 mt-8">
+        <button onclick="hideAddModal()" class="flex-1 py-4 rounded-3xl border border-white/30 font-medium">Cancel</button>
+        <button onclick="addNewTournament()" class="flex-1 py-4 bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] rounded-3xl font-semibold">Create Tournament</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div id="import-modal" onclick="if(event.target===this)hideImportModal()" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div onclick="event.stopImmediatePropagation()" class="card bg-[#0a3d2a] border border-[#d4af77] rounded-3xl p-8 w-full max-w-md mx-4">
+      <h3 class="text-2xl font-bold mb-4">Import Full Config</h3>
+      <textarea id="import-text" rows="10" class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white font-mono text-sm"></textarea>
+      <div class="flex gap-4 mt-6">
+        <button onclick="hideImportModal()" class="flex-1 py-4 rounded-3xl border border-white/30">Cancel</button>
+        <button onclick="importConfig()" class="flex-1 py-4 bg-[#d4af77] text-[#0a3d2a] rounded-3xl font-semibold">Import Now</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // DEFAULT CONFIG + all previous functions (fetchForTournament, getPlayerScore, calculateTeamScore, renderLeaderboard, etc.)
-    // ... (the rest of the script is identical to the last version except the sections below)
+    // ==================== DEFAULT CONFIG ====================
+    const defaultConfig = {
+      tournaments: {
+        "2026-masters": {
+          name: "2026 Masters",
+          league: "pga",
+          tournamentId: "401243005",
+          teams: {
+            "Gerald": [], "Josh": [], "Phil": [], "Patrick": [], "Wallace": [],
+            "Ricky": [], "Roger": [], "Graham": [], "Doug": [], "Nick": []
+          }
+        }
+      },
+      currentTournamentKey: "2026-masters"
+    };
+    // =======================================================
+
+    let config = JSON.parse(localStorage.getItem('fantasyGolfConfig')) || defaultConfig;
+    if (!localStorage.getItem('fantasyGolfConfig')) localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
+
+    let currentLeaderboardData = null;
+    let dataCache = {};
+    let currentAvailablePlayers = [];
+    let selectedTeamForAdmin = null;
+    let currentTab = 0;
+
+    function saveConfig() {
+      localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
+    }
+
+    async function fetchForTournament(key) {
+      if (dataCache[key]) return dataCache[key];
+      const tour = config.tournaments[key];
+      if (!tour) return null;
+      try {
+        const url = `https://site.api.espn.com/apis/site/v2/sports/golf/${tour.league}/leaderboard?tournamentId=${tour.tournamentId}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        dataCache[key] = data;
+        return data;
+      } catch (e) { return null; }
+    }
+
+    async function loadCurrentTournamentData() {
+      currentLeaderboardData = await fetchForTournament(config.currentTournamentKey);
+      if (currentLeaderboardData) {
+        document.getElementById("last-updated").innerHTML = `Last updated: <span class="font-mono">${new Date().toLocaleTimeString()}</span>`;
+      }
+    }
+
+    function getPlayerScore(playerName) {
+      if (!currentLeaderboardData) return { totalToPar: 0, rounds: ["-","-","-","-"], thru: "—", isMC: false };
+      const list = currentLeaderboardData.leaderboard?.players || currentLeaderboardData.players || [];
+      const p = list.find(pl => (pl.athlete?.displayName || pl.player?.displayName || "").toLowerCase() === playerName.toLowerCase());
+      if (!p) return { totalToPar: 999, rounds: ["—","—","—","—"], thru: "—", isMC: true };
+
+      const totalToPar = parseInt(p.score?.displayValue || p.total || 0) || 0;
+      const rounds = (p.rounds || []).map(r => parseInt(r.displayValue || r.value) || 0);
+      while (rounds.length < 4) rounds.push(0);
+      const thru = p.thru || p.status || "F";
+      const isMC = (p.status || "").includes("MC");
+
+      return { totalToPar, rounds: rounds.map(r => r > 0 ? `+${r}` : r.toString()), thru: thru === "F" ? "F" : thru, isMC };
+    }
+
+    function calculateTeamScore(teamPlayers) {
+      if (!currentLeaderboardData) return 999;
+      let scores = teamPlayers.map(name => {
+        const s = getPlayerScore(name);
+        return s.isMC ? 999 : s.totalToPar;
+      });
+
+      const allPlayers = currentLeaderboardData.leaderboard?.players || currentLeaderboardData.players || [];
+      const makeCutScores = allPlayers.filter(p => !(p.status || "").includes("MC"))
+        .map(p => parseInt(p.score?.displayValue || p.total || 0) || 0)
+        .sort((a,b) => b - a);
+      const worstMakeCut = makeCutScores[0] || 0;
+
+      scores = scores.map(s => s === 999 ? worstMakeCut : s);
+      scores.sort((a,b) => a - b);
+      return scores.slice(0,4).reduce((a,b) => a + b, 0);
+    }
+
+    function renderLeaderboard() {
+      const tbody = document.getElementById("leaderboard-body");
+      tbody.innerHTML = "";
+      const tour = config.tournaments[config.currentTournamentKey];
+      const teamScores = Object.keys(tour.teams || {}).map(team => ({
+        team,
+        score: calculateTeamScore(tour.teams[team] || [])
+      }));
+      teamScores.sort((a,b) => a.score - b.score);
+
+      teamScores.forEach((entry, i) => {
+        const rankClass = i === 0 ? "rank-1" : i === 1 ? "rank-2" : i === 2 ? "rank-3" : "";
+        const tr = document.createElement("tr");
+        tr.className = "border-b border-white/10 last:border-0 hover:bg-white/10";
+        tr.innerHTML = `
+          <td class="px-8 py-6 font-mono text-2xl ${rankClass}">${i+1}</td>
+          <td class="px-8 py-6 font-semibold">${entry.team}</td>
+          <td class="px-8 py-6 text-right font-mono text-3xl">${entry.score > 0 ? '+' + entry.score : entry.score}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderDetailedRosters() {
+      const container = document.getElementById("detailed-rosters");
+      container.innerHTML = "";
+      const teams = config.tournaments[config.currentTournamentKey].teams || {};
+      Object.keys(teams).forEach(team => {
+        const players = teams[team];
+        let html = `<div class="card bg-white/10 backdrop-blur-xl rounded-3xl p-8"><h3 class="text-2xl font-semibold mb-6">${team}</h3><table class="w-full"><thead><tr class="text-green-300 text-sm"><th class="text-left py-3">Player</th><th class="text-center py-3">R1</th><th class="text-center py-3">R2</th><th class="text-center py-3">R3</th><th class="text-center py-3">R4</th><th class="text-right py-3">Total</th><th class="text-right py-3">Thru</th></tr></thead><tbody>`;
+        players.forEach(name => {
+          const s = getPlayerScore(name);
+          html += `<tr class="border-t border-white/10"><td class="py-4">${name}</td><td class="text-center font-mono">${s.rounds[0]}</td><td class="text-center font-mono">${s.rounds[1]}</td><td class="text-center font-mono">${s.rounds[2]}</td><td class="text-center font-mono">${s.rounds[3]}</td><td class="text-right font-mono text-xl">${s.totalToPar > 0 ? '+' + s.totalToPar : s.totalToPar}</td><td class="text-right font-medium">${s.thru}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+        container.innerHTML += html;
+      });
+    }
+
+    function renderEverything() {
+      renderLeaderboard();
+      renderDetailedRosters();
+    }
+
+    function showTab(n) {
+      currentTab = n;
+      document.querySelectorAll(".tab-button").forEach((b,i) => b.classList.toggle("border-[#d4af77]", i === n));
+      document.querySelectorAll("#tab-content-0, #tab-content-1, #tab-content-2, #tab-content-3").forEach((el,i) => el.classList.toggle("hidden", i !== n));
+      if (n === 0 || n === 1) renderEverything();
+      if (n === 2) {
+        document.getElementById("admin-tournament-name").textContent = config.tournaments[config.currentTournamentKey].name;
+        populateAdminTeamSelect();
+        loadAvailablePlayers(); // auto-load when entering admin tab
+      }
+      if (n === 3) renderTournamentsList();
+    }
+
+    function populateTournamentSelector() {
+      const select = document.getElementById("tournament-select");
+      select.innerHTML = "";
+      Object.keys(config.tournaments).forEach(key => {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = config.tournaments[key].name;
+        if (key === config.currentTournamentKey) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function switchTournament(key) {
+      config.currentTournamentKey = key;
+      saveConfig();
+      currentLeaderboardData = null;
+      loadCurrentTournamentData().then(() => renderEverything());
+      populateTournamentSelector();
+    }
+
+    function showAddTournamentModal() {
+      document.getElementById("add-modal").classList.remove("hidden");
+      document.getElementById("new-name").focus();
+    }
+
+    function hideAddModal() {
+      document.getElementById("add-modal").classList.add("hidden");
+    }
+
+    function addNewTournament() {
+      const name = document.getElementById("new-name").value.trim();
+      const tournamentId = document.getElementById("new-id").value.trim();
+      const teamText = document.getElementById("new-teams").value.trim();
+      
+      if (!name || !tournamentId) {
+        alert("Tournament name and ESPN ID are required");
+        return;
+      }
+      if (!teamText) {
+        alert("Please enter at least one participant name");
+        return;
+      }
+
+      const teamNames = teamText.split('\n').map(t => t.trim()).filter(Boolean);
+      const teamsObj = {};
+      teamNames.forEach(name => { teamsObj[name] = []; });
+
+      const key = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      config.tournaments[key] = {
+        name,
+        league: "pga",
+        tournamentId,
+        teams: teamsObj
+      };
+
+      saveConfig();
+      hideAddModal();
+      populateTournamentSelector();
+      switchTournament(key);
+      showTab(2);
+    }
+
+    function renderTournamentsList() {
+      const container = document.getElementById("tournaments-list");
+      container.innerHTML = "";
+      Object.keys(config.tournaments).forEach(key => {
+        const t = config.tournaments[key];
+        const div = document.createElement("div");
+        div.className = "flex justify-between items-center bg-white/10 rounded-3xl p-6";
+        div.innerHTML = `
+          <div>
+            <div class="font-semibold text-xl">${t.name}</div>
+            <div class="text-xs text-green-300">ID: ${t.tournamentId}</div>
+          </div>
+          <div class="flex gap-4">
+            <button onclick="switchTournament('${key}');showTab(0)" class="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-3xl text-sm font-medium">Switch</button>
+            <button onclick="deleteTournament('${key}')" class="px-6 py-3 text-red-400 hover:text-red-300 text-sm font-medium">Delete</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function deleteTournament(key) {
+      if (confirm("Delete this tournament permanently?")) {
+        delete config.tournaments[key];
+        if (config.currentTournamentKey === key) config.currentTournamentKey = Object.keys(config.tournaments)[0] || "";
+        saveConfig();
+        populateTournamentSelector();
+        renderTournamentsList();
+        if (config.currentTournamentKey) loadCurrentTournamentData().then(renderEverything);
+      }
+    }
+
+    function populateAdminTeamSelect() {
+      const select = document.getElementById("admin-team-select");
+      select.innerHTML = "";
+      const teams = config.tournaments[config.currentTournamentKey].teams || {};
+      Object.keys(teams).forEach(team => {
+        const opt = document.createElement("option");
+        opt.value = team;
+        opt.textContent = team;
+        select.appendChild(opt);
+      });
+      if (select.options.length > 0) {
+        selectedTeamForAdmin = select.value;
+        renderCurrentRoster();
+      }
+    }
+
+    function renderCurrentRoster() {
+      const team = document.getElementById("admin-team-select").value;
+      selectedTeamForAdmin = team;
+      const div = document.getElementById("current-roster");
+      const players = (config.tournaments[config.currentTournamentKey].teams || {})[team] || [];
+      let html = `<div class="font-medium mb-4">${team} — ${players.length}/7 players</div><div class="flex flex-wrap gap-3">`;
+      players.forEach((p, i) => {
+        html += `<div class="flex items-center gap-2 bg-white/20 px-5 py-2.5 rounded-3xl text-sm"><span>${p}</span><button onclick="removePlayer('${team}', ${i});event.stopImmediatePropagation()" class="ml-2 text-red-400 text-xl leading-none">×</button></div>`;
+      });
+      html += `</div>`;
+      div.innerHTML = html;
+    }
+
+    window.removePlayer = function(team, index) {
+      const teams = config.tournaments[config.currentTournamentKey].teams;
+      teams[team].splice(index, 1);
+      saveConfig();
+      renderCurrentRoster();
+    };
 
     async function loadAvailablePlayers() {
       const picker = document.getElementById("player-picker");
@@ -103,7 +436,7 @@
 
       const data = await fetchForTournament(config.currentTournamentKey);
       
-      console.log("🔍 ESPN API response keys:", Object.keys(data || {})); // Open F12 to see this
+      console.log("🔍 ESPN API response keys:", Object.keys(data || {})); // helpful for debugging
 
       if (!data) {
         picker.innerHTML = `<div class="text-red-400 text-center py-8">Failed to connect to ESPN.<br>Double-check your Tournament ID.</div>`;
@@ -152,8 +485,42 @@
       });
     }
 
-    // Rest of the script (showTab, addNewTournament, etc.) is unchanged from last version
-    // Full working file includes everything – just copy the entire block below in your GitHub edit.
+    function addPlayerFromPicker(name) {
+      const teams = config.tournaments[config.currentTournamentKey].teams;
+      const team = selectedTeamForAdmin;
+      if (!team || teams[team].length >= 7 || teams[team].includes(name)) return;
+      teams[team].push(name);
+      saveConfig();
+      renderCurrentRoster();
+    }
+
+    function exportFullConfig() {
+      navigator.clipboard.writeText(JSON.stringify(config, null, 2)).then(() => alert("✅ Full config copied!\n\nPaste it into Import on any other device."));
+    }
+
+    function showImportModal() { document.getElementById("import-modal").classList.remove("hidden"); }
+    function hideImportModal() { document.getElementById("import-modal").classList.add("hidden"); }
+
+    function importConfig() {
+      try {
+        const imported = JSON.parse(document.getElementById("import-text").value.trim());
+        config = imported;
+        saveConfig();
+        hideImportModal();
+        populateTournamentSelector();
+        loadCurrentTournamentData().then(() => { renderEverything(); showTab(0); });
+        alert("✅ Config imported successfully!");
+      } catch(e) { alert("Invalid JSON"); }
+    }
+
+    function init() {
+      populateTournamentSelector();
+      loadCurrentTournamentData().then(() => renderEverything());
+      setInterval(() => { if (currentTab === 0 || currentTab === 1) loadCurrentTournamentData().then(renderEverything); }, 30000);
+      tailwind.config = { content: ["./index.html"] };
+    }
+
+    init();
   </script>
 </body>
 </html>
