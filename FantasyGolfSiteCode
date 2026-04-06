@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fantasy Majors League</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .leaderboard-table tr:hover { background-color: #f3f4f6; }
+  </style>
+</head>
+<body class="bg-[#0a3d2a] text-white min-h-screen">
+  <div class="max-w-6xl mx-auto p-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-golf-ball text-4xl"></i>
+        <h1 class="text-3xl font-bold">Fantasy Majors League</h1>
+      </div>
+      <div class="text-sm text-green-300" id="last-updated"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-green-700 mb-6">
+      <button onclick="showTab(0)" class="tab-button px-6 py-3 font-medium border-b-2 border-green-400 text-green-400" id="tab-0">Leaderboard</button>
+      <button onclick="showTab(1)" class="tab-button px-6 py-3 font-medium hover:text-green-400" id="tab-1">Detailed Rosters</button>
+      <button onclick="showTab(2)" class="tab-button px-6 py-3 font-medium hover:text-green-400" id="tab-2">Admin - Manage Rosters</button>
+    </div>
+
+    <!-- Tab 0: Leaderboard -->
+    <div id="tab-content-0">
+      <table class="w-full leaderboard-table bg-white/10 backdrop-blur rounded-xl overflow-hidden">
+        <thead class="bg-green-800">
+          <tr>
+            <th class="px-6 py-4 text-left">Rank</th>
+            <th class="px-6 py-4 text-left">Team</th>
+            <th class="px-6 py-4 text-right">Score (best 4)</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body" class="text-lg"></tbody>
+      </table>
+    </div>
+
+    <!-- Tab 1: Detailed Rosters -->
+    <div id="tab-content-1" class="hidden">
+      <div id="detailed-rosters" class="space-y-8"></div>
+    </div>
+
+    <!-- Tab 2: Admin -->
+    <div id="tab-content-2" class="hidden bg-white/10 backdrop-blur rounded-2xl p-6">
+      <h2 class="text-xl font-bold mb-4">Manage Rosters (per tournament)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm mb-2">Team</label>
+          <select id="admin-team-select" class="w-full bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white"></select>
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Add Player (exact ESPN name)</label>
+          <div class="flex gap-2">
+            <input id="new-player-input" type="text" class="flex-1 bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white" placeholder="e.g. Scottie Scheffler">
+            <button onclick="addPlayerToTeam()" class="bg-green-500 hover:bg-green-600 px-6 rounded-lg">Add</button>
+          </div>
+        </div>
+      </div>
+      <div id="current-roster" class="mt-6"></div>
+      <div class="flex gap-4 mt-8">
+        <button onclick="exportConfig()" class="flex-1 bg-white text-[#0a3d2a] font-medium py-4 rounded-xl">Copy Config JSON (paste into code)</button>
+        <button onclick="resetToDefaultConfig()" class="flex-1 bg-white/20 hover:bg-white/30 py-4 rounded-xl">Reset to Code Defaults</button>
+      </div>
+      <p class="text-xs text-green-300 mt-4">Changes are saved in your browser only. Use "Copy Config JSON" and paste it into the <code>teams</code> object in the code below, then re-deploy for everyone to see the new rosters.</p>
+    </div>
+  </div>
+
+  <script>
+    // ==================== EDIT THIS SECTION ====================
+    const config = {
+      league: "pga",                    // usually "pga" for all 4 majors
+      tournamentId: "401811941",        // ← CHANGE THIS for each major (find in ESPN leaderboard URL or network tab)
+      // Teams and their 7 players (exact ESPN displayName)
+      teams: {
+        "Gerald": ["Jordan Spieth", "Justin Thomas", "Will Zalatoris", "Sepp Straka", "Sergio Garcia", "Nick Dunlap", "Ludvig Aberg"], // example
+        "Josh": ["Ludvig Aberg", "Bryson DeChambeau", "Cameron Smith", "Brian Harman", "Tom Kim", "Jon Rahm", "Tom Hoge"],
+        "Phil": ["Danny McCarthy", "Wyndham Clark", "Sungjae Im", "Jason Day", "Davis Thompson", "Taylor Pendrith", "Thomas Detry"],
+        "Patrick": ["Shane Lowry", "Joquin Niemann", "Tyrrell Hatton", "Keegan Bradley", "Harris English", "Lucas Glover", "Maverick McNealy"],
+        "Wallace": ["Rory McIlroy", "Matt Fitzpatrick", "Sahith Theegala", "Byron Nelson", "Rickie Fowler", "Cam Davis", "Nico Echavarria"],
+        "Ricky": ["Collin Morikawa", "Xander Schauffele", "Tommy Fleetwood", "Patrick Reed", "Sam Burns", "J.T. Poston"],
+        "Roger": ["Tony Finau", "Adam Scott", "Justin Rose", "Dustin Johnson", "Aaron Rai", "Max Homa", "Laurie Canter"],
+        "Graham": ["Viktor Hovland", "Phil Mickelson", "Cameron Young", "Christiaan Bezuidenhout", "Nick Taylor", "Chuba Watson"],
+        "Doug": ["Scottie Scheffler", "Brooks Koepka", "Min Woo Lee", "Hideki Matsuyama", "Patrick Cantlay", "Corey Conners", "Danny Willett"],
+        "Nick": ["Russell Henley", "Robert MacIntyre", "Billy Horschel", "Daniel Berger", "J.J. Spaun", "Stephan Jaeger", "Michael Kim"]
+      }
+    };
+    // ===========================================================
+
+    let leaderboardData = null;
+    let currentTab = 0;
+
+    function tailwindInit() {
+      tailwind.config = { content: ["./index.html"], theme: { extend: {} } };
+    }
+
+    async function fetchLiveScores() {
+      try {
+        const url = `https://site.api.espn.com/apis/site/v2/sports/golf/${config.league}/leaderboard?tournamentId=${config.tournamentId}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        console.log("✅ ESPN Data received. Structure preview:", Object.keys(data)); // Open F12 to see full structure if needed
+        leaderboardData = data;
+        renderEverything();
+        document.getElementById("last-updated").innerHTML = `Last updated: <span class="font-mono">${new Date().toLocaleTimeString()}</span>`;
+      } catch (e) {
+        console.error(e);
+        document.getElementById("last-updated").innerHTML = `<span class="text-red-400">Error fetching scores – check tournamentId</span>`;
+      }
+    }
+
+    function getPlayerScore(playerName) {
+      if (!leaderboardData) return { totalToPar: 0, rounds: ["-","-","-","-"], thru: "—" };
+      // Adjust these paths if ESPN changes structure (rare) — check console.log above
+      const playersList = leaderboardData.leaderboard?.players || leaderboardData.players || [];
+      const p = playersList.find(pl => 
+        pl.athlete?.displayName?.toLowerCase() === playerName.toLowerCase() ||
+        pl.player?.displayName?.toLowerCase() === playerName.toLowerCase()
+      );
+      if (!p) return { totalToPar: 999, rounds: ["—","—","—","—"], thru: "Not found" };
+
+      const totalToPar = parseInt(p.score?.displayValue || p.score?.value || p.total || 0) || 0;
+
+      // Rounds to par (usually in p.rounds or p.statistics)
+      const rounds = [];
+      if (p.rounds && Array.isArray(p.rounds)) {
+        p.rounds.forEach(r => rounds.push(parseInt(r.displayValue || r.value) || 0));
+      } else {
+        rounds.push(0,0,0,0); // fallback
+      }
+      while (rounds.length < 4) rounds.push(0);
+
+      // Thru / status
+      let thru = p.thru || p.status || "F";
+      if (thru === "F" || thru === "finished") thru = "F";
+      else if (thru.includes("thru")) thru = thru;
+      else thru = `Thru ${thru}`;
+
+      return { totalToPar, rounds: rounds.map(r => r > 0 ? `+${r}` : r), thru, isMC: p.status?.includes("MC") || false };
+    }
+
+    function calculateTeamScore(teamPlayers) {
+      if (!leaderboardData) return 999;
+      let scores = teamPlayers.map(name => {
+        const s = getPlayerScore(name);
+        return s.isMC ? 999 : s.totalToPar; // temporary placeholder for MC
+      });
+
+      // Find worst make-cut score for MC replacement
+      const allPlayers = leaderboardData.leaderboard?.players || leaderboardData.players || [];
+      const makeCutScores = allPlayers
+        .filter(p => !(p.status || "").includes("MC"))
+        .map(p => parseInt(p.score?.displayValue || p.total || 0) || 0)
+        .sort((a,b) => b - a); // descending
+      const worstMakeCut = makeCutScores[0] || 0;
+
+      // Replace MC with worst make-cut
+      scores = scores.map(s => s === 999 ? worstMakeCut : s);
+
+      // Sum lowest (best) 4
+      scores.sort((a,b) => a - b);
+      return scores.slice(0,4).reduce((a,b) => a + b, 0);
+    }
+
+    function renderLeaderboard() {
+      const tbody = document.getElementById("leaderboard-body");
+      tbody.innerHTML = "";
+      const teamScores = Object.keys(config.teams).map(team => {
+        const score = calculateTeamScore(config.teams[team]);
+        return { team, score };
+      });
+      teamScores.sort((a,b) => a.score - b.score); // lowest first
+
+      teamScores.forEach((entry, i) => {
+        const tr = document.createElement("tr");
+        tr.className = "border-b border-white/10 last:border-0";
+        tr.innerHTML = `
+          <td class="px-6 py-5 font-mono">${i+1}</td>
+          <td class="px-6 py-5 font-semibold">${entry.team}</td>
+          <td class="px-6 py-5 text-right font-mono text-2xl">${entry.score > 0 ? '+' + entry.score : entry.score}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderDetailedRosters() {
+      const container = document.getElementById("detailed-rosters");
+      container.innerHTML = "";
+      Object.keys(config.teams).forEach(team => {
+        const players = config.teams[team];
+        let html = `<div class="bg-white/10 rounded-2xl p-6"><h3 class="text-xl font-bold mb-4">${team}</h3><table class="w-full text-sm"><thead><tr class="text-green-300"><th class="text-left py-2">Player</th><th class="text-center py-2">R1</th><th class="text-center py-2">R2</th><th class="text-center py-2">R3</th><th class="text-center py-2">R4</th><th class="text-right py-2">Total</th><th class="text-right py-2">Thru</th></tr></thead><tbody>`;
+        players.forEach(name => {
+          const s = getPlayerScore(name);
+          html += `<tr class="border-t border-white/10"><td class="py-3">${name}</td><td class="text-center font-mono">${s.rounds[0]}</td><td class="text-center font-mono">${s.rounds[1]}</td><td class="text-center font-mono">${s.rounds[2]}</td><td class="text-center font-mono">${s.rounds[3]}</td><td class="text-right font-mono text-lg">${s.totalToPar > 0 ? '+' + s.totalToPar : s.totalToPar}</td><td class="text-right font-medium">${s.thru}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+        container.innerHTML += html;
+      });
+    }
+
+    function renderEverything() {
+      renderLeaderboard();
+      renderDetailedRosters();
+    }
+
+    function showTab(n) {
+      currentTab = n;
+      document.querySelectorAll(".tab-button").forEach((b,i) => {
+        b.classList.toggle("border-b-2", i === n);
+        b.classList.toggle("border-green-400", i === n);
+        b.classList.toggle("text-green-400", i === n);
+      });
+      document.querySelectorAll("#tab-content-0, #tab-content-1, #tab-content-2").forEach((el,i) => el.classList.toggle("hidden", i !== n));
+      if (n === 1 && leaderboardData) renderDetailedRosters();
+    }
+
+    // Admin functions
+    function populateAdminTeamSelect() {
+      const select = document.getElementById("admin-team-select");
+      select.innerHTML = "";
+      Object.keys(config.teams).forEach(team => {
+        const opt = document.createElement("option");
+        opt.value = team;
+        opt.textContent = team;
+        select.appendChild(opt);
+      });
+      select.onchange = renderCurrentRoster;
+    }
+
+    function renderCurrentRoster() {
+      const team = document.getElementById("admin-team-select").value;
+      const div = document.getElementById("current-roster");
+      const players = config.teams[team] || [];
+      let html = `<h4 class="font-medium mb-2">${team} Roster (${players.length}/7)</h4><div class="flex flex-wrap gap-2">`;
+      players.forEach((p,i) => {
+        html += `<div class="bg-white/20 px-4 py-2 rounded-2xl flex items-center gap-2"><span>${p}</span><button onclick="removePlayer('${team}', ${i})" class="text-red-400 text-xs">×</button></div>`;
+      });
+      html += `</div>`;
+      div.innerHTML = html;
+    }
+
+    function addPlayerToTeam() {
+      const team = document.getElementById("admin-team-select").value;
+      const player = document.getElementById("new-player-input").value.trim();
+      if (!player || !team) return;
+      if (!config.teams[team]) config.teams[team] = [];
+      if (config.teams[team].length >= 7) { alert("Max 7 players"); return; }
+      config.teams[team].push(player);
+      renderCurrentRoster();
+      document.getElementById("new-player-input").value = "";
+    }
+
+    window.removePlayer = function(team, index) {
+      config.teams[team].splice(index, 1);
+      renderCurrentRoster();
+    };
+
+    function exportConfig() {
+      const json = JSON.stringify(config.teams, null, 2);
+      navigator.clipboard.writeText(json).then(() => alert("Config JSON copied! Paste it into the 'teams' object in the code and re-deploy."));
+    }
+
+    function resetToDefaultConfig() {
+      if (confirm("Reset to the teams defined in the code?")) location.reload();
+    }
+
+    // Start everything
+    tailwindInit();
+    fetchLiveScores();
+    setInterval(fetchLiveScores, 30000); // auto-refresh every 30 seconds
+    populateAdminTeamSelect();
+    renderCurrentRoster(); // initial admin view
+  </script>
+</body>
+</html>
