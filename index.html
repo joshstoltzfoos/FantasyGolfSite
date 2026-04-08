@@ -47,7 +47,7 @@
         <i class="fa-solid fa-golf-ball text-5xl text-[#d4af77]"></i>
         <div>
           <h1 class="text-4xl font-bold tracking-tight">Phil's Fantasy Golf League</h1>
-          <p class="text-green-300 text-sm -mt-1">Masters-Themed • Amen Corner Live Leaderboard</p>
+          <p class="text-green-300 text-sm -mt-1">Live (the sheet is always updated, Doug) Leaderboard</p>
         </div>
       </div>
 
@@ -143,7 +143,7 @@
     </div>
   </div>
 
-  <!-- Add Tournament Modal (unchanged) -->
+  <!-- Add Tournament Modal -->
   <div id="add-modal" onclick="if(event.target===this)hideAddModal()" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
     <div onclick="event.stopImmediatePropagation()" class="card bg-[#0a3d2a] border border-[#d4af77] rounded-3xl p-8 w-full max-w-lg mx-4">
       <h3 class="text-3xl font-bold mb-8">Create New Tournament</h3>
@@ -231,38 +231,39 @@
 
     const defaultConfig = {
       tournaments: {
-        // Current default (as provided)
+        // 2026 Masters (current/upcoming as of April 2026)
         "2026-masters": {
           name: "2026 Masters",
           league: "pga",
-          tournamentId: "401243005",
+          tournamentId: "401811941",
           teams: createTeamsObj()
         },
-        // All majors since beginning of 2020 – ready for you to import rosters via the file you'll provide
+        // 2025 Masters – FIXED with real ESPN ID (now pulls full 2025 field + final results)
         "2025-masters": {
           name: "2025 Masters",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID",
+          tournamentId: "401703504",
           teams: createTeamsObj()
         },
         "2025-pga-championship": {
           name: "2025 PGA Championship",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID",
+          tournamentId: "TBD - replace with ESPN ID when you import rosters",
           teams: createTeamsObj()
         },
         "2025-us-open": {
           name: "2025 U.S. Open",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID",
+          tournamentId: "TBD - replace with ESPN ID when you import rosters",
           teams: createTeamsObj()
         },
         "2025-the-open": {
           name: "2025 The Open Championship",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID",
+          tournamentId: "TBD - replace with ESPN ID when you import rosters",
           teams: createTeamsObj()
         },
+        // 2024 and earlier – ready for your roster import file
         "2024-masters": {
           name: "2024 Masters",
           league: "pga",
@@ -272,22 +273,22 @@
         "2024-pga-championship": {
           name: "2024 PGA Championship",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID",
+          tournamentId: "TBD - replace with ESPN ID when you import rosters",
           teams: createTeamsObj()
         },
         "2024-us-open": {
           name: "2024 U.S. Open",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID",
+          tournamentId: "TBD - replace with ESPN ID when you import rosters",
           teams: createTeamsObj()
         },
         "2024-the-open": {
           name: "2024 The Open Championship",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID",
+          tournamentId: "TBD - replace with ESPN ID when you import rosters",
           teams: createTeamsObj()
-        },
-        // You can add more earlier years (2020-2023) the same way – just use the Manage Tournaments modal
+        }
+        // Add 2020–2023 majors the same way via the gear menu → Manage Tournaments
       },
       currentTournamentKey: "2026-masters"
     };
@@ -385,7 +386,6 @@
         return s.isMC ? 999 : s.totalToPar;
       });
       
-      // Worst player to make the cut (for MC penalty)
       const allPlayers = currentLeaderboardData.leaderboard?.players || currentLeaderboardData.players || [];
       const makeCutScores = allPlayers
         .filter(p => !(p.status || "").toLowerCase().includes("mc"))
@@ -423,7 +423,6 @@
         tbody.appendChild(tr);
       });
       
-      // If no teams yet
       if (teamScores.length === 0) {
         tbody.innerHTML = `<tr><td colspan="3" class="px-8 py-12 text-center text-green-300">No teams defined yet. Add rosters in the gear menu.</td></tr>`;
       }
@@ -488,7 +487,6 @@
       
       let completedCount = 0;
       
-      // Process every tournament
       for (const key of Object.keys(config.tournaments)) {
         const data = await fetchForTournament(key);
         if (!data) continue;
@@ -505,12 +503,10 @@
           if (score !== 999 && score !== 0) hasRealScores = true;
         });
         
-        // Only count as completed if there are real scores
         if (!hasRealScores) continue;
         
         completedCount++;
         
-        // Find winner(s)
         const sortedTeams = Object.keys(teamScoresMap).sort((a, b) => teamScoresMap[a] - teamScoresMap[b]);
         const lowestScore = teamScoresMap[sortedTeams[0]];
         const winners = sortedTeams.filter(t => teamScoresMap[t] === lowestScore);
@@ -519,7 +515,6 @@
           if (stats[winner]) stats[winner].wins++;
         });
         
-        // Add to totals
         Object.keys(teamScoresMap).forEach(team => {
           if (stats[team]) {
             stats[team].totalScore += teamScoresMap[team];
@@ -528,7 +523,6 @@
         });
       }
       
-      // Build HTML
       let html = `
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div class="bg-white/5 rounded-3xl p-6 text-center">
@@ -556,7 +550,6 @@
           </thead>
           <tbody>`;
       
-      // Sort by wins, then by average score
       const sortedStats = Object.keys(stats).sort((a, b) => {
         if (stats[b].wins !== stats[a].wins) return stats[b].wins - stats[a].wins;
         const avgA = stats[a].tournaments ? stats[a].totalScore / stats[a].tournaments : 999;
@@ -627,7 +620,7 @@
     }
 
     function setCurrentFromGear(key) {
-      toggleGearMenu(); // close menu
+      toggleGearMenu();
       switchTournament(key);
     }
 
@@ -640,7 +633,7 @@
     }
 
     function showAddTournamentModal() {
-      toggleGearMenu(); // close gear if open
+      toggleGearMenu();
       document.getElementById("add-modal").classList.remove("hidden");
       document.getElementById("new-name").focus();
     }
@@ -843,7 +836,7 @@
     }
 
     function showImportModal() {
-      hideManageRostersModal(); // close any open admin modal
+      hideManageRostersModal();
       document.getElementById("import-modal").classList.remove("hidden");
     }
 
@@ -871,12 +864,11 @@
       populateGearTournamentSelect();
       loadCurrentTournamentData().then(() => renderEverything());
       
-      // Auto-refresh every 30 seconds (only when leaderboard/detailed are visible)
       setInterval(() => {
         loadCurrentTournamentData().then(() => renderEverything());
       }, 30000);
       
-      console.log("%c✅ Phil's Fantasy Golf League ready – fully themed for Augusta National & Amen Corner", "color:#d4af77; font-weight:700");
+      console.log("%c✅ Phil's Fantasy Golf League ready – Amen Corner background + 2025 Masters results now loading", "color:#d4af77; font-weight:700");
     }
 
     init();
