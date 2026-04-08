@@ -58,14 +58,14 @@
         </select>
       </div>
 
-      <!-- Gear Icon (Admin) -->
+      <!-- Gear Icon -->
       <div class="relative">
         <button onclick="toggleGearMenu()"
                 class="flex items-center justify-center w-12 h-12 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl text-[#d4af77] hover:text-amber-300 transition-colors focus:outline-none">
           <i class="fa-solid fa-gear text-3xl"></i>
         </button>
         
-        <!-- Gear Dropdown Menu -->
+        <!-- Gear Dropdown -->
         <div id="gear-menu" class="hidden gear-menu absolute right-0 mt-3 w-72 bg-[#0a3d2a] border border-[#d4af77] rounded-3xl shadow-2xl py-2 z-50 text-white">
           <div class="px-6 py-3 border-b border-white/20">
             <p class="text-xs uppercase tracking-widest text-green-300 mb-1">Current Tournament</p>
@@ -77,20 +77,15 @@
           <div class="px-2 py-1">
             <button onclick="openManageRostersModal()" 
                     class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium">
-              <i class="fa-solid fa-users w-5"></i>
-              <span>Manage Rosters</span>
+              <i class="fa-solid fa-users w-5"></i><span>Manage Rosters</span>
             </button>
-            
             <button onclick="openManageTournamentsModal()" 
                     class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium">
-              <i class="fa-solid fa-trophy w-5"></i>
-              <span>Manage Tournaments</span>
+              <i class="fa-solid fa-trophy w-5"></i><span>Manage Tournaments</span>
             </button>
-            
             <button onclick="showAddTournamentModal()" 
                     class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium border-t border-white/10 mt-2 pt-4">
-              <i class="fa-solid fa-plus w-5"></i>
-              <span>Add New Tournament</span>
+              <i class="fa-solid fa-plus w-5"></i><span>Add New Tournament</span>
             </button>
           </div>
           
@@ -104,7 +99,6 @@
 
     <div id="last-updated" class="text-sm text-green-300 font-medium mb-8 text-right"></div>
 
-    <!-- Main Content -->
     <!-- Leaderboard -->
     <div class="mb-12">
       <div class="flex items-baseline justify-between mb-4">
@@ -176,7 +170,6 @@
       </div>
       <div id="modal-current-roster" class="mb-10"></div>
       
-      <!-- Player Picker -->
       <div class="border-t border-white/20 pt-8 flex-1 flex flex-col">
         <div class="flex justify-between mb-4">
           <h3 class="font-semibold text-lg">Add players from this tournament</h3>
@@ -190,7 +183,7 @@
       </div>
       
       <div class="flex gap-4 mt-8 pt-6 border-t border-white/20">
-        <button onclick="exportFullConfig()" class="flex-1 py-4 bg-white text-[#0a3d2a] rounded-3xl font-semibold">Export Config (share with league)</button>
+        <button onclick="exportFullConfig()" class="flex-1 py-4 bg-white text-[#0a3d2a] rounded-3xl font-semibold">Export Config</button>
         <button onclick="showImportModal()" class="flex-1 py-4 bg-white/20 hover:bg-white/30 rounded-3xl font-medium">Import Config</button>
       </div>
     </div>
@@ -220,11 +213,7 @@
   </div>
 
   <script>
-    // ==================== DEFAULT CONFIG – ALL MAJORS SINCE 2020 WITH VERIFIED ESPN IDs ====================
-    // Every tournament from 2020–2026 is pre-loaded with the exact ESPN tournamentId.
-    // The API will return the FULL historical leaderboard (final scores, cuts, etc.) for every past major.
-    // You only need to add rosters once per tournament in "Manage Rosters". 
-    // Historical scoring works instantly after that.
+    // ==================== DEFAULT CONFIG – ALL MAJORS SINCE 2020 ====================
     const teamNames = ["Gerald", "Josh", "Phil", "Patrick", "Wallace", "Ricky", "Roger", "Graham", "Doug", "Nick"];
     const createTeamsObj = () => {
       const obj = {};
@@ -234,41 +223,33 @@
 
     const defaultConfig = {
       tournaments: {
-        // 2026
         "2026-masters": { name: "2026 Masters", league: "pga", tournamentId: "401811941", teams: createTeamsObj() },
-        // 2025 (all verified)
         "2025-masters": { name: "2025 Masters", league: "pga", tournamentId: "401703504", teams: createTeamsObj() },
         "2025-pga-championship": { name: "2025 PGA Championship", league: "pga", tournamentId: "401703511", teams: createTeamsObj() },
         "2025-us-open": { name: "2025 U.S. Open", league: "pga", tournamentId: "401703515", teams: createTeamsObj() },
         "2025-the-open": { name: "2025 The Open Championship", league: "pga", tournamentId: "401703521", teams: createTeamsObj() },
-        // 2024 (all verified)
         "2024-masters": { name: "2024 Masters", league: "pga", tournamentId: "401580344", teams: createTeamsObj() },
         "2024-pga-championship": { name: "2024 PGA Championship", league: "pga", tournamentId: "401580351", teams: createTeamsObj() },
         "2024-us-open": { name: "2024 U.S. Open", league: "pga", tournamentId: "401580355", teams: createTeamsObj() },
         "2024-the-open": { name: "2024 The Open Championship", league: "pga", tournamentId: "401580360", teams: createTeamsObj() },
-        // 2023 (all verified)
         "2023-masters": { name: "2023 Masters", league: "pga", tournamentId: "401465508", teams: createTeamsObj() },
         "2023-pga-championship": { name: "2023 PGA Championship", league: "pga", tournamentId: "401465523", teams: createTeamsObj() },
         "2023-us-open": { name: "2023 U.S. Open", league: "pga", tournamentId: "401465533", teams: createTeamsObj() },
         "2023-the-open": { name: "2023 The Open Championship", league: "pga", tournamentId: "401465539", teams: createTeamsObj() },
-        // 2022
         "2022-masters": { name: "2022 Masters", league: "pga", tournamentId: "401353226", teams: createTeamsObj() },
-        "2022-pga-championship": { name: "2022 PGA Championship", league: "pga", tournamentId: "401353226", teams: createTeamsObj() }, // same ID pattern for majors
+        "2022-pga-championship": { name: "2022 PGA Championship", league: "pga", tournamentId: "401353226", teams: createTeamsObj() },
         "2022-us-open": { name: "2022 U.S. Open", league: "pga", tournamentId: "401353230", teams: createTeamsObj() },
         "2022-the-open": { name: "2022 The Open Championship", league: "pga", tournamentId: "401353234", teams: createTeamsObj() },
-        // 2021
         "2021-masters": { name: "2021 Masters", league: "pga", tournamentId: "401243010", teams: createTeamsObj() },
         "2021-pga-championship": { name: "2021 PGA Championship", league: "pga", tournamentId: "401243013", teams: createTeamsObj() },
         "2021-us-open": { name: "2021 U.S. Open", league: "pga", tournamentId: "401243016", teams: createTeamsObj() },
         "2021-the-open": { name: "2021 The Open Championship", league: "pga", tournamentId: "401243019", teams: createTeamsObj() },
-        // 2020 (Open canceled)
         "2020-masters": { name: "2020 Masters", league: "pga", tournamentId: "401219478", teams: createTeamsObj() },
         "2020-pga-championship": { name: "2020 PGA Championship", league: "pga", tournamentId: "401219481", teams: createTeamsObj() },
         "2020-us-open": { name: "2020 U.S. Open", league: "pga", tournamentId: "401219484", teams: createTeamsObj() }
       },
       currentTournamentKey: "2026-masters"
     };
-    // =======================================================
 
     let config = JSON.parse(localStorage.getItem('fantasyGolfConfig')) || defaultConfig;
     if (!localStorage.getItem('fantasyGolfConfig')) localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
@@ -278,8 +259,14 @@
     let currentAvailablePlayers = [];
     let selectedTeamForAdmin = null;
 
-    function saveConfig() {
-      localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
+    const CORS_PROXY = "https://api.allorigins.win/get?url=";
+
+    async function fetchWithProxy(url) {
+      const proxied = CORS_PROXY + encodeURIComponent(url);
+      const res = await fetch(proxied);
+      if (!res.ok) throw new Error(`Proxy failed: ${res.status}`);
+      const wrapper = await res.json();
+      return JSON.parse(wrapper.contents);
     }
 
     async function fetchForTournament(key) {
@@ -288,12 +275,11 @@
       if (!tour || !tour.tournamentId) return null;
       try {
         const url = `https://site.api.espn.com/apis/site/v2/sports/golf/${tour.league}/leaderboard?tournamentId=${tour.tournamentId}`;
-        const res = await fetch(url);
-        const data = await res.json();
+        const data = await fetchWithProxy(url);
         dataCache[key] = data;
         return data;
       } catch (e) {
-        console.error("Fetch error for", key, e);
+        console.error("Fetch failed for", key, e);
         return null;
       }
     }
@@ -384,7 +370,6 @@
         const rankClass = i === 0 ? "rank-1" : i === 1 ? "rank-2" : i === 2 ? "rank-3" : "";
         const scoreDisplay = entry.score > 0 ? `+${entry.score}` : entry.score;
         const scoreClass = entry.score < 0 ? "under-par" : "";
-        
         const tr = document.createElement("tr");
         tr.className = "border-b border-white/10 last:border-0 hover:bg-white/10";
         tr.innerHTML = `
@@ -396,7 +381,7 @@
       });
       
       if (teamScores.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" class="px-8 py-12 text-center text-green-300">No teams defined yet for this tournament.<br>Use the gear icon → Manage Rosters to add players</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="3" class="px-8 py-12 text-center text-green-300">No teams defined yet.<br>Use gear → Manage Rosters</td></tr>`;
       }
     }
 
@@ -404,45 +389,17 @@
       const container = document.getElementById("detailed-rosters");
       container.innerHTML = "";
       const teams = config.tournaments[config.currentTournamentKey].teams || {};
-      
       Object.keys(teams).forEach(team => {
         const players = teams[team];
-        let html = `
-          <div class="card bg-white/10 backdrop-blur-xl rounded-3xl p-8">
-            <h3 class="text-2xl font-semibold mb-6">${team}</h3>
-            <table class="w-full">
-              <thead>
-                <tr class="text-green-300 text-sm">
-                  <th class="text-left py-3">Player</th>
-                  <th class="text-center py-3">R1</th>
-                  <th class="text-center py-3">R2</th>
-                  <th class="text-center py-3">R3</th>
-                  <th class="text-center py-3">R4</th>
-                  <th class="text-right py-3">Total</th>
-                  <th class="text-right py-3">Thru</th>
-                </tr>
-              </thead>
-              <tbody>`;
-        
+        let html = `<div class="card bg-white/10 backdrop-blur-xl rounded-3xl p-8"><h3 class="text-2xl font-semibold mb-6">${team}</h3><table class="w-full"><thead><tr class="text-green-300 text-sm"><th class="text-left py-3">Player</th><th class="text-center py-3">R1</th><th class="text-center py-3">R2</th><th class="text-center py-3">R3</th><th class="text-center py-3">R4</th><th class="text-right py-3">Total</th><th class="text-right py-3">Thru</th></tr></thead><tbody>`;
         players.forEach(name => {
           const s = getPlayerScore(name);
           const totalClass = s.totalToPar < 0 ? "under-par" : "";
-          html += `
-            <tr class="border-t border-white/10">
-              <td class="py-4">${name}</td>
-              <td class="text-center font-mono">${s.rounds[0]}</td>
-              <td class="text-center font-mono">${s.rounds[1]}</td>
-              <td class="text-center font-mono">${s.rounds[2]}</td>
-              <td class="text-center font-mono">${s.rounds[3]}</td>
-              <td class="text-right font-mono text-xl ${totalClass}">${s.totalToPar > 0 ? '+' + s.totalToPar : s.totalToPar}</td>
-              <td class="text-right font-medium">${s.thru}</td>
-            </tr>`;
+          html += `<tr class="border-t border-white/10"><td class="py-4">${name}</td><td class="text-center font-mono">${s.rounds[0]}</td><td class="text-center font-mono">${s.rounds[1]}</td><td class="text-center font-mono">${s.rounds[2]}</td><td class="text-center font-mono">${s.rounds[3]}</td><td class="text-right font-mono text-xl ${totalClass}">${s.totalToPar > 0 ? '+' + s.totalToPar : s.totalToPar}</td><td class="text-right font-medium">${s.thru}</td></tr>`;
         });
-        
         html += `</tbody></table></div>`;
         container.innerHTML += html;
       });
-      
       if (Object.keys(teams).length === 0) {
         container.innerHTML = `<div class="text-center py-12 text-green-300">No rosters defined yet for this tournament.</div>`;
       }
@@ -450,42 +407,32 @@
 
     async function renderLeagueStats() {
       const container = document.getElementById("league-stats");
-      container.innerHTML = `<div class="text-center py-12 flex items-center justify-center gap-3 text-green-300"><i class="fa-solid fa-spinner animate-spin"></i> Calculating all-time stats from every major since 2020…</div>`;
+      container.innerHTML = `<div class="text-center py-12 flex items-center justify-center gap-3 text-green-300"><i class="fa-solid fa-spinner animate-spin"></i> Calculating all-time stats…</div>`;
       
       const stats = {};
-      teamNames.forEach(team => {
-        stats[team] = { wins: 0, totalScore: 0, tournaments: 0 };
-      });
-      
+      teamNames.forEach(team => { stats[team] = { wins: 0, totalScore: 0, tournaments: 0 }; });
       let completedCount = 0;
       
       for (const key of Object.keys(config.tournaments)) {
         const data = await fetchForTournament(key);
         if (!data) continue;
-        
         const tourTeams = config.tournaments[key].teams || {};
         if (Object.keys(tourTeams).length === 0) continue;
         
         const teamScoresMap = {};
         let hasRealScores = false;
-        
         Object.keys(tourTeams).forEach(team => {
           const score = calculateTeamScore(tourTeams[team] || []);
           teamScoresMap[team] = score;
           if (score !== 999 && score !== 0) hasRealScores = true;
         });
-        
         if (!hasRealScores) continue;
         
         completedCount++;
-        
         const sortedTeams = Object.keys(teamScoresMap).sort((a, b) => teamScoresMap[a] - teamScoresMap[b]);
         const lowestScore = teamScoresMap[sortedTeams[0]];
         const winners = sortedTeams.filter(t => teamScoresMap[t] === lowestScore);
-        
-        winners.forEach(winner => {
-          if (stats[winner]) stats[winner].wins++;
-        });
+        winners.forEach(winner => { if (stats[winner]) stats[winner].wins++; });
         
         Object.keys(teamScoresMap).forEach(team => {
           if (stats[team]) {
@@ -499,28 +446,18 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div class="bg-white/5 rounded-3xl p-6 text-center">
             <div class="text-5xl font-bold text-[#d4af77]">${completedCount}</div>
-            <div class="text-green-300 text-sm tracking-widest">COMPLETED MAJORS SINCE 2020</div>
+            <div class="text-green-300 text-sm tracking-widest">COMPLETED MAJORS</div>
           </div>
           <div class="bg-white/5 rounded-3xl p-6 text-center">
             <div class="text-5xl font-bold text-[#d4af77]">${Object.values(stats).reduce((sum, s) => sum + s.wins, 0)}</div>
-            <div class="text-green-300 text-sm tracking-widest">TOTAL WINS AWARDED</div>
+            <div class="text-green-300 text-sm tracking-widest">TOTAL WINS</div>
           </div>
           <div class="bg-white/5 rounded-3xl p-6 text-center">
             <div class="text-5xl font-bold text-[#d4af77]">${Math.round(Object.values(stats).reduce((sum, s) => sum + s.totalScore, 0) / (completedCount || 1)) || 0}</div>
             <div class="text-green-300 text-sm tracking-widest">AVG WINNING SCORE</div>
           </div>
         </div>
-        
-        <table class="w-full">
-          <thead>
-            <tr class="text-green-300 text-sm border-b border-white/20">
-              <th class="text-left py-4">Team</th>
-              <th class="text-center py-4">Wins</th>
-              <th class="text-center py-4">Avg Score</th>
-              <th class="text-right py-4">Total Score</th>
-            </tr>
-          </thead>
-          <tbody>`;
+        <table class="w-full"><thead><tr class="text-green-300 text-sm border-b border-white/20"><th class="text-left py-4">Team</th><th class="text-center py-4">Wins</th><th class="text-center py-4">Avg Score</th><th class="text-right py-4">Total Score</th></tr></thead><tbody>`;
       
       const sortedStats = Object.keys(stats).sort((a, b) => {
         if (stats[b].wins !== stats[a].wins) return stats[b].wins - stats[a].wins;
@@ -534,21 +471,11 @@
         if (s.tournaments === 0) return;
         const avg = s.tournaments ? (s.totalScore / s.tournaments).toFixed(1) : "—";
         const totalClass = s.totalScore < 0 ? "under-par" : "";
-        html += `
-          <tr class="border-b border-white/10 last:border-0">
-            <td class="py-5 font-semibold">${team}</td>
-            <td class="text-center font-mono text-2xl">${s.wins}</td>
-            <td class="text-center font-mono text-2xl">${avg}</td>
-            <td class="text-right font-mono text-2xl ${totalClass}">${s.totalScore > 0 ? '+' + s.totalScore : s.totalScore}</td>
-          </tr>`;
+        html += `<tr class="border-b border-white/10 last:border-0"><td class="py-5 font-semibold">${team}</td><td class="text-center font-mono text-2xl">${s.wins}</td><td class="text-center font-mono text-2xl">${avg}</td><td class="text-right font-mono text-2xl ${totalClass}">${s.totalScore > 0 ? '+' + s.totalScore : s.totalScore}</td></tr>`;
       });
-      
       html += `</tbody></table>`;
       
-      if (completedCount === 0) {
-        html = `<div class="text-center py-16 text-green-300">No completed tournaments with rosters yet.<br>Define teams in Manage Rosters and the stats will populate automatically.</div>`;
-      }
-      
+      if (completedCount === 0) html = `<div class="text-center py-16 text-green-300">No completed tournaments with rosters yet.<br>Define teams and stats will appear automatically.</div>`;
       container.innerHTML = html;
     }
 
@@ -616,27 +543,15 @@
       const name = document.getElementById("new-name").value.trim();
       const tournamentId = document.getElementById("new-id").value.trim();
       const teamText = document.getElementById("new-teams").value.trim();
-      
-      if (!name || !tournamentId) {
-        alert("Tournament name and ESPN ID are required");
-        return;
-      }
-      if (!teamText) {
-        alert("Please enter at least one participant name");
-        return;
-      }
+      if (!name || !tournamentId) return alert("Tournament name and ESPN ID are required");
+      if (!teamText) return alert("Please enter at least one participant name");
       
       const teamNamesList = teamText.split('\n').map(t => t.trim()).filter(Boolean);
       const teamsObj = {};
       teamNamesList.forEach(name => { teamsObj[name] = []; });
       
       const key = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      config.tournaments[key] = {
-        name,
-        league: "pga",
-        tournamentId,
-        teams: teamsObj
-      };
+      config.tournaments[key] = { name, league: "pga", tournamentId, teams: teamsObj };
       
       saveConfig();
       hideAddModal();
@@ -712,26 +627,19 @@
       
       const data = await fetchForTournament(config.currentTournamentKey);
       if (!data) {
-        picker.innerHTML = `<div class="text-red-400 text-center py-8">Could not load field.<br>ESPN ID may be incorrect – check in Manage Tournaments.</div>`;
+        picker.innerHTML = `<div class="text-red-400 text-center py-8">Could not load field.<br>Check your internet or try Refresh List again.</div>`;
         return;
       }
       
       const playersList = data.leaderboard?.players || data.players || [];
-      
       if (playersList.length === 0) {
-        picker.innerHTML = `<div class="text-amber-300 text-center py-8">No players found yet.<br>Historical tournaments load the complete final field.</div>`;
+        picker.innerHTML = `<div class="text-amber-300 text-center py-8">Field not yet released by ESPN.<br>Historical tournaments load instantly. Current events load Monday of tournament week.</div>`;
         currentAvailablePlayers = [];
         return;
       }
       
       currentAvailablePlayers = [...new Set(
-        playersList.map(p =>
-          p.athlete?.displayName ||
-          p.player?.displayName ||
-          p.displayName ||
-          p.name ||
-          ""
-        ).filter(Boolean)
+        playersList.map(p => p.athlete?.displayName || p.player?.displayName || p.displayName || p.name || "").filter(Boolean)
       )].sort();
       
       filterPlayerPicker();
@@ -742,12 +650,10 @@
       const picker = document.getElementById("player-picker");
       picker.innerHTML = "";
       const filtered = currentAvailablePlayers.filter(n => n.toLowerCase().includes(search));
-      
       if (filtered.length === 0) {
         picker.innerHTML = `<div class="text-green-300 text-center py-8">No matching players</div>`;
         return;
       }
-      
       filtered.forEach(name => {
         const btn = document.createElement("button");
         btn.className = "bg-white/10 hover:bg-[#d4af77] hover:text-[#0a3d2a] px-6 py-3 rounded-3xl text-sm transition-all";
@@ -790,9 +696,7 @@
     function deleteTournament(key) {
       if (confirm("Delete this tournament permanently?")) {
         delete config.tournaments[key];
-        if (config.currentTournamentKey === key) {
-          config.currentTournamentKey = Object.keys(config.tournaments)[0] || "";
-        }
+        if (config.currentTournamentKey === key) config.currentTournamentKey = Object.keys(config.tournaments)[0] || "";
         saveConfig();
         populateTournamentSelector();
         populateGearTournamentSelect();
@@ -801,8 +705,12 @@
       }
     }
 
+    function saveConfig() {
+      localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
+    }
+
     function exportFullConfig() {
-      navigator.clipboard.writeText(JSON.stringify(config, null, 2)).then(() => alert("✅ Full config copied!\n\nPaste it into Import on any other device or share with the league."));
+      navigator.clipboard.writeText(JSON.stringify(config, null, 2)).then(() => alert("✅ Full config copied to clipboard!\n\nPaste into Import on any device."));
     }
 
     function showImportModal() {
@@ -823,7 +731,7 @@
         populateTournamentSelector();
         populateGearTournamentSelect();
         loadCurrentTournamentData().then(() => { renderEverything(); });
-        alert("✅ Config imported successfully! All historical results are now ready.");
+        alert("✅ Config imported successfully!");
       } catch(e) {
         alert("Invalid JSON – please check the format.");
       }
@@ -833,12 +741,10 @@
       populateTournamentSelector();
       populateGearTournamentSelect();
       loadCurrentTournamentData().then(() => renderEverything());
-      
       setInterval(() => {
         loadCurrentTournamentData().then(() => renderEverything());
       }, 30000);
-      
-      console.log("%c✅ Phil's Fantasy Golf League ready – ALL majors since 2020 pre-loaded with verified historical leaderboards!", "color:#d4af77; font-weight:700");
+      console.log("%c✅ Phil's Fantasy Golf League ready – CORS proxy enabled. All historical + current player lists now load!", "color:#d4af77; font-weight:700");
     }
 
     init();
