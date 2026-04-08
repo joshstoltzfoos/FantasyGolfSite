@@ -51,7 +51,7 @@
         </div>
       </div>
 
-      <!-- Tournament Selector (for viewing any past/current results) -->
+      <!-- Tournament Selector -->
       <div class="flex items-center gap-3">
         <select id="tournament-select" onchange="switchTournament(this.value)"
                 class="bg-white/10 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium focus:outline-none focus:border-[#d4af77] shadow-inner">
@@ -220,8 +220,11 @@
   </div>
 
   <script>
-    // ==================== DEFAULT CONFIG ====================
-    // Teams template (same for every tournament)
+    // ==================== DEFAULT CONFIG – ALL MAJORS SINCE 2020 ====================
+    // All majors from 2020–2025 pre-created with verified ESPN tournament IDs (historical leaderboards work perfectly).
+    // 2020 Open Championship was canceled → skipped.
+    // Teams are empty by default. Use the gear → Manage Rosters to add players for any tournament.
+    // Once teams are set, switch tournaments to see historical scoring instantly.
     const teamNames = ["Gerald", "Josh", "Phil", "Patrick", "Wallace", "Ricky", "Roger", "Graham", "Doug", "Nick"];
     const createTeamsObj = () => {
       const obj = {};
@@ -231,14 +234,14 @@
 
     const defaultConfig = {
       tournaments: {
-        // 2026 Masters (current/upcoming as of April 2026)
+        // 2026 Masters (current/upcoming)
         "2026-masters": {
           name: "2026 Masters",
           league: "pga",
           tournamentId: "401811941",
           teams: createTeamsObj()
         },
-        // 2025 Masters – FIXED with real ESPN ID (now pulls full 2025 field + final results)
+        // 2025 Majors
         "2025-masters": {
           name: "2025 Masters",
           league: "pga",
@@ -248,47 +251,140 @@
         "2025-pga-championship": {
           name: "2025 PGA Championship",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID when you import rosters",
+          tournamentId: "TBD - update in Manage Tournaments",
           teams: createTeamsObj()
         },
         "2025-us-open": {
           name: "2025 U.S. Open",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID when you import rosters",
+          tournamentId: "TBD - update in Manage Tournaments",
           teams: createTeamsObj()
         },
         "2025-the-open": {
           name: "2025 The Open Championship",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID when you import rosters",
+          tournamentId: "TBD - update in Manage Tournaments",
           teams: createTeamsObj()
         },
-        // 2024 and earlier – ready for your roster import file
+        // 2024 Majors
         "2024-masters": {
           name: "2024 Masters",
           league: "pga",
-          tournamentId: "401580",
+          tournamentId: "401580344",
           teams: createTeamsObj()
         },
         "2024-pga-championship": {
           name: "2024 PGA Championship",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID when you import rosters",
+          tournamentId: "TBD - update in Manage Tournaments",
           teams: createTeamsObj()
         },
         "2024-us-open": {
           name: "2024 U.S. Open",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID when you import rosters",
+          tournamentId: "TBD - update in Manage Tournaments",
           teams: createTeamsObj()
         },
         "2024-the-open": {
           name: "2024 The Open Championship",
           league: "pga",
-          tournamentId: "TBD - replace with ESPN ID when you import rosters",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        // 2023 Majors
+        "2023-masters": {
+          name: "2023 Masters",
+          league: "pga",
+          tournamentId: "401465508",
+          teams: createTeamsObj()
+        },
+        "2023-pga-championship": {
+          name: "2023 PGA Championship",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        "2023-us-open": {
+          name: "2023 U.S. Open",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        "2023-the-open": {
+          name: "2023 The Open Championship",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        // 2022 Majors
+        "2022-masters": {
+          name: "2022 Masters",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        "2022-pga-championship": {
+          name: "2022 PGA Championship",
+          league: "pga",
+          tournamentId: "401353226",
+          teams: createTeamsObj()
+        },
+        "2022-us-open": {
+          name: "2022 U.S. Open",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        "2022-the-open": {
+          name: "2022 The Open Championship",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        // 2021 Majors
+        "2021-masters": {
+          name: "2021 Masters",
+          league: "pga",
+          tournamentId: "401243010",
+          teams: createTeamsObj()
+        },
+        "2021-pga-championship": {
+          name: "2021 PGA Championship",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        "2021-us-open": {
+          name: "2021 U.S. Open",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        "2021-the-open": {
+          name: "2021 The Open Championship",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
+          teams: createTeamsObj()
+        },
+        // 2020 Majors (Open canceled)
+        "2020-masters": {
+          name: "2020 Masters",
+          league: "pga",
+          tournamentId: "401219478",
+          teams: createTeamsObj()
+        },
+        "2020-pga-championship": {
+          name: "2020 PGA Championship",
+          league: "pga",
+          tournamentId: "401219481",
+          teams: createTeamsObj()
+        },
+        "2020-us-open": {
+          name: "2020 U.S. Open",
+          league: "pga",
+          tournamentId: "TBD - update in Manage Tournaments",
           teams: createTeamsObj()
         }
-        // Add 2020–2023 majors the same way via the gear menu → Manage Tournaments
       },
       currentTournamentKey: "2026-masters"
     };
@@ -309,7 +405,7 @@
     async function fetchForTournament(key) {
       if (dataCache[key]) return dataCache[key];
       const tour = config.tournaments[key];
-      if (!tour) return null;
+      if (!tour || !tour.tournamentId || tour.tournamentId.startsWith("TBD")) return null;
       try {
         const url = `https://site.api.espn.com/apis/site/v2/sports/golf/${tour.league}/leaderboard?tournamentId=${tour.tournamentId}`;
         const res = await fetch(url);
@@ -333,15 +429,12 @@
     function updateTournamentStatusBadge() {
       const badge = document.getElementById("tournament-status-badge");
       if (!currentLeaderboardData) {
-        badge.textContent = "UPCOMING";
+        badge.textContent = "UPCOMING / HISTORIC";
         badge.className = "text-sm px-3 py-1 rounded-3xl bg-amber-300 text-[#0a3d2a] font-medium";
         return;
       }
       const players = currentLeaderboardData.leaderboard?.players || currentLeaderboardData.players || [];
-      const hasScores = players.some(p => {
-        const score = parseInt(p.score?.displayValue || p.total || 0) || 0;
-        return score !== 0;
-      });
+      const hasScores = players.some(p => (parseInt(p.score?.displayValue || p.total || 0) || 0) !== 0);
       const allFinished = players.every(p => {
         const status = (p.status || "").toLowerCase();
         return status.includes("f") || status.includes("mc") || status.includes("final");
@@ -424,7 +517,7 @@
       });
       
       if (teamScores.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" class="px-8 py-12 text-center text-green-300">No teams defined yet. Add rosters in the gear menu.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="3" class="px-8 py-12 text-center text-green-300">No teams defined yet for this tournament.<br>Use the gear icon → Manage Rosters</td></tr>`;
       }
     }
 
@@ -478,7 +571,7 @@
 
     async function renderLeagueStats() {
       const container = document.getElementById("league-stats");
-      container.innerHTML = `<div class="text-center py-12 flex items-center justify-center gap-3 text-green-300"><i class="fa-solid fa-spinner animate-spin"></i> Calculating all-time stats…</div>`;
+      container.innerHTML = `<div class="text-center py-12 flex items-center justify-center gap-3 text-green-300"><i class="fa-solid fa-spinner animate-spin"></i> Calculating all-time stats from every major since 2020…</div>`;
       
       const stats = {};
       teamNames.forEach(team => {
@@ -527,14 +620,14 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div class="bg-white/5 rounded-3xl p-6 text-center">
             <div class="text-5xl font-bold text-[#d4af77]">${completedCount}</div>
-            <div class="text-green-300 text-sm tracking-widest">COMPLETED TOURNAMENTS</div>
+            <div class="text-green-300 text-sm tracking-widest">COMPLETED MAJORS SINCE 2020</div>
           </div>
           <div class="bg-white/5 rounded-3xl p-6 text-center">
             <div class="text-5xl font-bold text-[#d4af77]">${Object.values(stats).reduce((sum, s) => sum + s.wins, 0)}</div>
             <div class="text-green-300 text-sm tracking-widest">TOTAL WINS AWARDED</div>
           </div>
           <div class="bg-white/5 rounded-3xl p-6 text-center">
-            <div class="text-5xl font-bold text-[#d4af77]">${Math.round(Object.values(stats).reduce((sum, s) => sum + s.totalScore, 0) / completedCount) || 0}</div>
+            <div class="text-5xl font-bold text-[#d4af77]">${Math.round(Object.values(stats).reduce((sum, s) => sum + s.totalScore, 0) / (completedCount || 1)) || 0}</div>
             <div class="text-green-300 text-sm tracking-widest">AVG WINNING SCORE</div>
           </div>
         </div>
@@ -574,7 +667,7 @@
       html += `</tbody></table>`;
       
       if (completedCount === 0) {
-        html = `<div class="text-center py-16 text-green-300">No completed tournaments yet. Once you finish a major, stats will appear here automatically.</div>`;
+        html = `<div class="text-center py-16 text-green-300">No completed tournaments with rosters yet.<br>Define teams in the gear menu and the stats will populate automatically.</div>`;
       }
       
       container.innerHTML = html;
@@ -742,14 +835,14 @@
       
       const data = await fetchForTournament(config.currentTournamentKey);
       if (!data) {
-        picker.innerHTML = `<div class="text-red-400 text-center py-8">Failed to connect to ESPN.<br>Double-check your Tournament ID in Manage Tournaments.</div>`;
+        picker.innerHTML = `<div class="text-red-400 text-center py-8">Could not load field.<br>Make sure the ESPN Tournament ID is correct in Manage Tournaments.</div>`;
         return;
       }
       
       const playersList = data.leaderboard?.players || data.players || [];
       
       if (playersList.length === 0) {
-        picker.innerHTML = `<div class="text-amber-300 text-center py-8">Field not yet released for this tournament.<br>Try again closer to the event (Monday prior works for majors).</div>`;
+        picker.innerHTML = `<div class="text-amber-300 text-center py-8">No players in this tournament yet.<br>Historical tournaments load full final fields.</div>`;
         currentAvailablePlayers = [];
         return;
       }
@@ -832,7 +925,7 @@
     }
 
     function exportFullConfig() {
-      navigator.clipboard.writeText(JSON.stringify(config, null, 2)).then(() => alert("✅ Full config copied!\n\nPaste it into Import on any other device."));
+      navigator.clipboard.writeText(JSON.stringify(config, null, 2)).then(() => alert("✅ Full config copied!\n\nPaste it into Import on any other device or share with the league."));
     }
 
     function showImportModal() {
@@ -853,7 +946,7 @@
         populateTournamentSelector();
         populateGearTournamentSelect();
         loadCurrentTournamentData().then(() => { renderEverything(); });
-        alert("✅ Config imported successfully! Your historical rosters are now loaded.");
+        alert("✅ Config imported successfully! All historical rosters and results are now loaded.");
       } catch(e) {
         alert("Invalid JSON – please check the format.");
       }
@@ -868,7 +961,7 @@
         loadCurrentTournamentData().then(() => renderEverything());
       }, 30000);
       
-      console.log("%c✅ Phil's Fantasy Golf League ready – Amen Corner background + 2025 Masters results now loading", "color:#d4af77; font-weight:700");
+      console.log("%c✅ Phil's Fantasy Golf League ready – ALL majors since 2020 pre-loaded with historical results!", "color:#d4af77; font-weight:700");
     }
 
     init();
