@@ -27,6 +27,9 @@
     @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
     /* Mobile table scroll */
     .roster-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .roster-table { width: 100%; min-width: 320px; border-collapse: collapse; }
+    .roster-table th, .roster-table td { white-space: nowrap; }
+    .roster-table td:first-child, .roster-table th:first-child { white-space: normal; min-width: 90px; }
     /* Modal scroll on small screens */
     .modal-inner { max-height: 92vh; overflow-y: auto; }
     /* Tap targets */
@@ -471,7 +474,7 @@ function renderRosters() {
         <span class="font-mono font-bold text-xl ${scCls}">${scDisplay}</span>
       </div>
       <div class="roster-table-wrap">
-        <table class="w-full min-w-[300px]">
+        <table class="roster-table">
           <thead><tr class="text-green-300">
             <th class="text-left text-xs pb-2 pr-2">Player</th>
             ${r1Header}
