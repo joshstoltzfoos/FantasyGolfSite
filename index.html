@@ -10,24 +10,17 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background-image: linear-gradient(rgba(10, 61, 42, 0.88), rgba(10, 61, 42, 0.92)),
-                        url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Amen_Corner_Augusta_National.jpg/1920px-Amen_Corner_Augusta_National.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
+      background-image: linear-gradient(rgba(10,61,42,0.88),rgba(10,61,42,0.92)),
+        url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Amen_Corner_Augusta_National.jpg/1920px-Amen_Corner_Augusta_National.jpg');
+      background-size: cover; background-position: center; background-attachment: fixed;
     }
-    .card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2); }
+    .card { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0/.2),0 8px 10px -6px rgb(0 0 0/.2); }
     .leaderboard-table tr:hover { background-color: rgba(255,255,255,0.07); }
-    .rank-1 { color: #d4af77; }
-    .rank-2 { color: #c0c0c0; }
-    .rank-3 { color: #cd7f32; }
-    .under-par { color: #ef4444 !important; font-weight: 600; }
-    .gear-menu { animation: fadeIn 0.2s ease-out forwards; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    .rank-1{color:#d4af77}.rank-2{color:#c0c0c0}.rank-3{color:#cd7f32}
+    .under-par{color:#ef4444!important;font-weight:600}
+    .gear-menu{animation:fadeIn .2s ease-out forwards}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
   </style>
 </head>
 <body class="text-white min-h-screen">
@@ -42,32 +35,27 @@
         <p class="text-green-300 text-sm -mt-1">Live (the sheet is always updated, Doug) Leaderboard</p>
       </div>
     </div>
-    <div class="flex items-center gap-3">
-      <select id="tournament-select" onchange="switchTournament(this.value)"
-              class="bg-white/10 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium focus:outline-none focus:border-[#d4af77] shadow-inner"></select>
-    </div>
+    <select id="tournament-select" onchange="switchTournament(this.value)"
+      class="bg-white/10 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium focus:outline-none focus:border-[#d4af77]"></select>
     <div class="relative">
       <button onclick="toggleGearMenu()"
-              class="flex items-center justify-center w-12 h-12 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl text-[#d4af77] hover:text-amber-300 transition-colors focus:outline-none">
+        class="flex items-center justify-center w-12 h-12 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl text-[#d4af77] hover:text-amber-300 transition-colors focus:outline-none">
         <i class="fa-solid fa-gear text-3xl"></i>
       </button>
       <div id="gear-menu" class="hidden gear-menu absolute right-0 mt-3 w-72 bg-[#0a3d2a] border border-[#d4af77] rounded-3xl shadow-2xl py-2 z-50 text-white">
         <div class="px-6 py-3 border-b border-white/20">
           <p class="text-xs uppercase tracking-widest text-green-300 mb-1">Current Tournament</p>
           <select id="gear-tournament-select" onchange="setCurrentFromGear(this.value)"
-                  class="w-full bg-white/10 border border-white/30 rounded-3xl px-4 py-3 text-white font-medium focus:outline-none focus:border-[#d4af77]"></select>
+            class="w-full bg-white/10 border border-white/30 rounded-3xl px-4 py-3 text-white font-medium focus:outline-none focus:border-[#d4af77]"></select>
         </div>
         <div class="px-2 py-1">
-          <button onclick="openManageRostersModal()"
-                  class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium">
+          <button onclick="openManageRostersModal()" class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium">
             <i class="fa-solid fa-users w-5"></i><span>Manage Rosters</span>
           </button>
-          <button onclick="openManageTournamentsModal()"
-                  class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium">
+          <button onclick="openManageTournamentsModal()" class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium">
             <i class="fa-solid fa-trophy w-5"></i><span>Manage Tournaments</span>
           </button>
-          <button onclick="showAddTournamentModal()"
-                  class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium border-t border-white/10 mt-2 pt-4">
+          <button onclick="showAddTournamentModal()" class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium border-t border-white/10 mt-2 pt-4">
             <i class="fa-solid fa-plus w-5"></i><span>Add New Tournament</span>
           </button>
         </div>
@@ -112,8 +100,7 @@
   <!-- League Stats -->
   <div>
     <h2 class="text-3xl font-semibold mb-4 flex items-center gap-2">
-      League Stats
-      <span class="text-sm font-medium text-green-300 px-3 py-1 bg-white/10 rounded-3xl">All-Time • Since 2020</span>
+      League Stats <span class="text-sm font-medium text-green-300 px-3 py-1 bg-white/10 rounded-3xl">All-Time • Since 2020</span>
     </h2>
     <div id="league-stats" class="card bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl"></div>
   </div>
@@ -124,12 +111,12 @@
   <div onclick="event.stopImmediatePropagation()" class="card bg-[#0a3d2a] border border-[#d4af77] rounded-3xl p-8 w-full max-w-lg mx-4">
     <h3 class="text-3xl font-bold mb-8">Create New Tournament</h3>
     <input id="new-name" placeholder="Tournament Name (e.g. 2027 Masters)"
-           class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 mb-6 text-white placeholder:text-white/60">
+      class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 mb-6 text-white placeholder:text-white/60">
     <input id="new-id" placeholder="ESPN Tournament ID"
-           class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 mb-6 text-white placeholder:text-white/60">
+      class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 mb-6 text-white placeholder:text-white/60">
     <label class="block text-sm mb-3 font-medium">League Participants (one name per line)</label>
     <textarea id="new-teams" rows="6" placeholder="Gerald&#10;Josh&#10;Phil&#10;Patrick&#10;Wallace&#10;Ricky&#10;Roger&#10;Graham&#10;Doug&#10;Nick"
-              class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white resize-none"></textarea>
+      class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white resize-none"></textarea>
     <div class="flex gap-4 mt-8">
       <button onclick="hideAddModal()" class="flex-1 py-4 rounded-3xl border border-white/30 font-medium">Cancel</button>
       <button onclick="addNewTournament()" class="flex-1 py-4 bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] rounded-3xl font-semibold">Create Tournament</button>
@@ -144,49 +131,40 @@
       <h2 class="text-2xl font-semibold">Manage Rosters – <span id="modal-admin-tournament-name" class="text-[#d4af77]"></span></h2>
       <button onclick="hideManageRostersModal()" class="text-white/60 hover:text-white text-3xl leading-none">×</button>
     </div>
-
-    <!-- Tab Nav -->
     <div class="flex gap-2 mb-6">
-      <button id="tab-individual" onclick="showRosterTab('individual')"
-              class="px-5 py-2 rounded-3xl font-medium text-sm bg-[#d4af77] text-[#0a3d2a]">Individual</button>
-      <button id="tab-bulk" onclick="showRosterTab('bulk')"
-              class="px-5 py-2 rounded-3xl font-medium text-sm bg-white/10 text-white">Bulk Import</button>
+      <button id="tab-individual" onclick="showRosterTab('individual')" class="px-5 py-2 rounded-3xl font-medium text-sm bg-[#d4af77] text-[#0a3d2a]">Individual</button>
+      <button id="tab-bulk" onclick="showRosterTab('bulk')" class="px-5 py-2 rounded-3xl font-medium text-sm bg-white/10 text-white">Bulk Import</button>
     </div>
-
     <!-- Individual Tab -->
     <div id="pane-individual" class="flex flex-col flex-1 overflow-hidden">
       <div class="mb-6">
         <label class="block text-sm mb-2 font-medium">Team</label>
         <select id="modal-admin-team-select" onchange="renderCurrentRoster()"
-                class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white"></select>
+          class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white"></select>
       </div>
       <div id="modal-current-roster" class="mb-6"></div>
       <div class="border-t border-white/20 pt-6 flex-1 flex flex-col min-h-0">
         <div class="flex justify-between mb-4">
           <h3 class="font-semibold text-lg">Add players from this tournament</h3>
           <button onclick="loadAvailablePlayers()" class="text-[#d4af77] hover:text-amber-300 flex items-center gap-2 text-sm font-medium">
-            <i class="fa-solid fa-rotate"></i> Refresh List
+            <i class="fa-solid fa-rotate"></i> Refresh
           </button>
         </div>
         <input id="player-search" type="text" placeholder="Search players..." onkeyup="filterPlayerPicker()"
-               class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white mb-4 focus:outline-none focus:border-[#d4af77]">
+          class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white mb-4 focus:outline-none focus:border-[#d4af77]">
         <div id="player-picker" class="flex flex-wrap gap-3 overflow-y-auto flex-1 min-h-[120px]"></div>
       </div>
     </div>
-
-    <!-- Bulk Import Tab -->
+    <!-- Bulk Tab -->
     <div id="pane-bulk" class="hidden flex-col flex-1 overflow-hidden">
-      <p class="text-green-300 text-sm mb-2">Paste roster assignments below. One team per line, format:</p>
-      <p class="font-mono text-xs bg-white/10 rounded-2xl px-4 py-2 mb-4 text-[#d4af77]">Gerald: Scottie Scheffler, Rory McIlroy, Jon Rahm, Xander Schauffele, Brooks Koepka, Justin Thomas, Hideki Matsuyama</p>
-      <p class="text-green-300 text-xs mb-4">Player names must match ESPN exactly (or close enough — it'll fuzzy-match). Max 7 per team. Existing rosters will be <strong class="text-white">replaced</strong>.</p>
-      <textarea id="bulk-roster-text" rows="12" placeholder="Gerald: Scottie Scheffler, Rory McIlroy, ..." 
-                class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white font-mono text-sm resize-none flex-1 focus:outline-none focus:border-[#d4af77]"></textarea>
+      <p class="text-green-300 text-sm mb-2">One team per line:</p>
+      <p class="font-mono text-xs bg-white/10 rounded-2xl px-4 py-2 mb-4 text-[#d4af77]">Gerald: Scottie Scheffler, Rory McIlroy, Jon Rahm, ...</p>
+      <p class="text-green-300 text-xs mb-4">Max 7 per team. Existing rosters will be <strong class="text-white">replaced</strong>.</p>
+      <textarea id="bulk-roster-text" rows="12" placeholder="Gerald: Scottie Scheffler, Rory McIlroy, ..."
+        class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white font-mono text-sm resize-none flex-1 focus:outline-none focus:border-[#d4af77]"></textarea>
       <div id="bulk-result" class="mt-3 text-sm"></div>
-      <button onclick="applyBulkRosters()" class="mt-4 w-full py-4 bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] rounded-3xl font-semibold">
-        Apply Bulk Rosters
-      </button>
+      <button onclick="applyBulkRosters()" class="mt-4 w-full py-4 bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] rounded-3xl font-semibold">Apply Bulk Rosters</button>
     </div>
-
     <div class="flex gap-4 mt-6 pt-6 border-t border-white/20">
       <button onclick="exportFullConfig()" class="flex-1 py-4 bg-white text-[#0a3d2a] rounded-3xl font-semibold">Export Config</button>
       <button onclick="showImportModal()" class="flex-1 py-4 bg-white/20 hover:bg-white/30 rounded-3xl font-medium">Import Config</button>
@@ -218,36 +196,35 @@
 </div>
 
 <script>
-// ==================== CONFIG ====================
-const teamNames = ["Gerald","Josh","Phil","Patrick","Wallace","Ricky","Roger","Graham","Doug","Nick"];
-const createTeamsObj = () => { const o = {}; teamNames.forEach(n => o[n] = []); return o; };
+// ===== CONFIG =====
+const teamNames = ["Gerald","Josh","Phil","Patrick","Wallace","Ricky","Roger","Graham","Doug","Nick","Christine"];
+const createTeamsObj = () => { const o={}; teamNames.forEach(n=>o[n]=[]); return o; };
 
 const defaultConfig = {
   tournaments: {
-    "2026-masters":            { name:"2026 Masters",                league:"pga", tournamentId:"401811941", teams:createTeamsObj() },
-    "2025-masters":            { name:"2025 Masters",                league:"pga", tournamentId:"401703504", teams:createTeamsObj() },
-    "2025-pga-championship":   { name:"2025 PGA Championship",       league:"pga", tournamentId:"401703511", teams:createTeamsObj() },
-    "2025-us-open":            { name:"2025 U.S. Open",              league:"pga", tournamentId:"401703515", teams:createTeamsObj() },
-    "2025-the-open":           { name:"2025 The Open Championship",  league:"pga", tournamentId:"401703521", teams:createTeamsObj() },
-    "2024-masters":            { name:"2024 Masters",                league:"pga", tournamentId:"401580344", teams:createTeamsObj() },
-    "2024-pga-championship":   { name:"2024 PGA Championship",       league:"pga", tournamentId:"401580351", teams:createTeamsObj() },
-    "2024-us-open":            { name:"2024 U.S. Open",              league:"pga", tournamentId:"401580355", teams:createTeamsObj() },
-    "2024-the-open":           { name:"2024 The Open Championship",  league:"pga", tournamentId:"401580360", teams:createTeamsObj() },
-    "2023-masters":            { name:"2023 Masters",                league:"pga", tournamentId:"401465508", teams:createTeamsObj() },
-    "2023-pga-championship":   { name:"2023 PGA Championship",       league:"pga", tournamentId:"401465523", teams:createTeamsObj() },
-    "2023-us-open":            { name:"2023 U.S. Open",              league:"pga", tournamentId:"401465533", teams:createTeamsObj() },
-    "2023-the-open":           { name:"2023 The Open Championship",  league:"pga", tournamentId:"401465539", teams:createTeamsObj() },
-    "2022-masters":            { name:"2022 Masters",                league:"pga", tournamentId:"401353226", teams:createTeamsObj() },
-    "2022-pga-championship":   { name:"2022 PGA Championship",       league:"pga", tournamentId:"401353226", teams:createTeamsObj() },
-    "2022-us-open":            { name:"2022 U.S. Open",              league:"pga", tournamentId:"401353230", teams:createTeamsObj() },
-    "2022-the-open":           { name:"2022 The Open Championship",  league:"pga", tournamentId:"401353234", teams:createTeamsObj() },
-    "2021-masters":            { name:"2021 Masters",                league:"pga", tournamentId:"401243010", teams:createTeamsObj() },
-    "2021-pga-championship":   { name:"2021 PGA Championship",       league:"pga", tournamentId:"401243013", teams:createTeamsObj() },
-    "2021-us-open":            { name:"2021 U.S. Open",              league:"pga", tournamentId:"401243016", teams:createTeamsObj() },
-    "2021-the-open":           { name:"2021 The Open Championship",  league:"pga", tournamentId:"401243019", teams:createTeamsObj() },
-    "2020-masters":            { name:"2020 Masters",                league:"pga", tournamentId:"401219478", teams:createTeamsObj() },
-    "2020-pga-championship":   { name:"2020 PGA Championship",       league:"pga", tournamentId:"401219481", teams:createTeamsObj() },
-    "2020-us-open":            { name:"2020 U.S. Open",              league:"pga", tournamentId:"401219484", teams:createTeamsObj() }
+    "2026-masters":           {name:"2026 Masters",              league:"pga",tournamentId:"401811941",teams:createTeamsObj()},
+    "2025-masters":           {name:"2025 Masters",              league:"pga",tournamentId:"401703504",teams:createTeamsObj()},
+    "2025-pga-championship":  {name:"2025 PGA Championship",     league:"pga",tournamentId:"401703511",teams:createTeamsObj()},
+    "2025-us-open":           {name:"2025 U.S. Open",            league:"pga",tournamentId:"401703515",teams:createTeamsObj()},
+    "2025-the-open":          {name:"2025 The Open Championship",league:"pga",tournamentId:"401703521",teams:createTeamsObj()},
+    "2024-masters":           {name:"2024 Masters",              league:"pga",tournamentId:"401580344",teams:createTeamsObj()},
+    "2024-pga-championship":  {name:"2024 PGA Championship",     league:"pga",tournamentId:"401580351",teams:createTeamsObj()},
+    "2024-us-open":           {name:"2024 U.S. Open",            league:"pga",tournamentId:"401580355",teams:createTeamsObj()},
+    "2024-the-open":          {name:"2024 The Open Championship",league:"pga",tournamentId:"401580360",teams:createTeamsObj()},
+    "2023-masters":           {name:"2023 Masters",              league:"pga",tournamentId:"401465508",teams:createTeamsObj()},
+    "2023-pga-championship":  {name:"2023 PGA Championship",     league:"pga",tournamentId:"401465523",teams:createTeamsObj()},
+    "2023-us-open":           {name:"2023 U.S. Open",            league:"pga",tournamentId:"401465533",teams:createTeamsObj()},
+    "2023-the-open":          {name:"2023 The Open Championship",league:"pga",tournamentId:"401465539",teams:createTeamsObj()},
+    "2022-masters":           {name:"2022 Masters",              league:"pga",tournamentId:"401353226",teams:createTeamsObj()},
+    "2022-us-open":           {name:"2022 U.S. Open",            league:"pga",tournamentId:"401353230",teams:createTeamsObj()},
+    "2022-the-open":          {name:"2022 The Open Championship",league:"pga",tournamentId:"401353234",teams:createTeamsObj()},
+    "2021-masters":           {name:"2021 Masters",              league:"pga",tournamentId:"401243010",teams:createTeamsObj()},
+    "2021-pga-championship":  {name:"2021 PGA Championship",     league:"pga",tournamentId:"401243013",teams:createTeamsObj()},
+    "2021-us-open":           {name:"2021 U.S. Open",            league:"pga",tournamentId:"401243016",teams:createTeamsObj()},
+    "2021-the-open":          {name:"2021 The Open Championship",league:"pga",tournamentId:"401243019",teams:createTeamsObj()},
+    "2020-masters":           {name:"2020 Masters",              league:"pga",tournamentId:"401219478",teams:createTeamsObj()},
+    "2020-pga-championship":  {name:"2020 PGA Championship",     league:"pga",tournamentId:"401219481",teams:createTeamsObj()},
+    "2020-us-open":           {name:"2020 U.S. Open",            league:"pga",tournamentId:"401219484",teams:createTeamsObj()}
   },
   currentTournamentKey: "2026-masters"
 };
@@ -255,295 +232,405 @@ const defaultConfig = {
 let config = JSON.parse(localStorage.getItem('fantasyGolfConfig')) || defaultConfig;
 if (!localStorage.getItem('fantasyGolfConfig')) localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
 
-let currentLeaderboardData = null;
+// ===== STATE =====
+let currentLeaderboardData = null;   // raw ESPN response
+let playerMap = {};                  // lowercased name → competitor object
 let dataCache = {};
 let currentAvailablePlayers = [];
 let selectedTeamForAdmin = null;
 
-const CORS_PROXY = "https://api.allorigins.win/get?url=";
+const PROXY = "https://api.allorigins.win/get?url=";
 
 async function fetchWithProxy(url) {
-  const res = await fetch(CORS_PROXY + encodeURIComponent(url));
-  if (!res.ok) throw new Error(`Proxy ${res.status}`);
-  const w = await res.json();
+  const r = await fetch(PROXY + encodeURIComponent(url));
+  if (!r.ok) throw new Error("proxy " + r.status);
+  const w = await r.json();
   return JSON.parse(w.contents);
 }
 
-// ── Score parsing helpers ─────────────────────────────────────────────────────
-// ESPN uses "E" for even par, "+N" or "-N" for others
-function parseESPNScore(val) {
+// ===== ESPN DATA EXTRACTION =====
+// ESPN golf leaderboard structure:
+//   data.events[0].competitions[0].competitors[]
+//     .athlete.displayName
+//     .status.type.name  ("active" | "cut" | "wd" | etc)
+//     .status.displayValue  e.g. "F", "9" (thru), "-" (not started)
+//     .score  e.g. "-5", "E", "+2"  (total to par)
+//     .linescores[].value  per-round scores (strokes, not to-par)
+//     .teeTime  ISO string (only present pre-round)
+//     .statistics[]  sometimes has to-par per round
+
+function extractCompetitors(data) {
+  try {
+    return data.events[0].competitions[0].competitors || [];
+  } catch(e) { return []; }
+}
+
+function buildPlayerMap(data) {
+  const map = {};
+  extractCompetitors(data).forEach(c => {
+    const name = (c.athlete?.displayName || c.displayName || "").trim();
+    if (name) map[name.toLowerCase()] = c;
+  });
+  return map;
+}
+
+// Parse ESPN score string: "E"→0, "-5"→-5, "+2"→2, "2"→2, null→null
+function parseScore(val) {
   if (val === null || val === undefined) return null;
   const s = String(val).trim();
-  if (s === "E" || s === "0") return 0;
+  if (s === "" || s === "-") return null;
+  if (s.toUpperCase() === "E") return 0;
   const n = parseInt(s, 10);
   return isNaN(n) ? null : n;
 }
 
-function fmtScore(n) {
-  if (n === null || n === undefined || n === "" || n === "—") return "—";
-  if (typeof n === "string" && n === "—") return "—";
-  const v = typeof n === "number" ? n : parseESPNScore(n);
-  if (v === null) return "—";
-  if (v === 0) return "E";
-  return v > 0 ? `+${v}` : String(v);
+// Format a to-par number for display
+function fmtPar(n) {
+  if (n === null || n === undefined) return "—";
+  if (n === 0) return "E";
+  return n > 0 ? `+${n}` : String(n);
 }
 
-// ── Fetch field (with pre-tournament fallback) ────────────────────────────────
-async function fetchFieldForTournament(key) {
-  const tour = config.tournaments[key];
-  if (!tour?.tournamentId) return [];
+// Format a raw stroke count (72, 68, etc) — show as-is or "—"
+function fmtStrokes(n) {
+  if (n === null || n === undefined || n === 0) return "—";
+  return String(n);
+}
 
-  // First try the standard leaderboard endpoint
-  const lbData = dataCache[key];
-  if (lbData) {
-    const players = extractPlayers(lbData);
-    if (players.length > 0) return players;
-  }
-
-  // Try the ESPN field/entry list endpoint (available before tournament starts)
+// Convert a tee time ISO string to a friendly local time string
+function fmtTeeTime(isoStr) {
+  if (!isoStr) return null;
   try {
-    const fieldUrl = `https://site.api.espn.com/apis/site/v2/sports/golf/${tour.league}/leaderboard?tournamentId=${tour.tournamentId}`;
-    const data = await fetchWithProxy(fieldUrl);
-    dataCache[key] = data;
+    const d = new Date(isoStr);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit', timeZoneName:'short'});
+  } catch(e) { return null; }
+}
 
-    let players = extractPlayers(data);
-    if (players.length > 0) return players;
+// ===== PLAYER SCORE LOOKUP =====
+function getPlayerInfo(playerName) {
+  const blank = {
+    totalToPar: null, rounds: [null,null,null,null],
+    thru: null, teeTime: null,
+    status: "unknown", // "notstarted"|"active"|"cut"|"wd"|"complete"
+    found: false
+  };
 
-    // Pre-tournament: ESPN may nest players differently — dig deeper
-    const comp = data?.tournament?.competitors || data?.competitors || [];
-    if (comp.length > 0) {
-      return comp.map(c => c.athlete?.displayName || c.player?.displayName || c.displayName || c.name || "").filter(Boolean);
+  const c = playerMap[playerName.toLowerCase()];
+  if (!c) return blank;
+
+  // Status
+  const statusName = (c.status?.type?.name || c.status?.type?.id || "").toLowerCase();
+  const statusDisplay = (c.status?.displayValue || "").trim();
+
+  let status = "active";
+  if (statusName.includes("cut") || statusName === "mc") status = "cut";
+  else if (statusName.includes("wd") || statusName.includes("withdraw")) status = "wd";
+  else if (statusDisplay.toUpperCase() === "F") status = "complete";
+
+  // Total to-par
+  const totalToPar = parseScore(c.score);
+
+  // Determine if they've started: ESPN sets score to null or "-" before teeing off
+  const hasStarted = totalToPar !== null || (statusDisplay !== "" && statusDisplay !== "-" && statusDisplay.toUpperCase() !== "SCR");
+
+  // Tee time (present when not yet started for the round)
+  const teeTime = (!hasStarted || statusDisplay === "-") ? fmtTeeTime(c.teeTime) : null;
+
+  // Per-round scores from linescores (raw stroke values per round)
+  // ESPN linescores: array of {value: "72"} etc, one per completed round
+  const linescores = c.linescores || [];
+  const rounds = [null, null, null, null];
+  linescores.forEach((ls, i) => {
+    if (i < 4) {
+      const v = parseInt(ls.value, 10);
+      rounds[i] = isNaN(v) || v === 0 ? null : v;
     }
+  });
 
-    // Last resort: try the ESPN event summary endpoint
-    const summaryUrl = `https://site.api.espn.com/apis/site/v2/sports/golf/${tour.league}/summary?event=${tour.tournamentId}`;
-    const summary = await fetchWithProxy(summaryUrl);
-    const competitors = summary?.competitors
-      || summary?.tournament?.competitors
-      || summary?.leaderboard?.players
-      || [];
-    return competitors.map(c => c.athlete?.displayName || c.player?.displayName || c.displayName || c.name || "").filter(Boolean);
-  } catch(e) {
-    console.warn("fetchFieldForTournament failed:", e);
-    return [];
+  // Thru
+  let thru = null;
+  if (status === "complete") thru = "F";
+  else if (status === "cut") thru = "MC";
+  else if (status === "wd") thru = "WD";
+  else if (hasStarted && statusDisplay && statusDisplay !== "-") {
+    const thruNum = parseInt(statusDisplay, 10);
+    thru = isNaN(thruNum) ? statusDisplay : String(thruNum);
   }
+
+  return { totalToPar, rounds, thru, teeTime, status, found: true };
 }
 
-function extractPlayers(data) {
-  const list = data?.leaderboard?.players || data?.players || [];
-  return [...new Set(
-    list.map(p => p.athlete?.displayName || p.player?.displayName || p.displayName || p.name || "").filter(Boolean)
-  )].sort();
+// ===== SCORE FOR TEAM (best 4 of 7) =====
+// Par for Augusta: 72
+const COURSE_PAR = 72;
+
+function calculateTeamScore(teamPlayers) {
+  if (!Object.keys(playerMap).length) return null;
+
+  // Find worst make-cut score to use as MC penalty
+  let worstMakeCut = 0;
+  Object.values(playerMap).forEach(c => {
+    const sn = (c.status?.type?.name || "").toLowerCase();
+    if (!sn.includes("cut") && !sn.includes("wd")) {
+      const sc = parseScore(c.score);
+      if (sc !== null && sc > worstMakeCut) worstMakeCut = sc;
+    }
+  });
+
+  const scores = teamPlayers.map(name => {
+    const info = getPlayerInfo(name);
+    if (!info.found) return null;
+    if (info.status === "cut" || info.status === "wd") return worstMakeCut;
+    return info.totalToPar ?? 0;
+  }).filter(s => s !== null);
+
+  if (!scores.length) return null;
+  scores.sort((a, b) => a - b);
+  return scores.slice(0, 4).reduce((a, b) => a + b, 0);
 }
 
+// ===== FETCH =====
 async function fetchForTournament(key) {
   if (dataCache[key]) return dataCache[key];
-  const tour = config.tournaments[key];
-  if (!tour?.tournamentId) return null;
+  const t = config.tournaments[key];
+  if (!t?.tournamentId) return null;
   try {
-    const url = `https://site.api.espn.com/apis/site/v2/sports/golf/${tour.league}/leaderboard?tournamentId=${tour.tournamentId}`;
+    const url = `https://site.api.espn.com/apis/site/v2/sports/golf/${t.league}/leaderboard?tournamentId=${t.tournamentId}`;
     const data = await fetchWithProxy(url);
     dataCache[key] = data;
     return data;
   } catch(e) {
-    console.error("Fetch failed for", key, e);
+    console.error("fetch failed for", key, e);
     return null;
   }
 }
 
 async function loadCurrentTournamentData() {
+  // Always bust cache for current tournament so scores stay live
+  delete dataCache[config.currentTournamentKey];
   currentLeaderboardData = await fetchForTournament(config.currentTournamentKey);
-  if (currentLeaderboardData) {
-    document.getElementById("last-updated").innerHTML =
-      `Last updated: <span class="font-mono">${new Date().toLocaleTimeString()}</span>`;
-  }
+  playerMap = currentLeaderboardData ? buildPlayerMap(currentLeaderboardData) : {};
+  document.getElementById("last-updated").innerHTML =
+    currentLeaderboardData
+      ? `Last updated: <span class="font-mono">${new Date().toLocaleTimeString()}</span>`
+      : `<span class="text-red-400">Could not load data — retrying…</span>`;
   updateTournamentStatusBadge();
 }
 
 function updateTournamentStatusBadge() {
   const badge = document.getElementById("tournament-status-badge");
-  if (!currentLeaderboardData) {
-    badge.textContent = "HISTORIC";
-    badge.className = "text-sm px-3 py-1 rounded-3xl bg-green-400 text-[#0a3d2a] font-medium";
-    return;
+  const competitors = extractCompetitors(currentLeaderboardData);
+  if (!competitors.length) {
+    badge.textContent = "UPCOMING"; badge.className = "text-sm px-3 py-1 rounded-3xl bg-amber-300 text-[#0a3d2a] font-medium"; return;
   }
-  const players = currentLeaderboardData?.leaderboard?.players || currentLeaderboardData?.players || [];
-  const hasScores = players.some(p => parseESPNScore(p.score?.displayValue ?? p.total) !== 0);
-  const allFinished = players.length > 0 && players.every(p => {
-    const st = (p.status || "").toLowerCase();
-    return st.includes("f") || st.includes("mc") || st.includes("final");
+  const anyScore = competitors.some(c => parseScore(c.score) !== null);
+  const allDone = competitors.every(c => {
+    const d = (c.status?.displayValue || "").toUpperCase();
+    const n = (c.status?.type?.name || "").toLowerCase();
+    return d === "F" || n.includes("cut") || n.includes("wd");
   });
-  if (players.length === 0 || !hasScores) {
-    badge.textContent = "UPCOMING";
-    badge.className = "text-sm px-3 py-1 rounded-3xl bg-amber-300 text-[#0a3d2a] font-medium";
-  } else if (allFinished) {
-    badge.textContent = "COMPLETE";
-    badge.className = "text-sm px-3 py-1 rounded-3xl bg-green-400 text-[#0a3d2a] font-medium";
+  if (!anyScore) {
+    badge.textContent = "UPCOMING"; badge.className = "text-sm px-3 py-1 rounded-3xl bg-amber-300 text-[#0a3d2a] font-medium";
+  } else if (allDone) {
+    badge.textContent = "COMPLETE"; badge.className = "text-sm px-3 py-1 rounded-3xl bg-green-400 text-[#0a3d2a] font-medium";
   } else {
-    badge.textContent = "IN PROGRESS";
-    badge.className = "text-sm px-3 py-1 rounded-3xl bg-blue-400 text-white font-medium";
+    badge.textContent = "IN PROGRESS"; badge.className = "text-sm px-3 py-1 rounded-3xl bg-blue-400 text-white font-medium";
   }
 }
 
-// ── Score lookup ──────────────────────────────────────────────────────────────
-function getPlayerScore(playerName) {
-  const blank = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "—", isMC: false, found: false };
-  if (!currentLeaderboardData) return blank;
-
-  const list = currentLeaderboardData?.leaderboard?.players || currentLeaderboardData?.players || [];
-  const name = playerName.toLowerCase();
-  const p = list.find(pl =>
-    (pl.athlete?.displayName || pl.player?.displayName || pl.displayName || "").toLowerCase() === name
-  );
-  if (!p) return { ...blank, totalToPar: 999, isMC: true };
-
-  const isMC = (p.status || "").toLowerCase().includes("mc");
-  const totalToPar = parseESPNScore(p.score?.displayValue ?? p.total) ?? 0;
-
-  // Round scores — ESPN can return them as objects with .displayValue or .score
-  const rounds = (p.rounds || []).map(r => {
-    const raw = r.displayValue ?? r.score ?? r.value;
-    return parseESPNScore(raw);
-  });
-  while (rounds.length < 4) rounds.push(null);
-
-  // Normalise "thru" — can be numeric hole count or "F"
-  let thru = p.thru ?? p.status ?? "";
-  if (String(thru) === "18" || String(thru).toLowerCase() === "f") thru = "F";
-  else if (thru === 0 || thru === "0") thru = "—";
-
-  return {
-    totalToPar,
-    rounds: rounds.slice(0, 4).map(r => r === null ? "—" : fmtScore(r)),
-    thru: String(thru),
-    isMC,
-    found: true
-  };
-}
-
-function calculateTeamScore(teamPlayers) {
-  if (!currentLeaderboardData) return 999;
-
-  const allPlayers = currentLeaderboardData?.leaderboard?.players || currentLeaderboardData?.players || [];
-  const makeCutScores = allPlayers
-    .filter(p => !(p.status || "").toLowerCase().includes("mc"))
-    .map(p => parseESPNScore(p.score?.displayValue ?? p.total) ?? 0)
-    .sort((a, b) => b - a);
-  const worstMakeCut = makeCutScores[0] ?? 0;
-
-  let scores = teamPlayers.map(name => {
-    const s = getPlayerScore(name);
-    return s.isMC ? worstMakeCut : s.totalToPar;
-  });
-
-  scores.sort((a, b) => a - b);
-  return scores.slice(0, 4).reduce((a, b) => a + b, 0);
-}
-
-// ── Render ────────────────────────────────────────────────────────────────────
+// ===== RENDER LEADERBOARD =====
 function renderLeaderboard() {
   const tbody = document.getElementById("leaderboard-body");
   tbody.innerHTML = "";
-  const tour = config.tournaments[config.currentTournamentKey];
-  const teamScores = Object.keys(tour.teams || {}).map(team => ({
-    team, score: calculateTeamScore(tour.teams[team] || [])
-  })).sort((a, b) => a.score - b.score);
+  const teams = config.tournaments[config.currentTournamentKey]?.teams || {};
+  const teamScores = Object.keys(teams).map(team => ({
+    team, score: calculateTeamScore(teams[team] || [])
+  })).sort((a, b) => {
+    if (a.score === null && b.score === null) return 0;
+    if (a.score === null) return 1;
+    if (b.score === null) return -1;
+    return a.score - b.score;
+  });
 
   if (!teamScores.length) {
     tbody.innerHTML = `<tr><td colspan="3" class="px-8 py-12 text-center text-green-300">No teams defined yet.<br>Use gear → Manage Rosters</td></tr>`;
     return;
   }
-
-  teamScores.forEach(({ team, score }, i) => {
+  teamScores.forEach(({team, score}, i) => {
     const rankClass = ["rank-1","rank-2","rank-3"][i] || "";
-    const scoreClass = score < 0 ? "under-par" : "";
+    const display = score === null ? "—" : fmtPar(score);
+    const scoreClass = score !== null && score < 0 ? "under-par" : "";
     const tr = document.createElement("tr");
     tr.className = "border-b border-white/10 last:border-0 hover:bg-white/10";
     tr.innerHTML = `
       <td class="px-8 py-6 font-mono text-2xl ${rankClass}">${i+1}</td>
       <td class="px-8 py-6 font-semibold">${team}</td>
-      <td class="px-8 py-6 text-right font-mono text-3xl ${scoreClass}">${fmtScore(score)}</td>`;
+      <td class="px-8 py-6 text-right font-mono text-3xl ${scoreClass}">${display}</td>`;
     tbody.appendChild(tr);
   });
 }
 
+// ===== RENDER DETAILED ROSTERS =====
 function renderDetailedRosters() {
   const container = document.getElementById("detailed-rosters");
   container.innerHTML = "";
-  const teams = config.tournaments[config.currentTournamentKey].teams || {};
+  const teams = config.tournaments[config.currentTournamentKey]?.teams || {};
+
   if (!Object.keys(teams).length) {
-    container.innerHTML = `<div class="text-center py-12 text-green-300">No rosters defined yet for this tournament.</div>`;
-    return;
+    container.innerHTML = `<div class="text-center py-12 text-green-300">No rosters defined yet.</div>`; return;
   }
+
+  // Determine if tournament has started at all
+  const competitors = extractCompetitors(currentLeaderboardData);
+  const tournamentStarted = competitors.some(c => parseScore(c.score) !== null);
+
   Object.keys(teams).forEach(team => {
     const players = teams[team];
     let rows = players.map(name => {
-      const s = getPlayerScore(name);
-      const tc = s.totalToPar < 0 ? "under-par" : "";
-      const mcBadge = s.isMC ? ' <span class="text-xs text-red-400 ml-1">MC</span>' : "";
+      const info = getPlayerInfo(name);
+
+      let statusBadge = "";
+      if (info.status === "cut") statusBadge = `<span class="ml-2 text-xs bg-red-500/30 text-red-300 px-2 py-0.5 rounded-full">MC</span>`;
+      else if (info.status === "wd") statusBadge = `<span class="ml-2 text-xs bg-gray-500/30 text-gray-300 px-2 py-0.5 rounded-full">WD</span>`;
+
+      // --- Build per-round cells ---
+      // Show round to-par (strokes relative to COURSE_PAR) or tee time or "—"
+      // We show round scores as stroke totals (68, 71 etc) since per-round to-par isn't in linescores
+      const roundCells = info.rounds.map((strokes, i) => {
+        if (strokes === null) {
+          // Round not played yet
+          if (i === 0 && !tournamentStarted && info.teeTime) {
+            return `<td class="text-center font-mono text-xs text-amber-300">${info.teeTime}</td>`;
+          }
+          return `<td class="text-center font-mono text-white/40">—</td>`;
+        }
+        const toPar = strokes - COURSE_PAR;
+        const cls = toPar < 0 ? "text-red-400 font-bold" : toPar > 0 ? "text-white" : "text-green-300";
+        return `<td class="text-center font-mono ${cls}">${fmtPar(toPar)}</td>`;
+      }).join("");
+
+      // Total to-par display
+      let totalDisplay = "—";
+      let totalClass = "text-white/40";
+
+      if (!info.found) {
+        totalDisplay = "—";
+      } else if (!tournamentStarted && info.teeTime) {
+        // Pre-tournament: show tee time in the total column
+        totalDisplay = `<span class="text-xs text-amber-300">${info.teeTime}</span>`;
+        totalClass = "";
+      } else if (info.totalToPar !== null) {
+        totalDisplay = fmtPar(info.totalToPar);
+        totalClass = info.totalToPar < 0 ? "under-par" : info.totalToPar > 0 ? "text-white" : "text-green-300 font-semibold";
+      }
+
+      // Thru display
+      let thruDisplay = "—";
+      if (info.thru) thruDisplay = info.thru;
+      else if (!tournamentStarted && info.teeTime) thruDisplay = "—";
+
       return `<tr class="border-t border-white/10">
-        <td class="py-4">${name}${mcBadge}</td>
-        <td class="text-center font-mono">${s.rounds[0]}</td>
-        <td class="text-center font-mono">${s.rounds[1]}</td>
-        <td class="text-center font-mono">${s.rounds[2]}</td>
-        <td class="text-center font-mono">${s.rounds[3]}</td>
-        <td class="text-right font-mono text-xl ${tc}">${fmtScore(s.totalToPar)}</td>
-        <td class="text-right font-medium">${s.thru}</td>
+        <td class="py-3 pr-4">${name}${statusBadge}</td>
+        ${roundCells}
+        <td class="text-right font-mono text-lg ${totalClass}">${totalDisplay}</td>
+        <td class="text-right font-medium text-sm text-white/70">${thruDisplay}</td>
       </tr>`;
     }).join("");
+
+    // Column headers vary: if tournament hasn't started, show "Tee Time" instead of R1
+    const r1Header = (!tournamentStarted) ? `<th class="text-center py-3">Tee Time</th>` : `<th class="text-center py-3">R1</th>`;
+
     container.innerHTML += `
       <div class="card bg-white/10 backdrop-blur-xl rounded-3xl p-8">
         <h3 class="text-2xl font-semibold mb-6">${team}</h3>
-        <table class="w-full">
-          <thead><tr class="text-green-300 text-sm">
-            <th class="text-left py-3">Player</th>
-            <th class="text-center py-3">R1</th><th class="text-center py-3">R2</th>
-            <th class="text-center py-3">R3</th><th class="text-center py-3">R4</th>
-            <th class="text-right py-3">Total</th><th class="text-right py-3">Thru</th>
-          </tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead><tr class="text-green-300 text-sm">
+              <th class="text-left py-3 w-40">Player</th>
+              ${r1Header}
+              <th class="text-center py-3">R2</th>
+              <th class="text-center py-3">R3</th>
+              <th class="text-center py-3">R4</th>
+              <th class="text-right py-3">Total</th>
+              <th class="text-right py-3">Thru</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
       </div>`;
   });
+}
+
+// ===== LEAGUE STATS =====
+// For stats, we use a separate playerMap per tournament — so we need to re-build per key
+async function getTeamScoreForStats(key, teamPlayers) {
+  const data = await fetchForTournament(key);
+  if (!data) return null;
+  const map = buildPlayerMap(data);
+
+  let worstMakeCut = 0;
+  Object.values(map).forEach(c => {
+    const sn = (c.status?.type?.name || "").toLowerCase();
+    if (!sn.includes("cut") && !sn.includes("wd")) {
+      const sc = parseScore(c.score);
+      if (sc !== null && sc > worstMakeCut) worstMakeCut = sc;
+    }
+  });
+
+  const scores = teamPlayers.map(name => {
+    const c = map[name.toLowerCase()];
+    if (!c) return null;
+    const sn = (c.status?.type?.name || "").toLowerCase();
+    if (sn.includes("cut") || sn.includes("wd")) return worstMakeCut;
+    return parseScore(c.score) ?? 0;
+  }).filter(s => s !== null);
+
+  if (!scores.length) return null;
+  scores.sort((a,b)=>a-b);
+  return scores.slice(0,4).reduce((a,b)=>a+b,0);
 }
 
 async function renderLeagueStats() {
   const container = document.getElementById("league-stats");
   container.innerHTML = `<div class="text-center py-12 flex items-center justify-center gap-3 text-green-300"><i class="fa-solid fa-spinner animate-spin"></i> Calculating all-time stats…</div>`;
+  const allTeams = new Set();
+  Object.values(config.tournaments).forEach(t => Object.keys(t.teams||{}).forEach(n => allTeams.add(n)));
   const stats = {};
-  teamNames.forEach(t => { stats[t] = { wins:0, totalScore:0, tournaments:0 }; });
+  allTeams.forEach(t => { stats[t] = {wins:0, totalScore:0, tournaments:0}; });
   let completedCount = 0;
 
   for (const key of Object.keys(config.tournaments)) {
-    const data = await fetchForTournament(key);
-    if (!data) continue;
     const tourTeams = config.tournaments[key].teams || {};
     if (!Object.keys(tourTeams).length) continue;
+    const data = await fetchForTournament(key);
+    if (!data) continue;
+    const competitors = extractCompetitors(data);
+    if (!competitors.some(c => parseScore(c.score) !== null)) continue;
+
     const teamScoresMap = {};
     let hasReal = false;
-    Object.keys(tourTeams).forEach(team => {
-      const score = calculateTeamScore(tourTeams[team] || []);
-      teamScoresMap[team] = score;
-      if (score !== 999 && score !== 0) hasReal = true;
-    });
+    for (const team of Object.keys(tourTeams)) {
+      const sc = await getTeamScoreForStats(key, tourTeams[team] || []);
+      if (sc !== null) { teamScoresMap[team] = sc; hasReal = true; }
+    }
     if (!hasReal) continue;
     completedCount++;
-    const sorted = Object.keys(teamScoresMap).sort((a,b) => teamScoresMap[a]-teamScoresMap[b]);
+    const sorted = Object.keys(teamScoresMap).sort((a,b)=>teamScoresMap[a]-teamScoresMap[b]);
     const low = teamScoresMap[sorted[0]];
-    sorted.filter(t => teamScoresMap[t] === low).forEach(w => { if (stats[w]) stats[w].wins++; });
+    sorted.filter(t=>teamScoresMap[t]===low).forEach(w => { if (stats[w]) stats[w].wins++; });
     Object.keys(teamScoresMap).forEach(team => {
       if (stats[team]) { stats[team].totalScore += teamScoresMap[team]; stats[team].tournaments++; }
     });
   }
 
   if (!completedCount) {
-    container.innerHTML = `<div class="text-center py-16 text-green-300">No completed tournaments with rosters yet.</div>`;
-    return;
+    container.innerHTML = `<div class="text-center py-16 text-green-300">No completed tournaments with rosters yet.</div>`; return;
   }
 
-  const sortedStats = Object.keys(stats).filter(t => stats[t].tournaments > 0).sort((a,b) => {
-    if (stats[b].wins !== stats[a].wins) return stats[b].wins - stats[a].wins;
-    return (stats[a].totalScore/stats[a].tournaments) - (stats[b].totalScore/stats[b].tournaments);
+  const sortedStats = Object.keys(stats).filter(t=>stats[t].tournaments>0).sort((a,b)=>{
+    if (stats[b].wins!==stats[a].wins) return stats[b].wins-stats[a].wins;
+    return (stats[a].totalScore/stats[a].tournaments)-(stats[b].totalScore/stats[b].tournaments);
   });
 
   let html = `
@@ -563,16 +650,16 @@ async function renderLeagueStats() {
     </div>
     <table class="w-full"><thead><tr class="text-green-300 text-sm border-b border-white/20">
       <th class="text-left py-4">Team</th><th class="text-center py-4">Wins</th>
-      <th class="text-center py-4">Avg Score</th><th class="text-right py-4">Total Score</th>
+      <th class="text-center py-4">Avg Score</th><th class="text-right py-4">Total</th>
     </tr></thead><tbody>`;
   sortedStats.forEach(team => {
     const s = stats[team];
-    const avg = (s.totalScore / s.tournaments).toFixed(1);
+    const avg = (s.totalScore/s.tournaments).toFixed(1);
     html += `<tr class="border-b border-white/10 last:border-0">
       <td class="py-5 font-semibold">${team}</td>
       <td class="text-center font-mono text-2xl">${s.wins}</td>
       <td class="text-center font-mono text-2xl">${avg}</td>
-      <td class="text-right font-mono text-2xl ${s.totalScore<0?'under-par':''}">${fmtScore(s.totalScore)}</td>
+      <td class="text-right font-mono text-2xl ${s.totalScore<0?'under-par':''}">${fmtPar(s.totalScore)}</td>
     </tr>`;
   });
   html += `</tbody></table>`;
@@ -585,137 +672,112 @@ function renderEverything() {
   renderLeagueStats();
 }
 
-// ── Tournament selectors ──────────────────────────────────────────────────────
+// ===== TOURNAMENT SELECTORS =====
 function populateTournamentSelector() {
-  const sel = document.getElementById("tournament-select");
-  sel.innerHTML = "";
+  const sel = document.getElementById("tournament-select"); sel.innerHTML = "";
   Object.keys(config.tournaments).forEach(key => {
-    const o = document.createElement("option");
-    o.value = key; o.textContent = config.tournaments[key].name;
-    if (key === config.currentTournamentKey) o.selected = true;
-    sel.appendChild(o);
+    const o = document.createElement("option"); o.value=key; o.textContent=config.tournaments[key].name;
+    if (key===config.currentTournamentKey) o.selected=true; sel.appendChild(o);
   });
 }
 function populateGearTournamentSelect() {
-  const sel = document.getElementById("gear-tournament-select");
-  sel.innerHTML = "";
+  const sel = document.getElementById("gear-tournament-select"); sel.innerHTML = "";
   Object.keys(config.tournaments).forEach(key => {
-    const o = document.createElement("option");
-    o.value = key; o.textContent = config.tournaments[key].name;
-    if (key === config.currentTournamentKey) o.selected = true;
-    sel.appendChild(o);
+    const o = document.createElement("option"); o.value=key; o.textContent=config.tournaments[key].name;
+    if (key===config.currentTournamentKey) o.selected=true; sel.appendChild(o);
   });
 }
 function switchTournament(key) {
-  config.currentTournamentKey = key;
-  saveConfig();
-  currentLeaderboardData = null;
-  loadCurrentTournamentData().then(() => renderEverything());
-  populateTournamentSelector();
-  populateGearTournamentSelect();
+  config.currentTournamentKey = key; saveConfig();
+  currentLeaderboardData = null; playerMap = {};
+  loadCurrentTournamentData().then(renderEverything);
+  populateTournamentSelector(); populateGearTournamentSelect();
 }
 function setCurrentFromGear(key) { toggleGearMenu(); switchTournament(key); }
 function toggleGearMenu() {
-  const m = document.getElementById("gear-menu");
-  m.classList.toggle("hidden");
+  const m = document.getElementById("gear-menu"); m.classList.toggle("hidden");
   if (!m.classList.contains("hidden")) populateGearTournamentSelect();
 }
 
-// ── Add tournament ────────────────────────────────────────────────────────────
-function showAddTournamentModal() { toggleGearMenu(); document.getElementById("add-modal").classList.remove("hidden"); document.getElementById("new-name").focus(); }
+// ===== ADD TOURNAMENT =====
+function showAddTournamentModal() { toggleGearMenu(); document.getElementById("add-modal").classList.remove("hidden"); }
 function hideAddModal() { document.getElementById("add-modal").classList.add("hidden"); }
 function addNewTournament() {
   const name = document.getElementById("new-name").value.trim();
   const tournamentId = document.getElementById("new-id").value.trim();
   const teamText = document.getElementById("new-teams").value.trim();
-  if (!name || !tournamentId) return alert("Tournament name and ESPN ID are required");
-  if (!teamText) return alert("Please enter at least one participant name");
+  if (!name||!tournamentId) return alert("Tournament name and ESPN ID are required");
   const teamsObj = {};
-  teamText.split('\n').map(t=>t.trim()).filter(Boolean).forEach(n => { teamsObj[n] = []; });
+  teamText.split('\n').map(t=>t.trim()).filter(Boolean).forEach(n=>{teamsObj[n]=[];});
   const key = name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
-  config.tournaments[key] = { name, league:"pga", tournamentId, teams:teamsObj };
+  config.tournaments[key] = {name, league:"pga", tournamentId, teams:teamsObj};
   saveConfig(); hideAddModal(); populateTournamentSelector(); populateGearTournamentSelect();
-  switchTournament(key); renderEverything();
+  switchTournament(key);
 }
 
-// ── Manage Rosters Modal ──────────────────────────────────────────────────────
+// ===== MANAGE ROSTERS =====
 function openManageRostersModal() {
   toggleGearMenu();
   document.getElementById("manage-rosters-modal").classList.remove("hidden");
   document.getElementById("modal-admin-tournament-name").textContent = config.tournaments[config.currentTournamentKey].name;
-  showRosterTab('individual');
-  populateAdminTeamSelect();
-  loadAvailablePlayers();
+  showRosterTab('individual'); populateAdminTeamSelect(); loadAvailablePlayers();
 }
 function hideManageRostersModal() { document.getElementById("manage-rosters-modal").classList.add("hidden"); }
-
 function showRosterTab(tab) {
-  const tabs = ['individual','bulk'];
-  tabs.forEach(t => {
-    document.getElementById(`pane-${t}`).classList.toggle('hidden', t !== tab);
-    document.getElementById(`pane-${t}`).classList.toggle('flex', t === tab);
+  ['individual','bulk'].forEach(t => {
+    document.getElementById(`pane-${t}`).classList.toggle('hidden', t!==tab);
+    document.getElementById(`pane-${t}`).classList.toggle('flex', t===tab);
     const btn = document.getElementById(`tab-${t}`);
-    btn.className = t === tab
-      ? "px-5 py-2 rounded-3xl font-medium text-sm bg-[#d4af77] text-[#0a3d2a]"
-      : "px-5 py-2 rounded-3xl font-medium text-sm bg-white/10 text-white";
+    btn.className = t===tab ? "px-5 py-2 rounded-3xl font-medium text-sm bg-[#d4af77] text-[#0a3d2a]"
+                            : "px-5 py-2 rounded-3xl font-medium text-sm bg-white/10 text-white";
   });
 }
-
 function populateAdminTeamSelect() {
-  const sel = document.getElementById("modal-admin-team-select");
-  sel.innerHTML = "";
+  const sel = document.getElementById("modal-admin-team-select"); sel.innerHTML = "";
   const teams = config.tournaments[config.currentTournamentKey].teams || {};
   Object.keys(teams).forEach(team => {
-    const o = document.createElement("option"); o.value = team; o.textContent = team; sel.appendChild(o);
+    const o = document.createElement("option"); o.value=team; o.textContent=team; sel.appendChild(o);
   });
   if (sel.options.length) { selectedTeamForAdmin = sel.value; renderCurrentRoster(); }
 }
 function renderCurrentRoster() {
   const team = document.getElementById("modal-admin-team-select").value;
   selectedTeamForAdmin = team;
-  const players = (config.tournaments[config.currentTournamentKey].teams || {})[team] || [];
+  const players = (config.tournaments[config.currentTournamentKey].teams||{})[team] || [];
   let html = `<div class="font-medium mb-4">${team} — ${players.length}/7 players</div><div class="flex flex-wrap gap-3">`;
   players.forEach((p,i) => {
-    html += `<div class="flex items-center gap-2 bg-white/20 px-5 py-2.5 rounded-3xl text-sm"><span>${p}</span><button onclick="removePlayer('${team}',${i});event.stopImmediatePropagation()" class="ml-2 text-red-400 text-xl leading-none">×</button></div>`;
+    html += `<div class="flex items-center gap-2 bg-white/20 px-5 py-2.5 rounded-3xl text-sm">
+      <span>${p}</span>
+      <button onclick="removePlayer('${team.replace(/'/g,"\\'")}',${i});event.stopImmediatePropagation()" class="ml-2 text-red-400 text-xl leading-none">×</button>
+    </div>`;
   });
   html += `</div>`;
   document.getElementById("modal-current-roster").innerHTML = html;
 }
 window.removePlayer = function(team, idx) {
-  config.tournaments[config.currentTournamentKey].teams[team].splice(idx, 1);
+  config.tournaments[config.currentTournamentKey].teams[team].splice(idx,1);
   saveConfig(); renderCurrentRoster();
 };
 
 async function loadAvailablePlayers() {
   const picker = document.getElementById("player-picker");
-  picker.innerHTML = `<div class="text-green-300 flex items-center gap-2 py-4"><i class="fa-solid fa-spinner animate-spin"></i> Loading field from ESPN…</div>`;
-
-  const names = await fetchFieldForTournament(config.currentTournamentKey);
-
-  if (!names.length) {
-    picker.innerHTML = `<div class="text-amber-300 text-center py-8">
-      Field not yet available from ESPN.<br>
-      <span class="text-xs text-green-300">Try again closer to tournament week, or use Bulk Import to manually enter rosters now.</span>
-    </div>`;
-    currentAvailablePlayers = [];
-    return;
-  }
-  currentAvailablePlayers = names;
+  picker.innerHTML = `<div class="text-green-300 flex items-center gap-2"><i class="fa-solid fa-spinner animate-spin"></i> Loading field…</div>`;
+  const data = await fetchForTournament(config.currentTournamentKey);
+  if (!data) { picker.innerHTML = `<div class="text-red-400">Could not load field. Try Refresh.</div>`; return; }
+  const competitors = extractCompetitors(data);
+  if (!competitors.length) { picker.innerHTML = `<div class="text-amber-300 text-center py-4">Field not yet released.<br>Use Bulk Import tab to enter rosters manually.</div>`; return; }
+  currentAvailablePlayers = [...new Set(competitors.map(c => c.athlete?.displayName || c.displayName || "").filter(Boolean))].sort();
   filterPlayerPicker();
 }
-
 function filterPlayerPicker() {
   const search = document.getElementById("player-search").value.toLowerCase().trim();
-  const picker = document.getElementById("player-picker");
-  picker.innerHTML = "";
-  const filtered = currentAvailablePlayers.filter(n => n.toLowerCase().includes(search));
-  if (!filtered.length) { picker.innerHTML = `<div class="text-green-300 text-center py-8">No matching players</div>`; return; }
+  const picker = document.getElementById("player-picker"); picker.innerHTML = "";
+  const filtered = currentAvailablePlayers.filter(n=>n.toLowerCase().includes(search));
+  if (!filtered.length) { picker.innerHTML = `<div class="text-green-300">No matches</div>`; return; }
   filtered.forEach(name => {
     const btn = document.createElement("button");
     btn.className = "bg-white/10 hover:bg-[#d4af77] hover:text-[#0a3d2a] px-6 py-3 rounded-3xl text-sm transition-all";
-    btn.textContent = name;
-    btn.onclick = () => addPlayerFromPicker(name);
-    picker.appendChild(btn);
+    btn.textContent = name; btn.onclick = () => addPlayerFromPicker(name); picker.appendChild(btn);
   });
 }
 function addPlayerFromPicker(name) {
@@ -725,52 +787,35 @@ function addPlayerFromPicker(name) {
   teams[team].push(name); saveConfig(); renderCurrentRoster();
 }
 
-// ── Bulk roster import ────────────────────────────────────────────────────────
+// ===== BULK IMPORT =====
 function applyBulkRosters() {
   const text = document.getElementById("bulk-roster-text").value.trim();
   if (!text) return;
-
-  const resultDiv = document.getElementById("bulk-result");
   const teams = config.tournaments[config.currentTournamentKey].teams;
   const knownTeams = Object.keys(teams);
   const errors = [], applied = [];
-
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  lines.forEach(line => {
-    // Accept "TeamName: Player1, Player2, ..." or "TeamName - Player1, Player2, ..."
+  text.split('\n').map(l=>l.trim()).filter(Boolean).forEach(line => {
     const sep = line.includes(':') ? ':' : line.includes(' - ') ? ' - ' : null;
     if (!sep) { errors.push(`Skipped (no separator): ${line}`); return; }
     const [rawTeam, rawPlayers] = line.split(sep, 2);
     const teamName = rawTeam.trim();
-
-    // Fuzzy-match team name (case-insensitive)
-    const matchedTeam = knownTeams.find(t => t.toLowerCase() === teamName.toLowerCase()) || teamName;
-    if (!teams[matchedTeam]) {
-      // Create the team if it doesn't exist yet
-      teams[matchedTeam] = [];
-      errors.push(`Created new team: ${matchedTeam}`);
-    }
-
-    const playerList = rawPlayers.split(',').map(p => p.trim()).filter(Boolean).slice(0, 7);
-    teams[matchedTeam] = playerList;
-    applied.push(`${matchedTeam}: ${playerList.length} players`);
+    const matched = knownTeams.find(t=>t.toLowerCase()===teamName.toLowerCase()) || teamName;
+    if (!teams[matched]) teams[matched] = [];
+    const playerList = rawPlayers.split(',').map(p=>p.trim()).filter(Boolean).slice(0,7);
+    teams[matched] = playerList;
+    applied.push(`${matched}: ${playerList.length}`);
   });
-
-  saveConfig();
-  renderEverything();
-  populateAdminTeamSelect();
-
-  let msg = applied.length ? `<span class="text-green-400">✅ Applied: ${applied.join(' • ')}</span>` : "";
+  saveConfig(); renderEverything(); populateAdminTeamSelect();
+  let msg = applied.length ? `<span class="text-green-400">✅ ${applied.join(' • ')}</span>` : "";
   if (errors.length) msg += `<br><span class="text-amber-300">⚠️ ${errors.join(' • ')}</span>`;
-  resultDiv.innerHTML = msg;
+  document.getElementById("bulk-result").innerHTML = msg;
 }
 
-// ── Manage Tournaments ────────────────────────────────────────────────────────
+// ===== MANAGE TOURNAMENTS =====
 function openManageTournamentsModal() { toggleGearMenu(); document.getElementById("manage-tournaments-modal").classList.remove("hidden"); renderTournamentsList(); }
 function hideManageTournamentsModal() { document.getElementById("manage-tournaments-modal").classList.add("hidden"); }
 function renderTournamentsList() {
-  const c = document.getElementById("modal-tournaments-list");
-  c.innerHTML = "";
+  const c = document.getElementById("modal-tournaments-list"); c.innerHTML = "";
   Object.keys(config.tournaments).forEach(key => {
     const t = config.tournaments[key];
     const div = document.createElement("div");
@@ -785,18 +830,18 @@ function renderTournamentsList() {
   });
 }
 function deleteTournament(key) {
-  if (!confirm("Delete this tournament permanently?")) return;
+  if (!confirm("Delete permanently?")) return;
   delete config.tournaments[key];
-  if (config.currentTournamentKey === key) config.currentTournamentKey = Object.keys(config.tournaments)[0] || "";
+  if (config.currentTournamentKey===key) config.currentTournamentKey = Object.keys(config.tournaments)[0]||"";
   saveConfig(); populateTournamentSelector(); populateGearTournamentSelect(); renderTournamentsList();
   if (config.currentTournamentKey) loadCurrentTournamentData().then(renderEverything);
 }
 
-// ── Config export/import ──────────────────────────────────────────────────────
+// ===== CONFIG =====
 function saveConfig() { localStorage.setItem('fantasyGolfConfig', JSON.stringify(config)); }
 function exportFullConfig() {
-  navigator.clipboard.writeText(JSON.stringify(config, null, 2))
-    .then(() => alert("✅ Full config copied to clipboard!\nPaste into Import on any device."));
+  navigator.clipboard.writeText(JSON.stringify(config,null,2))
+    .then(()=>alert("✅ Config copied to clipboard!"));
 }
 function showImportModal() { hideManageRostersModal(); document.getElementById("import-modal").classList.remove("hidden"); }
 function hideImportModal() { document.getElementById("import-modal").classList.add("hidden"); }
@@ -805,16 +850,17 @@ function importConfig() {
     config = JSON.parse(document.getElementById("import-text").value.trim());
     saveConfig(); hideImportModal(); populateTournamentSelector(); populateGearTournamentSelect();
     loadCurrentTournamentData().then(renderEverything);
-    alert("✅ Config imported successfully!");
-  } catch { alert("Invalid JSON – please check the format."); }
+    alert("✅ Imported!");
+  } catch { alert("Invalid JSON."); }
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ===== INIT =====
 function init() {
   populateTournamentSelector();
   populateGearTournamentSelect();
-  loadCurrentTournamentData().then(() => renderEverything());
-  setInterval(() => loadCurrentTournamentData().then(() => renderEverything()), 30000);
+  loadCurrentTournamentData().then(renderEverything);
+  // Refresh every 60s (live scoring). Cache is busted on each refresh for current tournament.
+  setInterval(() => loadCurrentTournamentData().then(renderEverything), 60000);
 }
 init();
 </script>
