@@ -16,7 +16,6 @@
       background-size: cover; background-position: center; background-attachment: fixed;
       -webkit-tap-highlight-color: transparent;
     }
-    .card { transition: box-shadow 0.2s; }
     .under-par { color: #f87171; font-weight: 600; }
     .even-par  { color: #86efac; font-weight: 600; }
     .over-par  { color: #e5e7eb; }
@@ -25,77 +24,63 @@
     .rank-3 { color: #cd7f32; }
     .gear-menu { animation: fadeIn .18s ease-out; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-    /* Mobile table scroll */
-    .roster-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .roster-table { width: 100%; min-width: 320px; border-collapse: collapse; }
-    .roster-table th, .roster-table td { white-space: nowrap; }
-    .roster-table td:first-child, .roster-table th:first-child { white-space: normal; min-width: 90px; }
-    /* Modal scroll on small screens */
-    .modal-inner { max-height: 92vh; overflow-y: auto; }
-    /* Tap targets */
     button { touch-action: manipulation; }
+    .modal-inner { max-height: 92vh; overflow-y: auto; }
   </style>
 </head>
 <body class="text-white min-h-screen">
 <div class="max-w-3xl mx-auto px-3 py-5 sm:px-6 sm:py-8">
 
   <!-- Header -->
-  <div class="flex items-start justify-between gap-3 mb-6">
+  <div class="flex items-start justify-between gap-3 mb-5">
     <div class="flex items-center gap-3 min-w-0">
-      <i class="fa-solid fa-golf-ball-tee text-4xl sm:text-5xl text-[#d4af77] shrink-0"></i>
+      <i class="fa-solid fa-golf-ball-tee text-4xl text-[#d4af77] shrink-0"></i>
       <div class="min-w-0">
-        <h1 class="text-2xl sm:text-4xl font-bold tracking-tight leading-tight">Phil's Fantasy Golf</h1>
-        <p class="text-green-300 text-xs sm:text-sm truncate">Live Leaderboard • 2026 Masters</p>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight leading-tight">Phil's Fantasy Golf</h1>
+        <p class="text-green-300 text-xs sm:text-sm" id="header-subtitle">2026 Masters</p>
       </div>
     </div>
-    <!-- Gear -->
     <div class="relative shrink-0">
-      <button onclick="toggleGearMenu()" aria-label="Settings"
-        class="w-11 h-11 flex items-center justify-center bg-white/10 active:bg-white/25 border border-white/30 rounded-2xl text-[#d4af77] transition-colors">
+      <button onclick="toggleGear()" class="w-11 h-11 flex items-center justify-center bg-white/10 border border-white/30 rounded-2xl text-[#d4af77]">
         <i class="fa-solid fa-gear text-xl"></i>
       </button>
-      <div id="gear-menu" class="hidden gear-menu absolute right-0 mt-2 w-64 bg-[#0a3d2a] border border-[#d4af77]/60 rounded-2xl shadow-2xl z-50 overflow-hidden">
+      <div id="gear-menu" class="hidden gear-menu absolute right-0 mt-2 w-60 bg-[#0a3d2a] border border-[#d4af77]/60 rounded-2xl shadow-2xl z-50 overflow-hidden">
         <div class="px-4 py-3 border-b border-white/15">
-          <p class="text-xs uppercase tracking-widest text-green-300 mb-0.5">Tournament</p>
-          <select id="gear-tournament-select" onchange="setCurrentFromGear(this.value)"
+          <p class="text-xs text-green-300 mb-1">Tournament</p>
+          <select id="gear-tourn-sel" onchange="setCurrentFromGear(this.value)"
             class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none"></select>
         </div>
         <div class="py-1">
-          <button onclick="openRostersModal()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 active:bg-white/15 text-left text-base font-medium">
-            <i class="fa-solid fa-users w-5 text-center text-green-300"></i> Manage Rosters
+          <button onclick="openRostersModal()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 text-left text-sm font-medium">
+            <i class="fa-solid fa-users text-green-300 w-4"></i> Manage Rosters
           </button>
-          <button onclick="openTournamentsModal()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 active:bg-white/15 text-left text-base font-medium">
-            <i class="fa-solid fa-trophy w-5 text-center text-green-300"></i> Tournaments
+          <button onclick="openTournamentsModal()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 text-left text-sm font-medium">
+            <i class="fa-solid fa-trophy text-green-300 w-4"></i> Tournaments
           </button>
-          <button onclick="showAddModal()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 active:bg-white/15 text-left text-base font-medium border-t border-white/10">
-            <i class="fa-solid fa-plus w-5 text-center text-green-300"></i> Add Tournament
+          <button onclick="showAddModal()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 text-left text-sm font-medium border-t border-white/10">
+            <i class="fa-solid fa-plus text-green-300 w-4"></i> Add Tournament
           </button>
-        </div>
-        <div class="px-4 py-2 border-t border-white/15 flex justify-between items-center">
-          <span class="text-xs text-green-300">Admin only</span>
-          <button onclick="toggleGearMenu()" class="text-[#d4af77] text-xs font-medium">Close</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Status bar -->
-  <div class="flex items-center justify-between mb-5 text-xs text-green-300">
-    <span id="tournament-status-badge" class="px-3 py-1 rounded-full bg-white/10 font-medium uppercase tracking-wide"></span>
-    <span id="last-updated"></span>
+  <div class="flex items-center justify-between mb-5 text-xs">
+    <span id="status-badge" class="px-3 py-1 rounded-full bg-white/10 text-green-300 font-medium uppercase tracking-wide"></span>
+    <span id="last-updated" class="text-white/40"></span>
   </div>
 
   <!-- Leaderboard -->
   <div class="mb-8">
-    <h2 class="text-lg sm:text-xl font-semibold mb-3 flex items-center gap-2">
-      <i class="fa-solid fa-ranking-star text-[#d4af77] text-base"></i> Leaderboard
-      <span class="text-xs text-green-300 font-normal">(best 4 of 7)</span>
+    <h2 class="text-base font-semibold mb-3 flex items-center gap-2 text-green-300 uppercase tracking-wide">
+      <i class="fa-solid fa-ranking-star text-[#d4af77]"></i> Leaderboard
     </h2>
-    <div class="card bg-white/10 backdrop-blur-xl rounded-2xl overflow-hidden shadow-xl">
+    <div class="bg-white/10 backdrop-blur-xl rounded-2xl overflow-hidden">
       <table class="w-full">
         <thead class="bg-gradient-to-r from-green-900 to-[#0a3d2a] text-xs uppercase tracking-wide text-green-300">
           <tr>
-            <th class="px-4 py-3 text-left w-10">#</th>
+            <th class="px-4 py-3 text-left w-8">#</th>
             <th class="px-4 py-3 text-left">Team</th>
             <th class="px-4 py-3 text-right">Score</th>
           </tr>
@@ -105,106 +90,92 @@
     </div>
   </div>
 
-  <!-- Rosters -->
-  <div class="mb-8">
-    <h2 class="text-lg sm:text-xl font-semibold mb-3 flex items-center gap-2">
-      <i class="fa-solid fa-list-ul text-[#d4af77] text-base"></i> Team Rosters
-    </h2>
-    <div id="detailed-rosters" class="space-y-4"></div>
-  </div>
-
-  <!-- League Stats -->
+  <!-- Team Rosters -->
   <div>
-    <h2 class="text-lg sm:text-xl font-semibold mb-3 flex items-center gap-2">
-      <i class="fa-solid fa-chart-bar text-[#d4af77] text-base"></i> All-Time Stats
+    <h2 class="text-base font-semibold mb-3 flex items-center gap-2 text-green-300 uppercase tracking-wide">
+      <i class="fa-solid fa-list-ul text-[#d4af77]"></i> Teams
     </h2>
-    <div id="league-stats" class="card bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-6 shadow-xl"></div>
+    <div id="rosters-container" class="space-y-3"></div>
   </div>
 
 </div>
 
-<!-- ===== MODALS ===== -->
-
-<!-- Add Tournament -->
-<div id="add-modal" onclick="if(event.target===this)hideAddModal()" class="hidden fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+<!-- Add Tournament Modal -->
+<div id="add-modal" onclick="if(event.target===this)hideAddModal()" class="hidden fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-50">
   <div onclick="event.stopPropagation()" class="modal-inner bg-[#0a3d2a] border border-[#d4af77]/60 rounded-t-3xl sm:rounded-2xl p-6 w-full sm:max-w-md">
-    <h3 class="text-xl font-bold mb-5">Add Tournament</h3>
+    <h3 class="text-lg font-bold mb-4">Add Tournament</h3>
     <input id="new-name" placeholder="Name (e.g. 2027 Masters)"
-      class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 mb-3 text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-[#d4af77]">
+      class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 mb-3 text-white placeholder:text-white/40 text-sm focus:outline-none focus:border-[#d4af77]">
     <input id="new-id" placeholder="ESPN Tournament ID"
-      class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 mb-3 text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-[#d4af77]">
+      class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 mb-3 text-white placeholder:text-white/40 text-sm focus:outline-none focus:border-[#d4af77]">
     <label class="block text-xs text-green-300 mb-1">Participants (one per line)</label>
     <textarea id="new-teams" rows="5" placeholder="Gerald&#10;Josh&#10;Phil…"
       class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm resize-none focus:outline-none focus:border-[#d4af77]"></textarea>
-    <div class="flex gap-3 mt-5">
-      <button onclick="hideAddModal()" class="flex-1 py-3 rounded-xl border border-white/20 text-sm font-medium">Cancel</button>
-      <button onclick="addTournament()" class="flex-1 py-3 bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] rounded-xl text-sm font-bold">Create</button>
+    <div class="flex gap-3 mt-4">
+      <button onclick="hideAddModal()" class="flex-1 py-3 rounded-xl border border-white/20 text-sm">Cancel</button>
+      <button onclick="addTournament()" class="flex-1 py-3 bg-[#d4af77] text-[#0a3d2a] rounded-xl text-sm font-bold">Create</button>
     </div>
   </div>
 </div>
 
-<!-- Manage Rosters -->
-<div id="rosters-modal" onclick="if(event.target===this)closeRostersModal()" class="hidden fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-[100] p-0 sm:p-4">
+<!-- Manage Rosters Modal -->
+<div id="rosters-modal" onclick="if(event.target===this)closeRostersModal()" class="hidden fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-[100]">
   <div onclick="event.stopPropagation()" class="modal-inner bg-[#0b3d2b] border border-white/20 rounded-t-3xl sm:rounded-2xl p-5 w-full sm:max-w-2xl">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-bold">Manage Rosters <span class="text-[#d4af77]" id="modal-tourn-name"></span></h2>
-      <button onclick="closeRostersModal()" class="text-white/50 hover:text-white text-2xl leading-none w-8 h-8 flex items-center justify-center">×</button>
+      <h2 class="text-base font-bold">Manage Rosters</h2>
+      <button onclick="closeRostersModal()" class="text-white/40 text-2xl leading-none w-8 h-8 flex items-center justify-center">×</button>
     </div>
-    <!-- Tabs -->
     <div class="flex gap-2 mb-4">
       <button id="tab-individual" onclick="showTab('individual')" class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#d4af77] text-[#0a3d2a]">Individual</button>
       <button id="tab-bulk" onclick="showTab('bulk')" class="px-4 py-2 rounded-xl text-sm font-medium bg-white/10 text-white">Bulk Import</button>
     </div>
-    <!-- Individual pane -->
     <div id="pane-individual">
-      <select id="team-select" onchange="renderRoster()"
+      <select id="team-select" onchange="renderRosterEditor()"
         class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm mb-3 focus:outline-none"></select>
       <div id="current-roster" class="mb-4"></div>
       <div class="border-t border-white/15 pt-4">
         <div class="flex justify-between items-center mb-2">
           <span class="text-sm font-medium">Add players</span>
-          <button onclick="loadPlayers()" class="text-[#d4af77] text-xs flex items-center gap-1"><i class="fa-solid fa-rotate"></i> Refresh</button>
+          <button onclick="loadPlayerPicker()" class="text-[#d4af77] text-xs flex items-center gap-1"><i class="fa-solid fa-rotate"></i> Refresh</button>
         </div>
-        <input id="player-search" type="text" placeholder="Search…" onkeyup="filterPicker()"
+        <input id="player-search" type="text" placeholder="Search…" oninput="filterPicker()"
           class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm mb-3 focus:outline-none focus:border-[#d4af77]">
         <div id="player-picker" class="flex flex-wrap gap-2 max-h-44 overflow-y-auto"></div>
       </div>
     </div>
-    <!-- Bulk pane -->
     <div id="pane-bulk" class="hidden">
-      <p class="text-xs text-green-300 mb-2">Format: <span class="font-mono text-[#d4af77]">Gerald: Player One, Player Two, ...</span> — max 7 per team, replaces existing.</p>
+      <p class="text-xs text-green-300 mb-2">Format: <span class="font-mono text-[#d4af77]">Gerald: Player One, Player Two</span> — max 7, replaces existing.</p>
       <textarea id="bulk-text" rows="9" placeholder="Gerald: Scottie Scheffler, Rory McIlroy, ..."
         class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white font-mono text-xs resize-none focus:outline-none focus:border-[#d4af77]"></textarea>
-      <div id="bulk-result" class="mt-2 text-xs min-h-[1.5rem]"></div>
-      <button onclick="applyBulk()" class="mt-3 w-full py-3 bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] rounded-xl text-sm font-bold">Apply</button>
+      <div id="bulk-result" class="mt-2 text-xs min-h-5"></div>
+      <button onclick="applyBulk()" class="mt-3 w-full py-3 bg-[#d4af77] text-[#0a3d2a] rounded-xl text-sm font-bold">Apply</button>
     </div>
-    <!-- Footer -->
     <div class="flex gap-3 mt-5 pt-4 border-t border-white/15">
-      <button onclick="exportConfig()" class="flex-1 py-3 bg-white/15 hover:bg-white/25 rounded-xl text-sm font-medium">Export Config</button>
-      <button onclick="openImportModal()" class="flex-1 py-3 bg-white/15 hover:bg-white/25 rounded-xl text-sm font-medium">Import Config</button>
+      <button onclick="exportConfig()" class="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-sm">Export Config</button>
+      <button onclick="openImportModal()" class="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-sm">Import Config</button>
     </div>
   </div>
 </div>
 
-<!-- Tournaments list -->
-<div id="tournaments-modal" onclick="if(event.target===this)closeTournamentsModal()" class="hidden fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-[100] p-0 sm:p-4">
+<!-- Tournaments Modal -->
+<div id="tournaments-modal" onclick="if(event.target===this)closeTournamentsModal()" class="hidden fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-[100]">
   <div onclick="event.stopPropagation()" class="modal-inner bg-[#0b3d2b] border border-white/20 rounded-t-3xl sm:rounded-2xl p-5 w-full sm:max-w-xl">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-bold">Tournaments</h2>
-      <button onclick="closeTournamentsModal()" class="text-white/50 hover:text-white text-2xl leading-none w-8 h-8 flex items-center justify-center">×</button>
+      <h2 class="text-base font-bold">Tournaments</h2>
+      <button onclick="closeTournamentsModal()" class="text-white/40 text-2xl leading-none w-8 h-8 flex items-center justify-center">×</button>
     </div>
-    <div id="tournaments-list" class="space-y-3 max-h-[60vh] overflow-y-auto"></div>
+    <div id="tournaments-list" class="space-y-3 max-h-72 overflow-y-auto"></div>
   </div>
 </div>
 
-<!-- Import Config -->
-<div id="import-modal" onclick="if(event.target===this)closeImportModal()" class="hidden fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-[110] p-0 sm:p-4">
+<!-- Import Modal -->
+<div id="import-modal" onclick="if(event.target===this)closeImportModal()" class="hidden fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-[110]">
   <div onclick="event.stopPropagation()" class="modal-inner bg-[#0a3d2a] border border-[#d4af77]/60 rounded-t-3xl sm:rounded-2xl p-6 w-full sm:max-w-md">
-    <h3 class="text-xl font-bold mb-4">Import Config</h3>
+    <h3 class="text-lg font-bold mb-4">Import Config</h3>
     <textarea id="import-text" rows="8" placeholder="Paste JSON config here…"
       class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white font-mono text-xs resize-none focus:outline-none"></textarea>
     <div class="flex gap-3 mt-4">
-      <button onclick="closeImportModal()" class="flex-1 py-3 rounded-xl border border-white/20 text-sm font-medium">Cancel</button>
+      <button onclick="closeImportModal()" class="flex-1 py-3 rounded-xl border border-white/20 text-sm">Cancel</button>
       <button onclick="doImport()" class="flex-1 py-3 bg-[#d4af77] text-[#0a3d2a] rounded-xl text-sm font-bold">Import</button>
     </div>
   </div>
@@ -213,7 +184,7 @@
 <script>
 // ===== CONFIG =====
 const DEFAULT_TEAMS = ["Gerald","Josh","Phil","Patrick","Wallace","Ricky","Roger","Doug","Nick","Christine"];
-const mkTeams = (names) => { const o={}; names.forEach(n=>o[n]=[]); return o; };
+const mkTeams = names => { const o={}; names.forEach(n => o[n]=[]); return o; };
 
 const defaultConfig = {
   tournaments: {
@@ -222,38 +193,40 @@ const defaultConfig = {
   currentTournamentKey: "2026-masters"
 };
 
-let config = (() => {
-  try { return JSON.parse(localStorage.getItem('fantasyGolfConfig')) || defaultConfig; }
-  catch(e) { return defaultConfig; }
-})();
+let config = (() => { try { return JSON.parse(localStorage.getItem('fantasyGolfConfig')) || defaultConfig; } catch(e) { return defaultConfig; } })();
 
 // ===== STATE =====
-let playerMap = {};          // name.toLowerCase() → ESPN competitor object
-let dataCache = {};
+let playerMap = {};       // "firstname lastname" (lower) → ESPN competitor object
 let availablePlayers = [];
 let activeTeam = null;
-
 const PROXY = "https://api.allorigins.win/get?url=";
 const COURSE_PAR = 72;
 
-// ===== ESPN FETCH & PARSE =====
+// ===== ESPN FETCH =====
 async function fetchWithProxy(url) {
   const r = await fetch(PROXY + encodeURIComponent(url));
   if (!r.ok) throw new Error("proxy " + r.status);
   return JSON.parse((await r.json()).contents);
 }
 
-async function fetchTournament(key, bustCache = false) {
-  if (!bustCache && dataCache[key]) return dataCache[key];
+async function fetchTournament(key) {
   const t = config.tournaments[key];
   if (!t?.tournamentId) return null;
   try {
     const url = `https://site.api.espn.com/apis/site/v2/sports/golf/${t.league}/leaderboard?tournamentId=${t.tournamentId}`;
-    const data = await fetchWithProxy(url);
-    dataCache[key] = data;
-    return data;
+    return await fetchWithProxy(url);
   } catch(e) { console.error("fetch failed", key, e); return null; }
 }
+
+// ===== ESPN DATA PARSING =====
+// ESPN structure: data.events[0].competitions[0].competitors[]
+// Each competitor has:
+//   .athlete.displayName
+//   .status.type.name  ("active", "cut", "wd", etc)
+//   .status.displayValue  ("F", "9", "-", etc)
+//   .score  ("-5", "E", "+2", "-")
+//   .linescores[].value  (round stroke totals like "68", "71")
+//   .teeTime  (ISO datetime string, present pre-round)
 
 function getCompetitors(data) {
   try { return data.events[0].competitions[0].competitors || []; }
@@ -272,7 +245,7 @@ function buildPlayerMap(data) {
 function parseScore(val) {
   if (val == null) return null;
   const s = String(val).trim();
-  if (!s || s === "-") return null;
+  if (!s || s === "-" || s === "—") return null;
   if (s.toUpperCase() === "E") return 0;
   const n = parseInt(s, 10);
   return isNaN(n) ? null : n;
@@ -295,38 +268,57 @@ function fmtTeeTime(iso) {
   if (!iso) return null;
   try {
     const d = new Date(iso);
-    if (isNaN(d)) return null;
-    return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit', timeZoneName:'short'});
+    if (isNaN(d.getTime())) return null;
+    // Show in ET (Masters is always ET)
+    return d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', timeZone:'America/New_York' }) + ' ET';
   } catch(e) { return null; }
 }
 
+// Returns a normalized player info object from the playerMap
 function getPlayerInfo(name) {
   const c = playerMap[name.toLowerCase()];
   if (!c) return null;
-  const statusName = (c.status?.type?.name || "").toLowerCase();
+
+  const statusName    = (c.status?.type?.name || "").toLowerCase();
   const statusDisplay = (c.status?.displayValue || "").trim();
+
   const isCut = statusName.includes("cut") || statusName === "mc";
   const isWD  = statusName.includes("wd") || statusName.includes("withdraw");
-  const isDone = statusDisplay.toUpperCase() === "F";
+
+  // Total to-par score
   const score = parseScore(c.score);
-  const hasStarted = score !== null || (statusDisplay && statusDisplay !== "-" && statusDisplay !== "SCR");
+
+  // Has this player teed off at all?
+  const hasStarted = score !== null || (statusDisplay && statusDisplay !== "-" && statusDisplay !== "SCR" && statusDisplay !== "");
+
+  // Tee time — ESPN includes this field on competitors even during/after rounds
+  // Only show it if the player hasn't started yet
   const teeTime = !hasStarted ? fmtTeeTime(c.teeTime) : null;
-  const rounds = [null,null,null,null];
-  (c.linescores||[]).forEach((ls,i) => {
-    if (i < 4) { const v = parseInt(ls.value,10); if (!isNaN(v) && v > 0) rounds[i] = v; }
+
+  // Round scores from linescores (raw stroke totals, e.g. 68, 71)
+  const rounds = [null, null, null, null];
+  (c.linescores || []).forEach((ls, i) => {
+    if (i < 4) {
+      const v = parseInt(ls.value, 10);
+      if (!isNaN(v) && v > 0) rounds[i] = v;
+    }
   });
+
+  // "Thru" — hole number or F
   let thru = null;
-  if (isCut) thru = "MC";
-  else if (isWD) thru = "WD";
-  else if (isDone) thru = "F";
+  if (isCut)  thru = "MC";
+  else if (isWD)  thru = "WD";
+  else if (statusDisplay.toUpperCase() === "F") thru = "F";
   else if (hasStarted && statusDisplay && statusDisplay !== "-") {
     const n = parseInt(statusDisplay, 10);
-    thru = isNaN(n) ? statusDisplay : String(n);
+    thru = isNaN(n) ? statusDisplay : `${n}`;
   }
+
   return { score, rounds, thru, teeTime, isCut, isWD, hasStarted };
 }
 
-function worstMakeCutScore() {
+// ===== TEAM SCORING =====
+function worstMakeCut() {
   let worst = 0;
   Object.values(playerMap).forEach(c => {
     const sn = (c.status?.type?.name || "").toLowerCase();
@@ -340,7 +332,7 @@ function worstMakeCutScore() {
 
 function teamScore(players) {
   if (!Object.keys(playerMap).length) return null;
-  const penalty = worstMakeCutScore();
+  const penalty = worstMakeCut();
   const scores = players.map(name => {
     const info = getPlayerInfo(name);
     if (!info) return null;
@@ -348,34 +340,42 @@ function teamScore(players) {
     return info.score ?? 0;
   }).filter(s => s !== null);
   if (!scores.length) return null;
-  scores.sort((a,b) => a-b);
-  return scores.slice(0,4).reduce((a,b)=>a+b,0);
+  scores.sort((a, b) => a - b);
+  return scores.slice(0, 4).reduce((a, b) => a + b, 0);
 }
 
-// ===== LOAD & REFRESH =====
-async function loadCurrent() {
-  const data = await fetchTournament(config.currentTournamentKey, true);
+// ===== FETCH & REFRESH =====
+async function loadAndRender() {
+  const data = await fetchTournament(config.currentTournamentKey);
   playerMap = data ? buildPlayerMap(data) : {};
-  const now = new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-  document.getElementById("last-updated").textContent = data ? `Updated ${now}` : "Offline";
+
+  // Update status
+  const now = new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
+  document.getElementById("last-updated").textContent = data ? `Updated ${now}` : "Offline – retrying";
   updateStatusBadge(data);
+
+  renderLeaderboard();
+  renderRosters();
 }
 
 function updateStatusBadge(data) {
-  const badge = document.getElementById("tournament-status-badge");
+  const badge = document.getElementById("status-badge");
   const comps = getCompetitors(data);
   const hasScores = comps.some(c => parseScore(c.score) !== null);
-  const allDone = comps.length > 0 && comps.every(c => {
-    const d = (c.status?.displayValue||"").toUpperCase();
-    const n = (c.status?.type?.name||"").toLowerCase();
-    return d==="F" || n.includes("cut") || n.includes("wd");
+  const allDone   = comps.length > 0 && comps.every(c => {
+    const d = (c.status?.displayValue || "").toUpperCase();
+    const n = (c.status?.type?.name || "").toLowerCase();
+    return d === "F" || n.includes("cut") || n.includes("wd");
   });
   if (!hasScores) {
-    badge.textContent = "Upcoming"; badge.className = "px-3 py-1 rounded-full bg-amber-300/20 text-amber-300 font-medium uppercase tracking-wide text-xs";
+    badge.textContent = "Upcoming";
+    badge.style.cssText = "background:rgba(251,191,36,0.15);color:#fbbf24";
   } else if (allDone) {
-    badge.textContent = "Complete"; badge.className = "px-3 py-1 rounded-full bg-green-400/20 text-green-300 font-medium uppercase tracking-wide text-xs";
+    badge.textContent = "Complete";
+    badge.style.cssText = "background:rgba(74,222,128,0.15);color:#4ade80";
   } else {
-    badge.textContent = "🟢 Live"; badge.className = "px-3 py-1 rounded-full bg-blue-400/20 text-blue-300 font-medium uppercase tracking-wide text-xs";
+    badge.textContent = "🟢 Live";
+    badge.style.cssText = "background:rgba(96,165,250,0.15);color:#60a5fa";
   }
 }
 
@@ -383,293 +383,178 @@ function updateStatusBadge(data) {
 function renderLeaderboard() {
   const tbody = document.getElementById("leaderboard-body");
   const teams = config.tournaments[config.currentTournamentKey]?.teams || {};
-  const rows = Object.keys(teams).map(t => ({t, sc: teamScore(teams[t]||[])}))
-    .sort((a,b) => {
-      if (a.sc===null && b.sc===null) return 0;
-      if (a.sc===null) return 1; if (b.sc===null) return -1;
+
+  const rows = Object.keys(teams)
+    .map(t => ({ t, sc: teamScore(teams[t] || []) }))
+    .sort((a, b) => {
+      if (a.sc === null && b.sc === null) return 0;
+      if (a.sc === null) return 1;
+      if (b.sc === null) return -1;
       return a.sc - b.sc;
     });
 
   if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="3" class="px-4 py-10 text-center text-green-300 text-sm">No teams yet — use gear → Manage Rosters</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="px-4 py-8 text-center text-white/40 text-sm">No teams yet.</td></tr>`;
     return;
   }
-  tbody.innerHTML = rows.map(({t, sc}, i) => {
-    const rankCls = ["rank-1","rank-2","rank-3"][i] || "text-white/60";
-    const display = sc === null ? "—" : fmtPar(sc);
-    const scoreCls = sc !== null && sc < 0 ? "under-par" : sc === 0 ? "even-par" : "over-par";
-    return `<tr class="hover:bg-white/5 active:bg-white/5">
-      <td class="px-4 py-4 font-mono font-bold text-lg ${rankCls}">${i+1}</td>
+
+  tbody.innerHTML = rows.map(({ t, sc }, i) => {
+    const rankCls = ["rank-1","rank-2","rank-3"][i] || "text-white/50";
+    const scoreCls = sc === null ? "text-white/40" : sc < 0 ? "under-par" : sc === 0 ? "even-par" : "over-par";
+    return `<tr class="hover:bg-white/5">
+      <td class="px-4 py-4 font-bold text-lg ${rankCls}">${i+1}</td>
       <td class="px-4 py-4 font-semibold">${t}</td>
-      <td class="px-4 py-4 text-right font-mono text-2xl font-bold ${scoreCls}">${display}</td>
+      <td class="px-4 py-4 text-right font-mono text-2xl font-bold ${scoreCls}">${sc === null ? "—" : fmtPar(sc)}</td>
     </tr>`;
   }).join("");
 }
 
 // ===== RENDER ROSTERS =====
 function renderRosters() {
-  const container = document.getElementById("detailed-rosters");
+  const container = document.getElementById("rosters-container");
   const teams = config.tournaments[config.currentTournamentKey]?.teams || {};
 
   if (!Object.keys(teams).length) {
-    container.innerHTML = `<div class="text-center py-8 text-green-300 text-sm">No rosters defined yet.</div>`;
+    container.innerHTML = `<p class="text-center py-8 text-white/40 text-sm">No rosters yet. Use gear → Manage Rosters.</p>`;
     return;
   }
 
-  // Determine tournament state from playerMap (already built from fetched data)
-  const allPlayers = Object.values(playerMap);
-  const tournamentStarted = allPlayers.some(c => parseScore(c.score) !== null);
-  const hasTeeTimesOnly = !tournamentStarted && allPlayers.some(c => c.teeTime);
+  // Figure out overall tournament state once
+  const allComps = Object.values(playerMap);
+  const tournamentStarted = allComps.some(c => parseScore(c.score) !== null);
 
   const html = Object.keys(teams).map(team => {
     const players = teams[team];
-
-    if (!players.length) {
-      return `<div class="card bg-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-lg">
-        <div class="font-bold text-base mb-2">${team}</div>
-        <p class="text-sm text-white/40">No players assigned yet.</p>
-      </div>`;
-    }
-
     const sc = teamScore(players);
-    const scDisplay = sc === null ? "—" : fmtPar(sc);
-    const scCls = sc !== null && sc < 0 ? "under-par" : sc === 0 ? "even-par" : "over-par";
+    const scCls = sc === null ? "text-white/40" : sc < 0 ? "under-par" : sc === 0 ? "even-par" : "over-par";
 
-    // Build rows — one per player, no table on mobile, use flex cards instead
-    const playerCards = players.map(name => {
-      const info = getPlayerInfo(name);
+    const playerRows = players.length === 0
+      ? `<p class="text-xs text-white/30 py-2">No players assigned.</p>`
+      : players.map(name => {
+          const info = getPlayerInfo(name);
 
-      let statusBadge = "";
-      if (info?.isCut) statusBadge = `<span class="text-xs bg-red-500/25 text-red-300 px-1.5 py-0.5 rounded-full">MC</span>`;
-      else if (info?.isWD)  statusBadge = `<span class="text-xs bg-gray-500/25 text-gray-300 px-1.5 py-0.5 rounded-full">WD</span>`;
+          // Status badge
+          let badge = "";
+          if (info?.isCut) badge = `<span class="text-xs bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-full leading-none">MC</span>`;
+          else if (info?.isWD) badge = `<span class="text-xs bg-gray-500/20 text-gray-300 px-1.5 py-0.5 rounded-full leading-none">WD</span>`;
 
-      // Right-side value: tee time, live score, or —
-      let rightVal = `<span class="text-white/30">—</span>`;
-      let subVal = "";
+          // Right-side primary value
+          let primary = `<span class="text-white/30 text-sm">—</span>`;
+          let secondary = "";
 
-      if (!info) {
-        rightVal = `<span class="text-white/30 text-xs">Not found</span>`;
-      } else if (hasTeeTimesOnly && info.teeTime) {
-        rightVal = `<span class="text-amber-200 text-sm font-medium">${info.teeTime}</span>`;
-      } else if (info.score !== null) {
-        rightVal = `<span class="font-mono font-bold text-lg ${parClass(info.score)}">${fmtPar(info.score)}</span>`;
-        subVal = info.thru ? `<span class="text-white/40 text-xs ml-1">thru ${info.thru}</span>` : "";
-      } else if (info.teeTime) {
-        rightVal = `<span class="text-amber-200 text-sm font-medium">${info.teeTime}</span>`;
-      }
+          if (!info) {
+            // Player not found in ESPN data yet
+            primary = `<span class="text-white/25 text-xs">—</span>`;
+          } else if (!info.hasStarted) {
+            // Pre-round: show tee time
+            const tt = info.teeTime || "—";
+            primary = `<span class="text-amber-200 font-medium text-sm">${tt}</span>`;
+          } else {
+            // Has started: show total score
+            primary = `<span class="font-mono font-bold text-lg ${parClass(info.score)}">${fmtPar(info.score)}</span>`;
+            if (info.thru) secondary = `<span class="text-white/35 text-xs block text-right">thru ${info.thru}</span>`;
+          }
 
-      // Round scores (only show if any rounds have been played)
-      let roundRow = "";
-      if (tournamentStarted && info?.rounds) {
-        const roundBits = info.rounds.map((strokes, i) => {
-          if (strokes === null) return `<span class="text-white/25">—</span>`;
-          const tp = strokes - COURSE_PAR;
-          return `<span class="font-mono ${parClass(tp)}">${fmtPar(tp)}</span>`;
-        });
-        roundRow = `<div class="flex gap-3 mt-1 text-xs">
-          <span class="text-white/40">R1&nbsp;${roundBits[0]}</span>
-          <span class="text-white/40">R2&nbsp;${roundBits[1]}</span>
-          <span class="text-white/40">R3&nbsp;${roundBits[2]}</span>
-          <span class="text-white/40">R4&nbsp;${roundBits[3]}</span>
-        </div>`;
-      }
+          // Per-round breakdown (only once rounds exist)
+          let roundsHtml = "";
+          if (tournamentStarted) {
+            const bits = info?.rounds.map((strokes, i) => {
+              if (strokes === null) return `<span class="text-white/20">—</span>`;
+              const tp = strokes - COURSE_PAR;
+              return `<span class="${parClass(tp)}">${fmtPar(tp)}</span>`;
+            }) || ["—","—","—","—"].map(v => `<span class="text-white/20">${v}</span>`);
+            roundsHtml = `
+              <div class="flex gap-3 mt-1 text-xs text-white/40">
+                <span>R1 ${bits[0]}</span>
+                <span>R2 ${bits[1]}</span>
+                <span>R3 ${bits[2]}</span>
+                <span>R4 ${bits[3]}</span>
+              </div>`;
+          }
 
-      return `<div class="flex items-center justify-between py-2.5 border-t border-white/10">
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="text-sm font-medium">${name}</span>
-            ${statusBadge}
-          </div>
-          ${roundRow}
+          return `
+            <div class="flex items-center justify-between py-2.5 border-t border-white/10 gap-2">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap leading-snug">
+                  <span class="text-sm font-medium">${name}</span>${badge}
+                </div>
+                ${roundsHtml}
+              </div>
+              <div class="text-right shrink-0">
+                ${primary}
+                ${secondary}
+              </div>
+            </div>`;
+        }).join("");
+
+    return `
+      <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
+        <div class="flex justify-between items-center mb-0.5">
+          <span class="font-bold">${team}</span>
+          <span class="font-mono font-bold text-xl ${scCls}">${sc === null ? "—" : fmtPar(sc)}</span>
         </div>
-        <div class="text-right ml-3 shrink-0">
-          ${rightVal}${subVal}
-        </div>
+        <p class="text-xs text-green-300/60 mb-1">${players.length} players · best 4 count</p>
+        ${playerRows}
       </div>`;
-    }).join("");
-
-    return `<div class="card bg-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-lg">
-      <div class="flex justify-between items-center mb-1">
-        <h3 class="font-bold text-base">${team}</h3>
-        <span class="font-mono font-bold text-xl ${scCls}">${scDisplay}</span>
-      </div>
-      <p class="text-xs text-green-300 mb-1">${players.length} players · best 4 count</p>
-      ${playerCards}
-    </div>`;
   }).join("");
 
   container.innerHTML = html;
 }
 
-// ===== LEAGUE STATS =====
-async function renderLeagueStats() {
-  const container = document.getElementById("league-stats");
-  container.innerHTML = `<div class="flex items-center justify-center gap-2 py-8 text-green-300 text-sm"><i class="fa-solid fa-spinner animate-spin"></i> Loading stats…</div>`;
-
-  const allTeamNames = new Set();
-  Object.values(config.tournaments).forEach(t => Object.keys(t.teams||{}).forEach(n => allTeamNames.add(n)));
-  const stats = {};
-  allTeamNames.forEach(n => { stats[n] = {wins:0, totalScore:0, count:0}; });
-  let completed = 0;
-
-  for (const key of Object.keys(config.tournaments)) {
-    const tourTeams = config.tournaments[key].teams || {};
-    if (!Object.keys(tourTeams).length) continue;
-    const data = await fetchTournament(key);
-    if (!data) continue;
-    const comps = getCompetitors(data);
-    if (!comps.some(c => parseScore(c.score) !== null)) continue;
-
-    const map = buildPlayerMap(data);
-    let worst = 0;
-    Object.values(map).forEach(c => {
-      const sn = (c.status?.type?.name||"").toLowerCase();
-      if (!sn.includes("cut") && !sn.includes("wd")) {
-        const sc = parseScore(c.score);
-        if (sc !== null && sc > worst) worst = sc;
-      }
-    });
-
-    const scoresMap = {};
-    let hasReal = false;
-    Object.keys(tourTeams).forEach(team => {
-      const players = tourTeams[team] || [];
-      const sc = (() => {
-        const scores = players.map(name => {
-          const c = map[name.toLowerCase()];
-          if (!c) return null;
-          const sn = (c.status?.type?.name||"").toLowerCase();
-          if (sn.includes("cut")||sn.includes("wd")) return worst;
-          return parseScore(c.score) ?? 0;
-        }).filter(s=>s!==null);
-        if (!scores.length) return null;
-        scores.sort((a,b)=>a-b);
-        return scores.slice(0,4).reduce((a,b)=>a+b,0);
-      })();
-      if (sc !== null) { scoresMap[team] = sc; hasReal = true; }
-    });
-    if (!hasReal) continue;
-    completed++;
-
-    const sorted = Object.keys(scoresMap).sort((a,b)=>scoresMap[a]-scoresMap[b]);
-    const low = scoresMap[sorted[0]];
-    sorted.filter(t=>scoresMap[t]===low).forEach(w => { if (stats[w]) stats[w].wins++; });
-    Object.keys(scoresMap).forEach(t => {
-      if (stats[t]) { stats[t].totalScore += scoresMap[t]; stats[t].count++; }
-    });
-  }
-
-  const sorted = Object.keys(stats).filter(t=>stats[t].count>0).sort((a,b)=>{
-    if (stats[b].wins !== stats[a].wins) return stats[b].wins - stats[a].wins;
-    return (stats[a].totalScore/stats[a].count) - (stats[b].totalScore/stats[b].count);
-  });
-
-  if (!sorted.length) {
-    container.innerHTML = `<div class="text-center py-8 text-green-300 text-sm">No completed tournaments yet.</div>`;
-    return;
-  }
-
-  container.innerHTML = `
-    <div class="grid grid-cols-3 gap-3 mb-5">
-      <div class="bg-white/5 rounded-xl p-3 text-center">
-        <div class="text-3xl font-bold text-[#d4af77]">${completed}</div>
-        <div class="text-green-300 text-xs mt-1">Majors</div>
-      </div>
-      <div class="bg-white/5 rounded-xl p-3 text-center">
-        <div class="text-3xl font-bold text-[#d4af77]">${Object.values(stats).reduce((s,x)=>s+x.wins,0)}</div>
-        <div class="text-green-300 text-xs mt-1">Total Wins</div>
-      </div>
-      <div class="bg-white/5 rounded-xl p-3 text-center">
-        <div class="text-3xl font-bold text-[#d4af77]">${sorted[0]}</div>
-        <div class="text-green-300 text-xs mt-1">Leader</div>
-      </div>
-    </div>
-    <table class="w-full text-sm">
-      <thead><tr class="text-green-300 text-xs border-b border-white/20">
-        <th class="text-left py-2">Team</th>
-        <th class="text-center py-2">Wins</th>
-        <th class="text-center py-2">Avg</th>
-        <th class="text-right py-2">Total</th>
-      </tr></thead>
-      <tbody class="divide-y divide-white/10">
-        ${sorted.map(t => {
-          const s = stats[t];
-          const avg = (s.totalScore/s.count).toFixed(1);
-          return `<tr>
-            <td class="py-2.5 font-medium">${t}</td>
-            <td class="text-center font-mono py-2.5">${s.wins}</td>
-            <td class="text-center font-mono py-2.5 ${parClass(parseFloat(avg))}">${parseFloat(avg)>0?'+'+avg:avg}</td>
-            <td class="text-right font-mono py-2.5 ${parClass(s.totalScore)}">${fmtPar(s.totalScore)}</td>
-          </tr>`;
-        }).join("")}
-      </tbody>
-    </table>`;
-}
-
-function renderAll() { renderLeaderboard(); renderRosters(); renderLeagueStats(); }
-
 // ===== TOURNAMENT SELECTORS =====
 function populateSelects() {
-  ['tournament-select','gear-tournament-select'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    sel.innerHTML = Object.keys(config.tournaments).map(key =>
-      `<option value="${key}" ${key===config.currentTournamentKey?'selected':''}>${config.tournaments[key].name}</option>`
+  ["tournament-select", "gear-tourn-sel"].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = Object.keys(config.tournaments).map(k =>
+      `<option value="${k}" ${k === config.currentTournamentKey ? "selected" : ""}>${config.tournaments[k].name}</option>`
     ).join("");
   });
+  document.getElementById("header-subtitle").textContent = config.tournaments[config.currentTournamentKey]?.name || "";
 }
 
 function switchTournament(key) {
   config.currentTournamentKey = key; saveConfig();
-  playerMap = {};
-  loadCurrent().then(renderAll);
-  populateSelects();
+  playerMap = {}; populateSelects(); loadAndRender();
 }
-function setCurrentFromGear(key) { toggleGearMenu(); switchTournament(key); }
+function setCurrentFromGear(key) { toggleGear(); switchTournament(key); }
 
-function toggleGearMenu() {
+function toggleGear() {
   const m = document.getElementById("gear-menu");
   m.classList.toggle("hidden");
   if (!m.classList.contains("hidden")) populateSelects();
 }
-// Close gear menu on outside tap
 document.addEventListener("click", e => {
-  const menu = document.getElementById("gear-menu");
-  if (!menu.classList.contains("hidden") && !menu.contains(e.target) && !e.target.closest('button[onclick="toggleGearMenu()"]')) {
-    menu.classList.add("hidden");
-  }
+  const m = document.getElementById("gear-menu");
+  if (!m.classList.contains("hidden") && !m.contains(e.target) && !e.target.closest("[onclick='toggleGear()']")) m.classList.add("hidden");
 });
 
 // ===== ADD TOURNAMENT =====
-function showAddModal() { toggleGearMenu(); document.getElementById("add-modal").classList.remove("hidden"); }
+function showAddModal() { toggleGear(); document.getElementById("add-modal").classList.remove("hidden"); }
 function hideAddModal() { document.getElementById("add-modal").classList.add("hidden"); }
 function addTournament() {
   const name = document.getElementById("new-name").value.trim();
   const tid  = document.getElementById("new-id").value.trim();
   const raw  = document.getElementById("new-teams").value.trim();
-  if (!name||!tid) return alert("Name and ESPN ID required.");
-  const names = raw.split('\n').map(s=>s.trim()).filter(Boolean);
-  const key = name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
-  config.tournaments[key] = {name, league:"pga", tournamentId:tid, teams:mkTeams(names)};
+  if (!name || !tid) return alert("Name and ESPN ID required.");
+  const key = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  config.tournaments[key] = { name, league:"pga", tournamentId:tid, teams: mkTeams(raw.split("\n").map(s=>s.trim()).filter(Boolean)) };
   saveConfig(); hideAddModal(); populateSelects(); switchTournament(key);
 }
 
 // ===== MANAGE ROSTERS =====
 function openRostersModal() {
-  toggleGearMenu();
+  toggleGear();
   document.getElementById("rosters-modal").classList.remove("hidden");
-  document.getElementById("modal-tourn-name").textContent = "";
-  showTab('individual');
-  populateTeamSelect();
-  loadPlayers();
+  showTab("individual"); populateTeamSelect(); loadPlayerPicker();
 }
 function closeRostersModal() { document.getElementById("rosters-modal").classList.add("hidden"); }
 
 function showTab(tab) {
-  ['individual','bulk'].forEach(t => {
-    document.getElementById(`pane-${t}`).classList.toggle('hidden', t!==tab);
+  ["individual","bulk"].forEach(t => {
+    document.getElementById(`pane-${t}`).classList.toggle("hidden", t !== tab);
     const btn = document.getElementById(`tab-${t}`);
-    btn.className = t===tab
+    btn.className = t === tab
       ? "px-4 py-2 rounded-xl text-sm font-semibold bg-[#d4af77] text-[#0a3d2a]"
       : "px-4 py-2 rounded-xl text-sm font-medium bg-white/10 text-white";
   });
@@ -678,27 +563,26 @@ function showTab(tab) {
 function populateTeamSelect() {
   const sel = document.getElementById("team-select");
   const teams = config.tournaments[config.currentTournamentKey]?.teams || {};
-  sel.innerHTML = Object.keys(teams).map(t=>`<option value="${t}">${t}</option>`).join("");
-  if (sel.options.length) { activeTeam = sel.value; renderRoster(); }
-  else { activeTeam = null; document.getElementById("current-roster").innerHTML = `<p class="text-sm text-green-300">No teams. Use Bulk Import.</p>`; }
+  sel.innerHTML = Object.keys(teams).map(t => `<option value="${t}">${t}</option>`).join("");
+  if (sel.options.length) { activeTeam = sel.value; renderRosterEditor(); }
+  else { activeTeam = null; document.getElementById("current-roster").innerHTML = `<p class="text-sm text-white/40">No teams. Use Bulk Import.</p>`; }
 }
 
-function renderRoster() {
+function renderRosterEditor() {
   activeTeam = document.getElementById("team-select").value;
-  const players = (config.tournaments[config.currentTournamentKey]?.teams||{})[activeTeam] || [];
-  const safe = activeTeam.replace(/'/g,"\\'");
+  const players = (config.tournaments[config.currentTournamentKey]?.teams || {})[activeTeam] || [];
+  const safe = activeTeam.replace(/'/g, "\\'");
   document.getElementById("current-roster").innerHTML = `
     <div class="flex items-center justify-between mb-2">
-      <span class="text-sm text-green-300">${players.length}/7 players</span>
-      <button onclick="deleteTeam('${safe}')" class="text-xs text-red-400 hover:text-red-300 border border-red-400/30 px-3 py-1 rounded-full flex items-center gap-1">
+      <span class="text-xs text-white/50">${players.length}/7 players</span>
+      <button onclick="deleteTeam('${safe}')" class="text-xs text-red-400 border border-red-400/30 px-3 py-1 rounded-full flex items-center gap-1">
         <i class="fa-solid fa-trash-can"></i> Remove Team
       </button>
     </div>
     <div class="flex flex-wrap gap-2">
-      ${players.map((p,i) => `
+      ${players.map((p, i) => `
         <div class="flex items-center gap-1 bg-white/15 px-3 py-1.5 rounded-full text-sm">
-          <span>${p}</span>
-          <button onclick="removePlayer('${safe}',${i})" class="text-red-400 ml-1 text-base leading-none">×</button>
+          ${p}<button onclick="removePlayer('${safe}',${i})" class="text-red-400 ml-1 text-base leading-none">×</button>
         </div>`).join("")}
     </div>`;
 }
@@ -706,38 +590,39 @@ function renderRoster() {
 window.deleteTeam = function(team) {
   if (!confirm(`Remove "${team}" from this tournament?`)) return;
   delete config.tournaments[config.currentTournamentKey].teams[team];
-  saveConfig(); renderAll(); populateTeamSelect();
+  saveConfig(); renderLeaderboard(); renderRosters(); populateTeamSelect();
 };
 window.removePlayer = function(team, idx) {
-  config.tournaments[config.currentTournamentKey].teams[team].splice(idx,1);
-  saveConfig(); renderRoster();
+  config.tournaments[config.currentTournamentKey].teams[team].splice(idx, 1);
+  saveConfig(); renderRosterEditor();
 };
 
-async function loadPlayers() {
+async function loadPlayerPicker() {
   const picker = document.getElementById("player-picker");
-  picker.innerHTML = `<span class="text-green-300 text-sm flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin"></i> Loading…</span>`;
-  const data = await fetchTournament(config.currentTournamentKey, true);
+  picker.innerHTML = `<span class="text-white/40 text-sm"><i class="fa-solid fa-spinner animate-spin mr-1"></i>Loading…</span>`;
+  const data = await fetchTournament(config.currentTournamentKey);
   const comps = getCompetitors(data);
   if (!comps.length) {
-    picker.innerHTML = `<span class="text-amber-300 text-xs">Field not yet available. Use Bulk Import tab.</span>`; return;
+    picker.innerHTML = `<span class="text-amber-300 text-xs">Field not yet available. Use Bulk Import.</span>`; return;
   }
-  availablePlayers = [...new Set(comps.map(c=>c.athlete?.displayName||c.displayName||"").filter(Boolean))].sort();
+  availablePlayers = [...new Set(comps.map(c => c.athlete?.displayName || c.displayName || "").filter(Boolean))].sort();
   filterPicker();
 }
+
 function filterPicker() {
   const q = document.getElementById("player-search").value.toLowerCase().trim();
   const picker = document.getElementById("player-picker");
-  const filtered = availablePlayers.filter(n=>n.toLowerCase().includes(q));
-  if (!filtered.length) { picker.innerHTML = `<span class="text-white/40 text-sm">No matches</span>`; return; }
+  const filtered = availablePlayers.filter(n => n.toLowerCase().includes(q));
+  if (!filtered.length) { picker.innerHTML = `<span class="text-white/30 text-sm">No matches</span>`; return; }
   picker.innerHTML = "";
   filtered.forEach(name => {
     const btn = document.createElement("button");
-    btn.className = "bg-white/10 active:bg-[#d4af77] active:text-[#0a3d2a] hover:bg-[#d4af77] hover:text-[#0a3d2a] px-3 py-1.5 rounded-full text-sm transition-colors";
+    btn.className = "bg-white/10 hover:bg-[#d4af77] hover:text-[#0a3d2a] active:bg-[#d4af77] active:text-[#0a3d2a] px-3 py-1.5 rounded-full text-sm transition-colors";
     btn.textContent = name;
     btn.onclick = () => {
       const teams = config.tournaments[config.currentTournamentKey].teams;
       if (!activeTeam || teams[activeTeam].length >= 7 || teams[activeTeam].includes(name)) return;
-      teams[activeTeam].push(name); saveConfig(); renderRoster();
+      teams[activeTeam].push(name); saveConfig(); renderRosterEditor();
     };
     picker.appendChild(btn);
   });
@@ -748,76 +633,65 @@ function applyBulk() {
   if (!text) return;
   const teams = config.tournaments[config.currentTournamentKey].teams;
   const applied = [], errors = [];
-  text.split('\n').map(l=>l.trim()).filter(Boolean).forEach(line => {
-    const sep = line.includes(':') ? ':' : line.includes(' - ') ? ' - ' : null;
-    if (!sep) { errors.push(`Bad format: ${line}`); return; }
-    const [rawTeam, rawPlayers] = line.split(sep,2);
-    const teamName = rawTeam.trim();
-    const existing = Object.keys(teams).find(t=>t.toLowerCase()===teamName.toLowerCase()) || teamName;
+  text.split("\n").map(l => l.trim()).filter(Boolean).forEach(line => {
+    const colonIdx = line.indexOf(":");
+    if (colonIdx === -1) { errors.push(`Bad format: ${line}`); return; }
+    const teamName  = line.slice(0, colonIdx).trim();
+    const rawPlayers = line.slice(colonIdx + 1);
+    const existing = Object.keys(teams).find(t => t.toLowerCase() === teamName.toLowerCase()) || teamName;
     if (!teams[existing]) teams[existing] = [];
-    teams[existing] = rawPlayers.split(',').map(p=>p.trim()).filter(Boolean).slice(0,7);
+    teams[existing] = rawPlayers.split(",").map(p => p.trim()).filter(Boolean).slice(0, 7);
     applied.push(`${existing} (${teams[existing].length})`);
   });
-  saveConfig(); renderAll(); populateTeamSelect();
+  saveConfig(); renderLeaderboard(); renderRosters(); populateTeamSelect();
   document.getElementById("bulk-result").innerHTML =
-    (applied.length ? `<span class="text-green-400">✅ ${applied.join(', ')}</span>` : "") +
-    (errors.length  ? `<br><span class="text-amber-300">⚠️ ${errors.join(', ')}</span>` : "");
+    (applied.length ? `<span class="text-green-400">✅ ${applied.join(", ")}</span>` : "") +
+    (errors.length  ? `<br><span class="text-amber-300">⚠️ ${errors.join(", ")}</span>` : "");
 }
 
 // ===== TOURNAMENTS LIST =====
 function openTournamentsModal() {
-  toggleGearMenu();
+  toggleGear();
   document.getElementById("tournaments-modal").classList.remove("hidden");
-  const list = document.getElementById("tournaments-list");
-  list.innerHTML = Object.keys(config.tournaments).map(key => {
+  document.getElementById("tournaments-list").innerHTML = Object.keys(config.tournaments).map(key => {
     const t = config.tournaments[key];
     return `<div class="flex justify-between items-center bg-white/10 rounded-xl p-4">
       <div>
-        <div class="font-semibold">${t.name}</div>
-        <div class="text-xs text-green-300 mt-0.5">ESPN ID: ${t.tournamentId}</div>
+        <div class="font-semibold text-sm">${t.name}</div>
+        <div class="text-xs text-white/40 mt-0.5">ESPN ID: ${t.tournamentId}</div>
       </div>
       <div class="flex gap-2">
-        <button onclick="switchTournament('${key}');closeTournamentsModal()" class="px-4 py-2 bg-green-700 hover:bg-green-600 rounded-xl text-xs font-medium">View</button>
-        <button onclick="deleteTournament('${key}')" class="px-3 py-2 text-red-400 hover:text-red-300 text-xs">Delete</button>
+        <button onclick="switchTournament('${key}');closeTournamentsModal()" class="px-3 py-2 bg-green-700 rounded-xl text-xs font-medium">View</button>
+        <button onclick="deleteTournament('${key}')" class="px-3 py-2 text-red-400 text-xs">Delete</button>
       </div>
     </div>`;
   }).join("");
 }
 function closeTournamentsModal() { document.getElementById("tournaments-modal").classList.add("hidden"); }
-
 function deleteTournament(key) {
   if (!confirm("Delete this tournament?")) return;
   delete config.tournaments[key];
   if (config.currentTournamentKey === key) config.currentTournamentKey = Object.keys(config.tournaments)[0] || "";
   saveConfig(); populateSelects(); openTournamentsModal();
-  if (config.currentTournamentKey) loadCurrent().then(renderAll);
+  if (config.currentTournamentKey) loadAndRender();
 }
 
-// ===== CONFIG =====
-function saveConfig() { localStorage.setItem('fantasyGolfConfig', JSON.stringify(config)); }
-function exportConfig() {
-  navigator.clipboard.writeText(JSON.stringify(config,null,2))
-    .then(()=>alert("✅ Config copied to clipboard!"));
-}
+// ===== CONFIG IO =====
+function saveConfig() { localStorage.setItem("fantasyGolfConfig", JSON.stringify(config)); }
+function exportConfig() { navigator.clipboard.writeText(JSON.stringify(config, null, 2)).then(() => alert("✅ Copied!")); }
 function openImportModal() { closeRostersModal(); document.getElementById("import-modal").classList.remove("hidden"); }
 function closeImportModal() { document.getElementById("import-modal").classList.add("hidden"); }
 function doImport() {
   try {
     config = JSON.parse(document.getElementById("import-text").value.trim());
-    saveConfig(); closeImportModal(); populateSelects();
-    loadCurrent().then(renderAll);
-    alert("✅ Imported!");
+    saveConfig(); closeImportModal(); populateSelects(); loadAndRender(); alert("✅ Imported!");
   } catch { alert("Invalid JSON."); }
 }
 
 // ===== INIT =====
-async function init() {
-  populateSelects();
-  await loadCurrent();
-  renderAll();
-  setInterval(() => loadCurrent().then(renderAll), 60000);
-}
-init();
+populateSelects();
+loadAndRender();
+setInterval(loadAndRender, 60000);
 </script>
 </body>
 </html>
