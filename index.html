@@ -410,85 +410,95 @@ function renderLeaderboard() {
 function renderRosters() {
   const container = document.getElementById("detailed-rosters");
   const teams = config.tournaments[config.currentTournamentKey]?.teams || {};
-  const comps = getCompetitors(dataCache[config.currentTournamentKey]);
-  const tournamentStarted = comps.some(c => parseScore(c.score) !== null);
 
   if (!Object.keys(teams).length) {
     container.innerHTML = `<div class="text-center py-8 text-green-300 text-sm">No rosters defined yet.</div>`;
     return;
   }
 
-  container.innerHTML = Object.keys(teams).map(team => {
+  // Determine tournament state from playerMap (already built from fetched data)
+  const allPlayers = Object.values(playerMap);
+  const tournamentStarted = allPlayers.some(c => parseScore(c.score) !== null);
+  const hasTeeTimesOnly = !tournamentStarted && allPlayers.some(c => c.teeTime);
+
+  const html = Object.keys(teams).map(team => {
     const players = teams[team];
+
+    if (!players.length) {
+      return `<div class="card bg-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-lg">
+        <div class="font-bold text-base mb-2">${team}</div>
+        <p class="text-sm text-white/40">No players assigned yet.</p>
+      </div>`;
+    }
+
     const sc = teamScore(players);
     const scDisplay = sc === null ? "—" : fmtPar(sc);
     const scCls = sc !== null && sc < 0 ? "under-par" : sc === 0 ? "even-par" : "over-par";
 
-    const rows = players.map(name => {
+    // Build rows — one per player, no table on mobile, use flex cards instead
+    const playerCards = players.map(name => {
       const info = getPlayerInfo(name);
-      let badge = "";
-      if (info?.isCut) badge = `<span class="ml-1 text-xs bg-red-500/25 text-red-300 px-1.5 py-0.5 rounded-full">MC</span>`;
-      else if (info?.isWD) badge = `<span class="ml-1 text-xs bg-gray-500/25 text-gray-300 px-1.5 py-0.5 rounded-full">WD</span>`;
 
-      // Round cells: to-par vs course par, or "—"
-      const roundCells = (info?.rounds || [null,null,null,null]).map((strokes, ri) => {
-        if (strokes === null) {
-          // Show tee time in R1 if not started
-          if (ri === 0 && !tournamentStarted && info?.teeTime) {
-            return `<td class="text-center text-xs text-amber-200 whitespace-nowrap px-1">${info.teeTime}</td>`;
-          }
-          return `<td class="text-center text-white/30 px-1">—</td>`;
-        }
-        const tp = strokes - COURSE_PAR;
-        return `<td class="text-center font-mono text-sm px-1 ${parClass(tp)}">${fmtPar(tp)}</td>`;
-      }).join("");
+      let statusBadge = "";
+      if (info?.isCut) statusBadge = `<span class="text-xs bg-red-500/25 text-red-300 px-1.5 py-0.5 rounded-full">MC</span>`;
+      else if (info?.isWD)  statusBadge = `<span class="text-xs bg-gray-500/25 text-gray-300 px-1.5 py-0.5 rounded-full">WD</span>`;
 
-      // Total column: show tee time pre-tournament, score once started
-      let totalCell, thruCell;
+      // Right-side value: tee time, live score, or —
+      let rightVal = `<span class="text-white/30">—</span>`;
+      let subVal = "";
+
       if (!info) {
-        totalCell = `<td class="text-right text-white/30 px-2 font-mono">—</td>`;
-        thruCell  = `<td class="text-right text-white/30 px-2 text-xs">—</td>`;
-      } else if (!tournamentStarted && info.teeTime) {
-        totalCell = `<td class="text-right text-amber-200 text-xs px-2 whitespace-nowrap">${info.teeTime}</td>`;
-        thruCell  = `<td class="text-right text-white/30 px-2 text-xs">—</td>`;
-      } else {
-        totalCell = `<td class="text-right font-mono font-bold px-2 ${parClass(info.score)}">${fmtPar(info.score)}</td>`;
-        thruCell  = `<td class="text-right text-white/50 px-2 text-xs">${info.thru || "—"}</td>`;
+        rightVal = `<span class="text-white/30 text-xs">Not found</span>`;
+      } else if (hasTeeTimesOnly && info.teeTime) {
+        rightVal = `<span class="text-amber-200 text-sm font-medium">${info.teeTime}</span>`;
+      } else if (info.score !== null) {
+        rightVal = `<span class="font-mono font-bold text-lg ${parClass(info.score)}">${fmtPar(info.score)}</span>`;
+        subVal = info.thru ? `<span class="text-white/40 text-xs ml-1">thru ${info.thru}</span>` : "";
+      } else if (info.teeTime) {
+        rightVal = `<span class="text-amber-200 text-sm font-medium">${info.teeTime}</span>`;
       }
 
-      return `<tr class="border-t border-white/10">
-        <td class="py-2.5 pr-2 text-sm">${name}${badge}</td>
-        ${roundCells}
-        ${totalCell}
-        ${thruCell}
-      </tr>`;
+      // Round scores (only show if any rounds have been played)
+      let roundRow = "";
+      if (tournamentStarted && info?.rounds) {
+        const roundBits = info.rounds.map((strokes, i) => {
+          if (strokes === null) return `<span class="text-white/25">—</span>`;
+          const tp = strokes - COURSE_PAR;
+          return `<span class="font-mono ${parClass(tp)}">${fmtPar(tp)}</span>`;
+        });
+        roundRow = `<div class="flex gap-3 mt-1 text-xs">
+          <span class="text-white/40">R1&nbsp;${roundBits[0]}</span>
+          <span class="text-white/40">R2&nbsp;${roundBits[1]}</span>
+          <span class="text-white/40">R3&nbsp;${roundBits[2]}</span>
+          <span class="text-white/40">R4&nbsp;${roundBits[3]}</span>
+        </div>`;
+      }
+
+      return `<div class="flex items-center justify-between py-2.5 border-t border-white/10">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-sm font-medium">${name}</span>
+            ${statusBadge}
+          </div>
+          ${roundRow}
+        </div>
+        <div class="text-right ml-3 shrink-0">
+          ${rightVal}${subVal}
+        </div>
+      </div>`;
     }).join("");
 
-    const r1Header = (!tournamentStarted)
-      ? `<th class="text-center text-xs px-1 pb-2 text-amber-200/70">Tee</th>`
-      : `<th class="text-center text-xs px-1 pb-2">R1</th>`;
-
     return `<div class="card bg-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-lg">
-      <div class="flex justify-between items-center mb-3">
+      <div class="flex justify-between items-center mb-1">
         <h3 class="font-bold text-base">${team}</h3>
         <span class="font-mono font-bold text-xl ${scCls}">${scDisplay}</span>
       </div>
-      <div class="roster-table-wrap">
-        <table class="roster-table">
-          <thead><tr class="text-green-300">
-            <th class="text-left text-xs pb-2 pr-2">Player</th>
-            ${r1Header}
-            <th class="text-center text-xs px-1 pb-2">R2</th>
-            <th class="text-center text-xs px-1 pb-2">R3</th>
-            <th class="text-center text-xs px-1 pb-2">R4</th>
-            <th class="text-right text-xs px-2 pb-2">Total</th>
-            <th class="text-right text-xs px-2 pb-2">Thru</th>
-          </tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
+      <p class="text-xs text-green-300 mb-1">${players.length} players · best 4 count</p>
+      ${playerCards}
     </div>`;
   }).join("");
+
+  container.innerHTML = html;
 }
 
 // ===== LEAGUE STATS =====
