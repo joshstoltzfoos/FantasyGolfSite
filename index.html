@@ -3,21 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phil's Fantasy Golf League | 2026 Masters</title>
+  <title>Phil's Fantasy Golf | 2026 Masters</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background-image: linear-gradient(rgba(10, 61, 42, 0.9), rgba(10, 61, 42, 0.95)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Amen_Corner_Augusta_National.jpg/1920px-Amen_Corner_Augusta_National.jpg');
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(rgba(10, 61, 42, 0.9), rgba(10, 61, 42, 0.95)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Amen_Corner_Augusta_National.jpg/1920px-Amen_Corner_Augusta_National.jpg');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
     }
-    .card { transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); }
-    .card:hover { transform: translateY(-2px); border-color: rgba(212, 175, 119, 0.4); }
-    .rank-1 { color: #d4af77; } .rank-2 { color: #c0c0c0; } .rank-3 { color: #cd7f32; }
+    .rank-1 { color: #d4af77; }
     .under-par { color: #ef4444 !important; font-weight: 700; }
   </style>
 </head>
@@ -25,53 +23,48 @@
   <div class="max-w-6xl mx-auto p-4 md:p-6">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
       <div class="flex items-center gap-4">
-        <div class="bg-[#d4af77] p-3 rounded-2xl shadow-lg shadow-black/50">
+        <div class="bg-[#d4af77] p-3 rounded-2xl shadow-xl">
             <i class="fa-solid fa-golf-ball-tee text-3xl text-[#0a3d2a]"></i>
         </div>
         <div>
-          <h1 class="text-4xl font-black tracking-tight uppercase">Phil's League</h1>
+          <h1 class="text-4xl font-black uppercase tracking-tighter">Phil's League</h1>
           <div class="flex items-center gap-2 mt-1">
              <p class="text-green-300 text-sm font-bold tracking-widest uppercase">2026 Masters Tournament</p>
-             <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50">Initializing...</span>
+             <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 uppercase font-bold">Syncing...</span>
           </div>
         </div>
       </div>
-      <button onclick="manualRefresh()" 
-              class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/20 rounded-2xl px-6 py-3 text-white transition-all active:scale-95">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        <span class="font-bold uppercase tracking-wider text-xs">Refresh Standings</span>
+      <button onclick="manualRefresh()" class="bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl px-6 py-3 transition-all active:scale-95 font-bold text-xs uppercase tracking-widest">
+        <i class="fa-solid fa-arrows-rotate mr-2"></i>Refresh
       </button>
     </div>
 
-    <div id="last-updated" class="text-xs text-green-300/60 font-medium mb-8 text-right italic"></div>
+    <div id="debug-box" class="hidden mb-8 p-4 bg-red-900/40 border border-red-500/50 rounded-2xl">
+        <h3 class="text-xs font-bold uppercase mb-2 text-red-300"><i class="fa-solid fa-circle-exclamation mr-2"></i>API Troubleshooting Info:</h3>
+        <p id="debug-text" class="text-sm font-mono text-red-200"></p>
+    </div>
 
     <div class="mb-12">
-      <div class="flex items-baseline justify-between mb-4 px-2">
-        <h2 class="text-2xl font-black uppercase tracking-tighter">Current Standings</h2>
-        <span class="text-[10px] text-white/40 uppercase tracking-widest font-bold">Best 4 scores count towards total</span>
-      </div>
-      <div class="card bg-black/40 backdrop-blur-xl rounded-3xl p-1 shadow-2xl overflow-hidden">
-        <table class="w-full bg-transparent">
+      <h2 class="text-2xl font-black uppercase tracking-tighter mb-4 ml-2">Standings</h2>
+      <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-1 shadow-2xl border border-white/10 overflow-hidden">
+        <table class="w-full">
           <thead class="bg-white/5 text-green-300 uppercase text-[10px] tracking-[0.2em]">
             <tr>
-              <th class="px-6 py-4 text-left font-black w-16">Pos</th>
-              <th class="px-6 py-4 text-left font-black">Manager</th>
-              <th class="px-6 py-4 text-right font-black">Score</th>
+              <th class="px-6 py-4 text-left w-16">Pos</th>
+              <th class="px-6 py-4 text-left">Manager</th>
+              <th class="px-6 py-4 text-right">Score</th>
             </tr>
           </thead>
-          <tbody id="leaderboard-body" class="text-lg"></tbody>
+          <tbody id="leaderboard-body"></tbody>
         </table>
       </div>
     </div>
 
-    <div>
-      <h2 class="text-2xl font-black uppercase tracking-tighter mb-6 px-2">Roster Breakdown</h2>
-      <div id="detailed-rosters" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
-    </div>
+    <h2 class="text-2xl font-black uppercase tracking-tighter mb-6 ml-2">Roster Breakdown</h2>
+    <div id="detailed-rosters" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
   </div>
 
   <script>
-    // ==================== ROSTERS ====================
     const teamRosters = {
       "Christine": ["Aldrich Potgieter", "Justin Thomas", "Wyndham Clark", "Harris English", "Sepp Straka", "Alex Noren", "Min Woo Lee"],
       "Doug": ["Rasmus Neergaard-Petersen", "Nicolai Højgaard", "Marco Penge", "Scottie Scheffler", "Chris Gotterup", "Jon Rahm", "Ryan Fox"],
@@ -85,92 +78,75 @@
       "Wallace": ["Max Greyserman", "Dustin Johnson", "Sergio Garcia", "Nico Echavarria", "Andrew Novak", "Rory McIlroy", "Jason Day"]
     };
 
-    const teamNames = Object.keys(teamRosters);
-    let currentLeaderboardData = null;
-
-    // ==================== API CONFIG ====================
-    const RAPIDAPI_KEY = "e055e416ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
+    // KEY UPDATED TO THE 'f' VERSION FROM YOUR CURL
+    const RAPIDAPI_KEY = "e055e4f6ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
     const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
-    const TOURN_ID = "014"; // Masters
+    const TOURN_ID = "014"; 
     const YEAR = "2026";
-    const ORG_ID = "1"; // Added OrgID for PGA Tour
+
+    let currentLeaderboardData = null;
 
     async function loadCurrentTournamentData() {
       const statusEl = document.getElementById('api-status');
+      const debugBox = document.getElementById('debug-box');
+      const debugText = document.getElementById('debug-text');
+
       try {
-        // Updated URL with orgId
-        const url = `https://${RAPIDAPI_HOST}/leaderboard?year=${YEAR}&tournId=${TOURN_ID}&orgId=${ORG_ID}`;
-        
+        const url = `https://${RAPIDAPI_HOST}/leaderboard?year=${YEAR}&tournId=${TOURN_ID}&orgId=1`;
         const res = await fetch(url, {
-          method: 'GET',
           headers: {
             'x-rapidapi-key': RAPIDAPI_KEY,
             'x-rapidapi-host': RAPIDAPI_HOST
           }
         });
 
-        if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.message || `HTTP ${res.status}`);
+        const data = await res.json();
+
+        if (data.message) {
+            throw new Error(data.message);
         }
 
-        const data = await res.json();
-        
-        // This API structure: data.leaderboardRows
         if (data && data.leaderboardRows) {
           currentLeaderboardData = data.leaderboardRows;
-          statusEl.textContent = "🟢 LIVE DATA";
-          statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/50";
+          statusEl.textContent = "🟢 Live";
+          statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/50 uppercase font-bold";
+          debugBox.classList.add('hidden');
         } else {
-          throw new Error("Data empty or malformed");
+          throw new Error("API connected but no leaderboard data found.");
         }
       } catch (e) {
-        console.error("API Error Detail:", e.message);
-        statusEl.textContent = `🔴 ${e.message.toUpperCase()}`;
-        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50";
+        statusEl.textContent = "🔴 Error";
+        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50 uppercase font-bold";
+        debugBox.classList.remove('hidden');
+        debugText.textContent = e.message;
       }
-      updateLastUpdated();
     }
 
-    // ==================== LOGIC ====================
     function normalize(str) {
-      if (!str) return "";
-      return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(a\)/i, '').replace(/[^a-z0-9 ]/g, "").trim();
-    }
-
-    function findPlayer(name, rows) {
-      if (!rows) return null;
-      const target = normalize(name);
-      return rows.find(p => {
-        const rowName = normalize(`${p.firstName || ''} ${p.lastName || ''}`);
-        return rowName === target || rowName.includes(target) || target.includes(rowName);
-      });
+      return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(a\)/i, '').replace(/[^a-z0-9 ]/g, "").trim();
     }
 
     function getPlayerScore(playerName) {
-      const fallback = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "Awaiting", teeTime: "—", isMC: false, isDefault: true };
+      const fallback = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "TBD", teeTime: "—", isMC: false, isDefault: true };
       if (!currentLeaderboardData) return fallback;
-      const p = findPlayer(playerName, currentLeaderboardData);
+      
+      const target = normalize(playerName);
+      const p = currentLeaderboardData.find(row => {
+          const rowName = normalize(`${row.firstName} ${row.lastName}`);
+          return rowName.includes(target) || target.includes(rowName);
+      });
+
       if (!p) return fallback;
 
-      let scoreVal = 0;
-      if (p.total === "E" || p.total === "even" || p.total === "0") scoreVal = 0;
-      else {
-        scoreVal = parseInt(p.total);
-        if (isNaN(scoreVal)) scoreVal = 0;
-      }
+      let scoreVal = (p.total === "E" || p.total === "even") ? 0 : parseInt(p.total);
+      if (isNaN(scoreVal)) scoreVal = 0;
 
       const rounds = ["—","—","—","—"];
-      if (p.rounds && Array.isArray(p.rounds)) {
-        p.rounds.forEach(r => {
-          const idx = parseInt(r.roundId) - 1;
-          if (idx >= 0 && idx < 4) rounds[idx] = r.scoreToPar;
-        });
-      }
+      if (p.rounds) p.rounds.forEach(r => { rounds[r.roundId - 1] = r.scoreToPar; });
 
       return {
         totalToPar: scoreVal,
-        rounds: rounds,
+        rounds,
         thru: p.thru || "—",
         teeTime: p.teeTime || "—",
         isMC: ["cut", "wd", "dq"].includes((p.status || "").toLowerCase()),
@@ -180,106 +156,66 @@
 
     function getCutLine() {
       if (!currentLeaderboardData) return 0;
-      const activeScores = currentLeaderboardData
+      const scores = currentLeaderboardData
         .filter(p => !["cut", "wd", "dq"].includes((p.status || "").toLowerCase()))
         .map(p => (p.total === "E" || p.total === "even") ? 0 : parseInt(p.total))
         .filter(s => !isNaN(s));
-      return activeScores.length ? Math.max(...activeScores) : 0;
-    }
-
-    function calculateTeamScore(teamName) {
-      const roster = teamRosters[teamName] || [];
-      const cutLine = getCutLine();
-      const players = roster.map(name => {
-        const s = getPlayerScore(name);
-        const adjusted = s.isMC ? cutLine : s.totalToPar;
-        return { ...s, name, adjusted };
-      });
-      players.sort((a, b) => a.adjusted - b.adjusted);
-      const score = players.slice(0, 4).reduce((sum, p) => sum + p.adjusted, 0);
-      return { score, players };
-    }
-
-    // ==================== RENDERING ====================
-    function renderLeaderboard() {
-      const tbody = document.getElementById('leaderboard-body');
-      const sorted = teamNames.map(name => {
-          const res = calculateTeamScore(name);
-          return { name, score: res.score };
-      }).sort((a, b) => a.score - b.score);
-
-      tbody.innerHTML = sorted.map((team, i) => {
-        const rank = i === 0 ? `<span class="rank-1">1</span>` : i === 1 ? `<span class="rank-2">2</span>` : i === 2 ? `<span class="rank-3">3</span>` : i + 1;
-        const scoreDisp = team.score > 0 ? `+${team.score}` : (team.score === 0 ? 'E' : team.score);
-        return `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-          <td class="px-6 py-5 font-black">${rank}</td>
-          <td class="px-6 py-5 font-bold uppercase text-sm tracking-tight">${team.name}</td>
-          <td class="px-6 py-5 text-right font-black text-2xl">${scoreDisp}</td>
-        </tr>`;
-      }).join('');
-    }
-
-    function renderDetailedRosters() {
-      const container = document.getElementById('detailed-rosters');
-      container.innerHTML = teamNames.map(teamName => {
-        const res = calculateTeamScore(teamName);
-        const playersHTML = res.players.map(p => {
-          const scoreClass = p.isMC ? 'line-through text-red-500/70' : (p.adjusted < 0 ? 'under-par' : '');
-          const status = p.isDefault ? `<span class="text-white/20">Checking...</span>` : 
-                        (p.thru === "—" || p.thru === "F" || p.thru === "66") ? `<span class="text-[#d4af77] text-[10px] font-black uppercase tracking-widest">Tee: ${p.teeTime}</span>` : `<span class="text-green-400 font-black uppercase text-[10px] tracking-widest">Thru: ${p.thru}</span>`;
-          
-          return `<div class="bg-black/20 border border-white/5 rounded-2xl px-5 py-3 flex items-center justify-between">
-            <div class="flex flex-col">
-                <span class="font-black text-xs uppercase tracking-tighter">${p.name} ${p.isMC ? '⛳' : ''}</span>
-                ${status}
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="hidden sm:flex gap-1.5 text-[9px] text-white/20 font-bold">
-                    ${p.rounds.map((r,i) => `<span>R${i+1}:${r}</span>`).join('')}
-                </div>
-                <div class="font-black text-xl min-w-[45px] text-right ${scoreClass}">${p.adjusted > 0 ? '+' : ''}${p.adjusted === 0 && !p.isDefault ? 'E' : (p.isDefault ? '—' : p.adjusted)}</div>
-            </div>
-          </div>`;
-      }).join('');
-
-      return `<div class="card bg-white/5 backdrop-blur-md rounded-3xl p-6">
-          <div class="flex justify-between items-start mb-6">
-            <h3 class="text-xl font-black uppercase tracking-tighter text-white/90">${teamName}</h3>
-            <div class="text-right">
-              <div class="text-[9px] uppercase font-black text-green-300 tracking-[0.2em] mb-1">Total Score</div>
-              <div class="text-4xl font-black text-white leading-none">${res.score > 0 ? '+' : ''}${res.score === 0 ? 'E' : res.score}</div>
-            </div>
-          </div>
-          <div class="space-y-2.5">${playersHTML}</div>
-        </div>`;
-      }).join('');
-    }
-
-    function updateLastUpdated() {
-      document.getElementById('last-updated').textContent = `Sync: ${new Date().toLocaleTimeString()} ET`;
+      return scores.length ? Math.max(...scores) : 0;
     }
 
     function renderEverything() {
-      renderLeaderboard();
-      renderDetailedRosters();
+      const cutLine = getCutLine();
+      const standings = Object.keys(teamRosters).map(name => {
+          const players = teamRosters[name].map(pName => {
+              const s = getPlayerScore(pName);
+              const adjusted = s.isMC ? cutLine : s.totalToPar;
+              return { ...s, name: pName, adjusted };
+          });
+          players.sort((a,b) => a.adjusted - b.adjusted);
+          const total = players.slice(0, 4).reduce((sum, p) => sum + p.adjusted, 0);
+          return { name, total, players };
+      }).sort((a,b) => a.total - b.total);
+
+      // Render Table
+      document.getElementById('leaderboard-body').innerHTML = standings.map((team, i) => `
+        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+          <td class="px-6 py-5 font-black text-white/50">${i+1}</td>
+          <td class="px-6 py-5 font-bold uppercase text-sm">${team.name}</td>
+          <td class="px-6 py-5 text-right font-black text-2xl">${team.total > 0 ? '+'+team.total : (team.total === 0 ? 'E' : team.total)}</td>
+        </tr>`).join('');
+
+      // Render Rosters
+      document.getElementById('detailed-rosters').innerHTML = standings.map(team => `
+        <div class="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10">
+          <div class="flex justify-between items-start mb-6">
+            <h3 class="text-xl font-black uppercase tracking-tighter">${team.name}</h3>
+            <div class="text-right">
+              <div class="text-[9px] uppercase font-black text-green-300 tracking-widest">Total</div>
+              <div class="text-4xl font-black">${team.total > 0 ? '+'+team.total : (team.total === 0 ? 'E' : team.total)}</div>
+            </div>
+          </div>
+          <div class="space-y-2">
+            ${team.players.map(p => `
+              <div class="bg-black/20 rounded-xl px-4 py-3 flex items-center justify-between border border-white/5">
+                <div>
+                  <div class="text-xs font-black uppercase">${p.name} ${p.isMC ? '⛳' : ''}</div>
+                  <div class="text-[10px] font-bold text-white/40 uppercase">${p.thru === "—" ? 'Tee: '+p.teeTime : 'Thru: '+p.thru}</div>
+                </div>
+                <div class="font-black text-lg ${p.isMC ? 'line-through text-red-500/50' : (p.adjusted < 0 ? 'under-par' : '')}">
+                  ${p.adjusted > 0 ? '+'+p.adjusted : (p.adjusted === 0 && !p.isDefault ? 'E' : p.adjusted)}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>`).join('');
     }
 
-    function manualRefresh() {
-      const btn = document.querySelector('button i');
-      btn.classList.add('fa-spin');
-      loadCurrentTournamentData().then(() => {
-          renderEverything();
-          setTimeout(() => btn.classList.remove('fa-spin'), 1000);
-      });
-    }
-
-    async function init() {
+    async function manualRefresh() {
       await loadCurrentTournamentData();
       renderEverything();
-      setInterval(manualRefresh, 180000); 
     }
 
-    window.onload = init;
+    window.onload = manualRefresh;
   </script>
 </body>
 </html>
