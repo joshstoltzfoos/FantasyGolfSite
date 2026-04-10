@@ -32,17 +32,10 @@
           <p class="text-green-300 text-sm">2026 Masters • Best 4 scores count • MC = worst made-cut score</p>
         </div>
       </div>
-      <div class="flex items-center gap-3">
-        <button onclick="openBulkUploadModal()" 
-                class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium transition-colors">
-          <i class="fa-solid fa-file-import"></i>
-          <span>Bulk Upload Rosters</span>
-        </button>
-        <button onclick="manualRefresh()" 
-                class="flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl text-[#d4af77]">
-          <i class="fa-solid fa-rotate"></i>
-        </button>
-      </div>
+      <button onclick="manualRefresh()" 
+              class="flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl text-[#d4af77]">
+        <i class="fa-solid fa-rotate"></i>
+      </button>
     </div>
 
     <div id="last-updated" class="text-sm text-green-300 font-medium mb-8 text-right"></div>
@@ -71,40 +64,22 @@
     </div>
   </div>
 
-  <!-- Bulk Upload Modal -->
-  <div id="bulk-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div onclick="event.stopImmediatePropagation()" class="bg-[#0a3d2a] border border-[#d4af77] rounded-3xl p-8 w-full max-w-2xl mx-4">
-      <h3 class="text-3xl font-bold mb-4">Bulk Upload Rosters</h3>
-      <p class="text-green-300 text-sm mb-2">Paste from Google Sheets (one player per line):</p>
-      <p class="text-xs text-white/60 mb-4">Format: <span class="font-mono">Team, Player Name</span></p>
-      <textarea id="bulk-textarea" rows="14" 
-                class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white font-mono text-sm"
-                placeholder="Gerald, Scottie Scheffler&#10;Gerald, Rory McIlroy&#10;Josh, Jon Rahm&#10;Josh, Bryson DeChambeau"></textarea>
-      
-      <div class="flex gap-4 mt-8">
-        <button onclick="hideBulkModal()" class="flex-1 py-4 rounded-3xl border border-white/30 font-medium">Cancel</button>
-        <button onclick="processBulkUpload()" id="upload-btn"
-                class="flex-1 py-4 bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] rounded-3xl font-semibold">Upload & Replace All Rosters</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // ==================== CONFIG ====================
-    const teamNames = ["Gerald", "Josh", "Phil", "Patrick", "Wallace", "Ricky", "Roger", "Graham", "Doug", "Nick"];
-
-    let config = JSON.parse(localStorage.getItem('fantasyGolfConfig')) || {
-      currentTournamentKey: "2026-masters",
-      tournaments: {
-        "2026-masters": {
-          name: "2026 Masters",
-          year: "2026",
-          tournId: "536",
-          teams: {}
-        }
-      }
+    // ==================== YOUR EXACT ROSTERS ====================
+    const teamRosters = {
+      "Christine": ["Aldrich Potgieter", "Justin Thomas", "Wyndham Clark", "Harris English", "Sepp Straka", "Alex Noren", "Min Woo Lee"],
+      "Doug": ["Rasmus Neergaard-Petersen", "Nicolai Højgaard", "Marco Penge", "Scottie Scheffler", "Chris Gotterup", "Jon Rahm", "Ryan Fox"],
+      "Gerald": ["Robert MacIntyre", "Tyrrell Hatton", "Cameron Young", "Jordan Spieth", "Ludvig Åberg", "Justin Rose", "Zach Johnson"],
+      "Josh": ["Patrick Cantlay", "Keegan Bradley", "Brooks Koepka", "Cameron Smith", "Collin Morikawa", "Adam Scott", "Max Homa"],
+      "Nick": ["Maverick McNealy", "Ryan Gerard", "Tommy Fleetwood", "Brian Harman", "Matt Fitzpatrick", "Harry Hall", "Sami Välimäki"],
+      "Patrick": ["Jacob Bridgeman", "Jake Knapp", "Aaron Rai", "Bubba Watson", "Brandon Holtz", "Sungjae Im", "Fred Couples"],
+      "Phil": ["Hideki Matsuyama", "Russell Henley", "Gary Woodland", "Kristoffer Reitan", "Michael Kim", "Nick Taylor", "Sam Burns"],
+      "Ricky": ["Rasmus Højgaard", "Corey Conners", "Shane Lowry", "Xander Schauffele", "Viktor Hovland", "Matt McCarty", "Patrick Reed"],
+      "Roger": ["Bryson DeChambeau", "Kurt Kitayama", "Akshay Bhatia", "Si Woo Kim", "Ben Griffin", "Daniel Berger", "J.J. Spaun"],
+      "Wallace": ["Max Greyserman", "Dustin Johnson", "Sergio Garcia", "Nico Echavarria", "Andrew Novak", "Rory McIlroy", "Jason Day"]
     };
-    if (!localStorage.getItem('fantasyGolfConfig')) localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
+
+    const teamNames = Object.keys(teamRosters);
 
     let currentLeaderboardData = null;
     let isTournamentOver = false;
@@ -113,7 +88,7 @@
     const RAPIDAPI_KEY = "e055e416ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
     const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
 
-    // ==================== REFRESH LOGIC ====================
+    // ==================== REFRESH LOGIC (3 min, 7AM–8PM ET) ====================
     function isRefreshWindow() {
       const hour = parseInt(new Intl.DateTimeFormat('en-US', {
         timeZone: 'America/New_York',
@@ -135,15 +110,14 @@
         });
         return res.ok ? await res.json() : null;
       } catch (e) {
-        console.error("API fetch failed");
+        console.error("API error");
         return null;
       }
     }
 
     async function loadCurrentTournamentData() {
       if (isTournamentOver) return;
-      const tour = config.tournaments["2026-masters"];
-      const data = await fetchRapidAPI('/leaderboard', { year: tour.year, tournId: tour.tournId });
+      const data = await fetchRapidAPI('/leaderboard', { year: "2026", tournId: "536" });
       if (data) currentLeaderboardData = data;
       updateLastUpdated();
     }
@@ -168,7 +142,7 @@
       }, 180000); // 3 minutes
     }
 
-    // ==================== PLAYER SCORING WITH FUZZY MATCH ====================
+    // ==================== FUZZY NAME MATCHING ====================
     function normalize(str) {
       return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
@@ -187,6 +161,7 @@
       if (!currentLeaderboardData?.leaderboardRows) {
         return {totalToPar: 999, rounds: ["—","—","—","—"], thru: "—", teeTime: "—", isMC: true};
       }
+
       const p = findPlayer(playerName, currentLeaderboardData.leaderboardRows);
       if (!p) return {totalToPar: 999, rounds: ["—","—","—","—"], thru: "—", teeTime: "—", isMC: true};
 
@@ -197,8 +172,14 @@
         if (idx >= 0 && idx < 4) rounds[idx] = r.scoreToPar === "E" ? "E" : (parseInt(r.scoreToPar) || 0);
       });
 
-      const isMC = ["cut","wd","dq"].includes((p.status||"").toLowerCase());
-      return {totalToPar, rounds, thru: p.thru || "—", teeTime: p.teeTime || "—", isMC};
+      const isMC = ["cut", "wd", "dq"].includes((p.status || "").toLowerCase());
+      return {
+        totalToPar,
+        rounds,
+        thru: p.thru || "—",
+        teeTime: p.teeTime || "—",
+        isMC
+      };
     }
 
     function getCutLine() {
@@ -213,7 +194,7 @@
     }
 
     function calculateTeamScore(teamName) {
-      const roster = config.tournaments["2026-masters"].teams[teamName] || [];
+      const roster = teamRosters[teamName] || [];
       if (!roster.length || !currentLeaderboardData) return {score: 999, players: []};
 
       const cutLine = getCutLine();
@@ -225,6 +206,7 @@
 
       playerScores.sort((a, b) => a.adjusted - b.adjusted);
       const best4Total = playerScores.slice(0, 4).reduce((sum, p) => sum + p.adjusted, 0);
+
       return { score: best4Total, players: playerScores };
     }
 
@@ -233,12 +215,12 @@
       const tbody = document.getElementById('leaderboard-body');
       tbody.innerHTML = '';
 
-      const sortedTeams = teamNames.map(name => {
+      const sorted = teamNames.map(name => {
         const res = calculateTeamScore(name);
         return { name, score: res.score };
       }).sort((a, b) => a.score - b.score);
 
-      sortedTeams.forEach((team, i) => {
+      sorted.forEach((team, i) => {
         const rankHTML = i === 0 ? `<span class="rank-1">1</span>` : i === 1 ? `<span class="rank-2">2</span>` : i === 2 ? `<span class="rank-3">3</span>` : i + 1;
         const scoreDisplay = team.score === 999 ? '—' : (team.score > 0 ? `+${team.score}` : team.score);
         const row = document.createElement('tr');
@@ -288,7 +270,7 @@
               <div class="text-4xl font-bold">${result.score === 999 ? '—' : (result.score > 0 ? `+${result.score}` : result.score)}</div>
             </div>
           </div>
-          <div class="space-y-2">${playersHTML || '<p class="text-white/40 py-8 text-center italic">No players yet — use Bulk Upload</p>'}</div>
+          <div class="space-y-2">${playersHTML}</div>
         `;
         container.appendChild(card);
       });
@@ -297,63 +279,6 @@
     function renderEverything() {
       renderLeaderboard();
       renderDetailedRosters();
-    }
-
-    // ==================== BULK UPLOAD (NOW FIXED) ====================
-    function openBulkUploadModal() {
-      document.getElementById('bulk-modal').classList.remove('hidden');
-      document.getElementById('bulk-modal').classList.add('flex');
-    }
-
-    function hideBulkModal() {
-      const modal = document.getElementById('bulk-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function processBulkUpload() {
-      const textarea = document.getElementById('bulk-textarea');
-      const text = textarea.value.trim();
-
-      if (!text) {
-        alert("Please paste your roster data from Google Sheets.");
-        return;
-      }
-
-      const newTeams = {};
-      teamNames.forEach(t => newTeams[t] = []);
-
-      const lines = text.split('\n');
-      lines.forEach(line => {
-        if (!line.trim()) return;
-        // Try comma first, then tab
-        let parts = line.split(',').map(s => s.trim());
-        if (parts.length < 2) parts = line.split('\t').map(s => s.trim());
-
-        if (parts.length >= 2) {
-          const team = parts[0].trim();
-          const player = parts.slice(1).join(', ').trim();
-          if (teamNames.includes(team) && player) {
-            if (!newTeams[team].includes(player)) {
-              newTeams[team].push(player);
-            }
-          }
-        }
-      });
-
-      // Save the new rosters
-      config.tournaments["2026-masters"].teams = newTeams;
-      localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
-
-      hideBulkModal();
-      renderEverything();
-
-      // Success message
-      const msg = document.createElement('div');
-      msg.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#166534; color:white; padding:12px 24px; border-radius:9999px; box-shadow:0 10px 15px -3px rgb(0 0 0 / 0.3); z-index:1000;';
-      msg.textContent = '✅ Rosters successfully updated!';
-      document.body.appendChild(msg);
-      setTimeout(() => msg.remove(), 2500);
     }
 
     function manualRefresh() {
@@ -365,7 +290,7 @@
       await loadCurrentTournamentData();
       renderEverything();
       startRefreshCycle();
-      console.log("%c✅ Phil's Fantasy Golf League – Bulk upload button fixed and ready", "color:#d4af77; font-weight:700");
+      console.log("%c✅ Phil's Fantasy Golf League – Rosters loaded • 3-min refresh active", "color:#d4af77; font-weight:700");
     }
 
     window.onload = init;
