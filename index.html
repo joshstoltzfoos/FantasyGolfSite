@@ -30,7 +30,7 @@
           <h1 class="text-4xl font-bold tracking-tight">Phil's Fantasy Golf League</h1>
           <div class="flex items-center gap-2">
              <p class="text-green-300 text-sm">2026 Masters • Best 4 scores count</p>
-             <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50">API Offline</span>
+             <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50">Initializing...</span>
           </div>
         </div>
       </div>
@@ -81,50 +81,34 @@
 
     const teamNames = Object.keys(teamRosters);
     let currentLeaderboardData = null;
-    let refreshInterval = null;
 
+    // UPDATED API CONFIG
     const RAPIDAPI_KEY = "e055e416ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
-    const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
+    const RAPIDAPI_HOST = "golf-leaderboard-data.p.rapidapi.com";
+    const TOURNAMENT_ID = "220"; 
 
-    async function fetchRapidAPI(endpoint, params) {
-      const url = new URL(`https://${RAPIDAPI_HOST}${endpoint}`);
-      Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
+    async function loadCurrentTournamentData() {
+      const statusEl = document.getElementById('api-status');
       try {
-        const res = await fetch(url, {
+        const res = await fetch(`https://${RAPIDAPI_HOST}/leaderboard/${TOURNAMENT_ID}`, {
           headers: {
             'x-rapidapi-key': RAPIDAPI_KEY,
             'x-rapidapi-host': RAPIDAPI_HOST
           }
         });
         const data = await res.json();
-        // Check for common RapidAPI error messages
-        if (data.message) {
-            console.error("API Error:", data.message);
-            return null;
+        
+        // This API returns results inside data.results.leaderboard
+        if (data && data.results && data.results.leaderboard) {
+          currentLeaderboardData = data.results.leaderboard;
+          statusEl.textContent = "🟢 API Online";
+          statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/50";
+        } else {
+          throw new Error("Invalid data format");
         }
-        return data;
       } catch (e) {
-        console.error("Fetch Error:", e);
-        return null;
-      }
-    }
-
-    async function loadCurrentTournamentData() {
-      const statusEl = document.getElementById('api-status');
-      // Masters Tournament ID 536 is standard, but verify if year 2026 is live
-      const data = await fetchRapidAPI('/leaderboard', { year: "2026", tournId: "536" });
-      
-      let rows = null;
-      if (data && Array.isArray(data.leaderboardRows)) rows = data.leaderboardRows;
-      else if (data && Array.isArray(data.leaderboard)) rows = data.leaderboard;
-
-      if (rows && rows.length > 0) {
-        currentLeaderboardData = { leaderboardRows: rows };
-        statusEl.textContent = "🟢 API Online";
-        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/50";
-      } else {
-        currentLeaderboardData = null;
-        statusEl.textContent = "🔴 API Connection Failed";
+        console.error("API Error:", e);
+        statusEl.textContent = "🔴 API Sync Error";
         statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50";
       }
       updateLastUpdated();
@@ -134,9 +118,9 @@
       if (!str) return "";
       return str.toLowerCase()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") // Removes accents like ø -> o
-        .replace(/\(a\)/i, '') // Removes amateur tag
-        .replace(/[^a-z0-9 ]/g, "") // Removes special symbols
+        .replace(/[\u0300-\u036f]/g, "") 
+        .replace(/\(a\)/i, '')
+        .replace(/[^a-z0-9 ]/g, "")
         .trim();
     }
 
@@ -144,7 +128,8 @@
       if (!rows) return null;
       const target = normalize(name);
       return rows.find(p => {
-        const rowName = normalize(`${p.firstName || ''} ${p.lastName || ''}`);
+        // This API uses "first_name" and "last_name"
+        const rowName = normalize(`${p.first_name || ''} ${p.last_name || ''}`);
         return rowName === target || rowName.includes(target) || target.includes(rowName);
       });
     }
@@ -152,27 +137,23 @@
     function getPlayerScore(playerName) {
       const defaultState = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "Awaiting", teeTime: "TBD", isMC: false, isDefault: true };
       
-      if (!currentLeaderboardData?.leaderboardRows) return defaultState;
+      if (!currentLeaderboardData) return defaultState;
       
-      const p = findPlayer(playerName, currentLeaderboardData.leaderboardRows);
+      const p = findPlayer(playerName, currentLeaderboardData);
       if (!p) return defaultState;
 
-      let total = p.total === "E" ? 0 : parseInt(p.total);
-      if (isNaN(total)) total = 0;
+      // This API uses total_to_par
+      let total = p.total_to_par; 
+      if (total === null || total === undefined) total = 0;
 
-      const rounds = Array(4).fill("—");
-      (p.rounds || []).forEach(r => {
-        const idx = (r.roundId || 1) - 1;
-        if (idx >= 0 && idx < 4) rounds[idx] = r.scoreToPar === "E" ? "E" : r.scoreToPar;
-      });
-
-      const isMC = ["cut", "wd", "dq"].includes((p.status || "").toLowerCase());
+      const rounds = [p.r1 || "—", p.r2 || "—", p.r3 || "—", p.r4 || "—"];
+      const isMC = p.status === "cut" || p.status === "WD" || p.status === "DQ";
       
       return {
         totalToPar: total,
         rounds,
-        thru: p.thru || "—",
-        teeTime: p.teeTime || "—",
+        thru: p.thru || "F",
+        teeTime: p.tee_time || "—",
         isMC,
         isDefault: false
       };
@@ -180,11 +161,12 @@
 
     function getCutLine() {
       if (!currentLeaderboardData) return 0;
-      const scores = currentLeaderboardData.leaderboardRows
-        .filter(p => !["cut", "wd", "dq"].includes((p.status || "").toLowerCase()))
-        .map(p => p.total === "E" ? 0 : parseInt(p.total))
-        .filter(s => !isNaN(s));
-      return scores.length ? Math.max(...scores) : 0;
+      // Filter for players who made the cut to find the "worst" made-cut score
+      const activeScores = currentLeaderboardData
+        .filter(p => p.status === "active" || p.status === "finish")
+        .map(p => p.total_to_par)
+        .filter(s => s !== null);
+      return activeScores.length ? Math.max(...activeScores) : 0;
     }
 
     function calculateTeamScore(teamName) {
@@ -205,17 +187,18 @@
 
     function renderLeaderboard() {
       const tbody = document.getElementById('leaderboard-body');
-      const sorted = teamNames.map(name => calculateTeamScore(name))
-        .map((res, i) => ({ name: teamNames[i], score: res.score }))
-        .sort((a, b) => a.score - b.score);
+      const sorted = teamNames.map(name => {
+          const res = calculateTeamScore(name);
+          return { name, score: res.score };
+      }).sort((a, b) => a.score - b.score);
 
       tbody.innerHTML = sorted.map((team, i) => {
         const rank = i === 0 ? `<span class="rank-1">1</span>` : i === 1 ? `<span class="rank-2">2</span>` : i === 2 ? `<span class="rank-3">3</span>` : i + 1;
-        const score = team.score > 0 ? `+${team.score}` : (team.score === 0 ? 'E' : team.score);
+        const scoreDisp = team.score > 0 ? `+${team.score}` : (team.score === 0 ? 'E' : team.score);
         return `<tr class="border-b border-white/10 hover:bg-white/5">
           <td class="px-6 py-5 font-semibold">${rank}</td>
           <td class="px-6 py-5 font-medium">${team.name}</td>
-          <td class="px-6 py-5 text-right font-semibold">${score}</td>
+          <td class="px-6 py-5 text-right font-semibold">${scoreDisp}</td>
         </tr>`;
       }).join('');
     }
@@ -226,11 +209,12 @@
         const res = calculateTeamScore(teamName);
         const playersHTML = res.players.map(p => {
           const scoreClass = p.isMC ? 'line-through text-red-400' : (p.adjusted < 0 ? 'under-par' : '');
-          const status = p.isDefault ? `<span class="text-white/40">Checking API...</span>` : 
-                        (p.thru === "—" || p.thru === "F") ? `<span class="text-amber-300">Tee: ${p.teeTime}</span>` : `Thru: ${p.thru}`;
+          const mcTag = p.isMC ? ' <span class="text-[10px] bg-red-500/70 px-1.5 py-0.5 rounded">MC</span>' : '';
+          const status = p.isDefault ? `<span class="text-white/40">Searching...</span>` : 
+                        (p.thru === "—" || p.thru === "F") ? `<span class="text-amber-300">${p.teeTime !== "—" ? 'Tee: ' + p.teeTime : 'Finished'}</span>` : `Thru: ${p.thru}`;
           
           return `<div class="flex flex-col sm:flex-row gap-4 bg-white/5 rounded-3xl px-6 py-4 items-center">
-            <div class="font-medium flex-1">${p.name}</div>
+            <div class="font-medium flex-1">${p.name}${mcTag}</div>
             <div class="text-sm text-white/70">${status}</div>
             <div class="flex gap-4 text-xs">${p.rounds.map((r,i) => `<div class="text-center"><span class="block text-white/50">R${i+1}</span>${r}</div>`).join('')}</div>
             <div class="font-semibold text-lg ${scoreClass}">${p.adjusted > 0 ? '+' : ''}${p.adjusted === 0 && !p.isDefault ? 'E' : (p.isDefault ? '—' : p.adjusted)}</div>
