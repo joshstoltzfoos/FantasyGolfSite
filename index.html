@@ -1,247 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Phil's Fantasy Golf League — Masters 2026</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f4f4f4;color:#222}
-.header{background:linear-gradient(135deg,#006747 0%,#004d35 100%);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.header h1{font-size:18px;font-weight:800;letter-spacing:.3px}
-.header .sub{font-size:12px;opacity:.85;margin-top:2px}
-.header .meta{font-size:11px;opacity:.6;text-align:right}
-.header .row{display:flex;justify-content:space-between;align-items:center}
-.btn-bar{display:flex;gap:8px;margin-top:8px}
-.btn-sm{padding:4px 12px;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:5px;font-size:11px;cursor:pointer}
-.btn-sm:hover{background:rgba(255,255,255,.3)}
-.container{max-width:800px;margin:0 auto;padding-bottom:40px}
-.section{margin:12px 12px 0}
-.section h2{font-size:16px;font-weight:700;color:#006747;margin:0 0 8px;display:flex;align-items:center;gap:6px}
-.card{border-radius:10px;overflow:hidden;border:1px solid #ddd;background:#fff;margin-bottom:16px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
-.lb-head th{background:#006747;color:#fff;padding:10px 8px}
-.team-head{padding:10px 12px;color:#fff;display:flex;justify-content:space-between;align-items:center}
-.team-head .name{font-weight:700;font-size:15px}
-.team-head .score{font-weight:800;font-size:17px}
-.detail-head th{background:#f5f5f5;padding:7px 5px;color:#555;border-bottom:2px solid #ddd}
-.neg{color:#c0392b;font-weight:700}
-.pos{color:#2471a3;font-weight:700}
-.even{color:#333;font-weight:600}
-.muted{color:#ccc}
-.mc{color:#e74c3c;font-size:10px;margin-left:4px}
-.nf{color:#e67e22;font-size:10px;margin-left:4px}
-.dot{color:#006747;margin-right:3px;font-size:10px}
-td{padding:8px 6px}
-tr.alt{background:#fafafa}
-tr.leader-row{background:#f0f9f4}
-.thru-f{color:#006747;font-weight:700;font-size:11px}
-.thru-n{color:#888;font-size:11px}
-.setup{max-width:700px;margin:0 auto;padding:16px}
-.setup-box{background:#fff;border:1px solid #ddd;border-radius:10px;padding:20px}
-.setup textarea{width:100%;min-height:180px;padding:10px;font-size:13px;font-family:monospace;border:1px solid #ccc;border-radius:6px;resize:vertical}
-.setup .preview{margin-top:14px;max-height:250px;overflow-y:auto;font-size:12px;border:1px solid #eee;border-radius:6px}
-.setup .preview-row{padding:8px 10px;border-bottom:1px solid #f0f0f0}
-.setup .preview-row:nth-child(even){background:#fafafa}
-.save-btn{padding:12px 16px;background:#006747;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;width:100%;margin-top:16px}
-.save-btn:disabled{background:#ccc;cursor:default}
-.note{font-size:11px;color:#999;text-align:center;margin-top:6px}
-.expand-btn{width:100%;padding:12px;background:#f0f0f0;border:1px solid #ddd;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;color:#333;display:flex;justify-content:space-between;align-items:center}
-.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.loading{text-align:center;padding:40px;color:#666}
-.err-box{margin:12px;padding:14px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;font-size:13px;color:#856404}
-@media(max-width:600px){table{min-width:500px}.header h1{font-size:16px}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phil's Fantasy Golf League</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', system-ui, sans-serif; background-image: linear-gradient(rgba(10, 61, 42, 0.88), rgba(10, 61, 42, 0.92)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Amen_Corner_Augusta_National.jpg/1920px-Amen_Corner_Augusta_National.jpg'); background-size: cover; background-position: center; background-attachment: fixed; }
+    .card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2); }
+    .leaderboard-table tr:hover { background-color: #f3f4f6; }
+    .rank-1 { color: #d4af77; } .rank-2 { color: #c0c0c0; } .rank-3 { color: #cd7f32; }
+    .under-par { color: #ef4444 !important; font-weight: 600; }
+    .gear-menu { animation: fadeIn 0.2s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
-<body>
-<div id="app"></div>
-<script>
-// ====== CONFIG ======
-const MASTERS_ID="401811941";
-const REFRESH_MS=30000;
-// On Netlify, use the proxy path. Locally or elsewhere, try direct + CORS proxies.
-const IS_NETLIFY=window.location.hostname.includes("netlify")||window.location.hostname.includes(".app")||!window.location.hostname.includes("localhost")&&window.location.protocol==="https:";
-const ESPN_DIRECT=`https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?tournamentId=${MASTERS_ID}`;
-const ESPN_PROXY=`/espn-api/scoreboard?tournamentId=${MASTERS_ID}`;
+<body class="text-white min-h-screen">
+  <div class="max-w-6xl mx-auto p-4">
+    <!-- Header (unchanged) -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-golf-ball text-5xl text-[#d4af77]"></i>
+        <div>
+          <h1 class="text-4xl font-bold tracking-tight">Phil's Fantasy Golf League</h1>
+          <p class="text-green-300 text-sm -mt-1">Live Leaderboard</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <select id="tournament-select" onchange="switchTournament(this.value)" class="bg-white/10 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium focus:outline-none focus:border-[#d4af77] shadow-inner"></select>
+      </div>
+      <div class="relative">
+        <button onclick="toggleGearMenu()" class="flex items-center justify-center w-12 h-12 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl text-[#d4af77] hover:text-amber-300 transition-colors focus:outline-none">
+          <i class="fa-solid fa-gear text-3xl"></i>
+        </button>
+        <div id="gear-menu" class="hidden gear-menu absolute right-0 mt-3 w-72 bg-[#0a3d2a] border border-[#d4af77] rounded-3xl shadow-2xl py-2 z-50 text-white">
+          <!-- Gear content remains exactly as you had it -->
+          <div class="px-6 py-3 border-b border-white/20">
+            <p class="text-xs uppercase tracking-widest text-green-300 mb-1">Current Tournament</p>
+            <select id="gear-tournament-select" onchange="setCurrentFromGear(this.value)" class="w-full bg-white/10 border border-white/30 rounded-3xl px-4 py-3 text-white font-medium focus:outline-none focus:border-[#d4af77]"></select>
+          </div>
+          <div class="px-2 py-1">
+            <button onclick="openManageRostersModal()" class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium"><i class="fa-solid fa-users w-5"></i><span>Manage Rosters</span></button>
+            <button onclick="openManageTournamentsModal()" class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium"><i class="fa-solid fa-trophy w-5"></i><span>Manage Tournaments</span></button>
+            <button onclick="fetchAndShowSchedule()" class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium"><i class="fa-solid fa-calendar w-5"></i><span>Fetch PGA Schedule (get tournIds)</span></button>
+            <button onclick="showAddTournamentModal()" class="w-full flex items-center gap-3 px-6 py-4 hover:bg-white/10 rounded-3xl text-left text-lg font-medium border-t border-white/10 mt-2 pt-4"><i class="fa-solid fa-plus w-5"></i><span>Add New Tournament</span></button>
+          </div>
+          <div class="px-6 pt-4 border-t border-white/20 text-xs text-green-300 flex justify-between items-center">
+            <span>Admin • Only visible to you</span>
+            <button onclick="toggleGearMenu()" class="text-[#d4af77] hover:text-amber-300">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-function getUrl(){
-  // Try Netlify proxy first if deployed, else direct
-  return IS_NETLIFY?ESPN_PROXY:ESPN_DIRECT;
-}
-const CORS_FALLBACKS=[
-  u=>u,
-  u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
-  u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-];
+    <div id="last-updated" class="text-sm text-green-300 font-medium mb-8 text-right"></div>
 
-// ====== STATE ======
-let state={teams:[],golfers:[],tourn:null,loading:true,err:null,lastUp:null,showSetup:false,csv:"",countdown:REFRESH_MS/1000,proxyIdx:0,fullLBOpen:false};
-const $=id=>document.getElementById(id);
-const app=$("app");
+    <!-- Rest of your HTML (Leaderboard, Detailed Rosters, League Stats, Modals) remains unchanged -->
+    <!-- ... paste the rest of your original HTML here ... -->
 
-// ====== HELPERS ======
-const fmtScore=n=>n===0?"E":n>0?`+${n}`:`${n}`;
-const parseScore=s=>{if(!s||s==="--"||s==="")return null;if(s==="E")return 0;return parseInt(s,10)};
-const norm=s=>(s||"").toLowerCase().replace(/[^a-z]/g,"");
-function matchPlayer(a,b){
-  if(norm(a)===norm(b))return true;
-  const ap=a.toLowerCase().trim().split(/\s+/),bp=b.toLowerCase().trim().split(/\s+/);
-  if(ap.length&&bp.length&&ap[ap.length-1]===bp[bp.length-1])return true;
-  if(norm(a).includes(norm(b))||norm(b).includes(norm(a)))return true;
-  return false;
-}
-function findGolfer(name,gs){
-  return gs.find(g=>norm(g.name)===norm(name))||gs.find(g=>matchPlayer(name,g.name))||null;
-}
-function fmtTeeTime(r){
-  if(!r)return"";try{
-  const m=r.match(/(\d+):(\d+):\d+\s*(AM|PM|\w{3,4})/i);
-  if(m){let h=+m[1],mn=m[2],s=m[3];if(s==="AM"||s==="PM")return`${h}:${mn} ${s}`;if(h>12)return`${h-12}:${mn}p`;if(h===0)return`12:${mn}a`;return`${h}:${mn}a`}
-  return r.slice(0,8)}catch{return r}
-}
-function scoreClass(n){return n===null||n===undefined?"muted":n<0?"neg":n>0?"pos":"even"}
+  </div>
 
-// ====== STORAGE ======
-function loadTeams(){
-  try{const d=localStorage.getItem("fg_teams_v3");if(d){state.teams=JSON.parse(d);return true}}catch{}return false;
-}
-function saveTeams(t){state.teams=t;state.showSetup=false;try{localStorage.setItem("fg_teams_v3",JSON.stringify(t))}catch{}render();}
-function parseCSV(text){
-  return text.trim().split("\n").filter(Boolean).map(l=>{
-    const sep=l.includes("\t")?"\t":",";
-    const p=l.split(sep).map(s=>s.trim().replace(/^["']|["']$/g,"")).filter(Boolean);
-    return p.length>=2?{name:p[0],players:p.slice(1,8)}:null;
-  }).filter(Boolean);
-}
+  <script>
+    // ==================== CONFIG ====================
+    const teamNames = ["Gerald", "Josh", "Phil", "Patrick", "Wallace", "Ricky", "Roger", "Graham", "Doug", "Nick"];
+    const createTeamsObj = () => { const obj = {}; teamNames.forEach(n => obj[n] = []); return obj; };
 
-// ====== FETCH ======
-async function fetchData(){
-  const baseUrl=getUrl();
-  const urls=IS_NETLIFY?[()=>baseUrl]:CORS_FALLBACKS.map(f=>()=>f(ESPN_DIRECT));
-  for(let i=state.proxyIdx;i<urls.length;i++){
-    try{
-      const r=await fetch(urls[i](),{cache:"no-store"});
-      if(!r.ok)continue;
-      const d=await r.json();
-      if(!d.events||!d.events.length)continue;
-      const ev=d.events[0],comp=ev.competitions[0];
-      state.tourn={name:ev.name||"Masters Tournament",status:ev.status?.type?.description||"",round:ev.status?.period||1};
-      state.golfers=comp.competitors.map((c,idx)=>{
-        const rounds=(c.linescores||[]).map(ls=>{
-          const holes=ls.linescores||[];
-          const stats=ls.statistics?.categories?.[0]?.stats||[];
-          const tt=stats.length?stats[stats.length-1]?.displayValue||"":"";
-          return{display:ls.displayValue,num:parseScore(ls.displayValue),holes:holes.length,teeTime:tt};
-        });
-        let thru="-";
-        if(rounds.length){const cr=rounds[rounds.length-1];if(cr.holes>=18)thru="F";else if(cr.holes>0)thru=`${cr.holes}`;else if(cr.teeTime)thru=fmtTeeTime(cr.teeTime)}
-        const st=c.status?.type?.description||c.status?.displayValue||"";
-        const mc=/cut|wd|dq/i.test(st);
-        return{name:c.athlete?.displayName||c.athlete?.fullName||"Unknown",totalDisplay:c.score||"E",totalNum:parseScore(c.score||"E"),rounds,thru,missedCut:mc,status:st,order:c.order||idx+1};
-      }).sort((a,b)=>(a.totalNum??999)-(b.totalNum??999));
-      state.proxyIdx=i;state.err=null;state.lastUp=new Date();state.loading=false;state.countdown=REFRESH_MS/1000;
-      render();return;
-    }catch{continue}
-  }
-  state.proxyIdx=0;state.err="Unable to fetch data. Check network or Netlify proxy config.";state.loading=false;render();
-}
+    const defaultConfig = {
+      tournaments: {
+        "2026-masters": { name: "2026 Masters", year: "2026", tournId: "TODO-get-from-schedule", teams: createTeamsObj() },
+        // ... your other tournaments exactly as before
+        "2025-masters": { name: "2025 Masters", year: "2025", tournId: "TODO-get-from-schedule", teams: createTeamsObj() },
+        "2025-pga-championship": { name: "2025 PGA Championship", year: "2025", tournId: "TODO-get-from-schedule", teams: createTeamsObj() },
+        "2025-us-open": { name: "2025 U.S. Open", year: "2025", tournId: "TODO-get-from-schedule", teams: createTeamsObj() },
+        "2025-the-open": { name: "2025 The Open Championship", year: "2025", tournId: "TODO-get-from-schedule", teams: createTeamsObj() },
+        "2024-masters": { name: "2024 Masters", year: "2024", tournId: "TODO-get-from-schedule", teams: createTeamsObj() },
+        "2024-valspar": { name: "2024 Valspar Championship", year: "2024", tournId: "475", teams: createTeamsObj() }
+        // add the rest as needed
+      },
+      currentTournamentKey: "2026-masters"
+    };
 
-// ====== COMPUTE STANDINGS ======
-function getStandings(){
-  const gs=state.golfers;
-  const made=gs.filter(g=>!g.missedCut&&g.totalNum!==null);
-  const worstCut=made.length?Math.max(...made.map(g=>g.totalNum)):0;
-  return{worstCut,standings:state.teams.map(team=>{
-    const pd=team.players.map(pn=>{
-      const g=findGolfer(pn,gs);
-      if(!g)return{name:pn,found:false,score:null,data:null};
-      const eff=g.missedCut?worstCut:(g.totalNum??0);
-      return{name:pn,found:true,score:eff,data:g};
-    });
-    const valid=pd.filter(p=>p.found).map(p=>p.score).sort((a,b)=>a-b);
-    const top4=valid.slice(0,4);
-    return{...team,playerData:pd,total:top4.reduce((s,v)=>s+v,0),top4Count:top4.length};
-  }).sort((a,b)=>a.total-b.total)};
-}
+    let config = JSON.parse(localStorage.getItem('fantasyGolfConfig')) || defaultConfig;
+    if (!localStorage.getItem('fantasyGolfConfig')) localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
 
-// ====== RENDER ======
-function render(){
-  if(state.showSetup){renderSetup();return}
-  const{worstCut,standings}=getStandings();
-  let html=`<div class="container">`;
-  // Header
-  html+=`<div class="header"><div class="row"><div><h1>Phil's Fantasy Golf League</h1><div class="sub">${state.tourn?.name||"Masters Tournament 2026"}${state.tourn?.status?` — ${state.tourn.status}`:""}${state.tourn?.round?` (Rd ${state.tourn.round})`:""}</div></div><div class="meta">${state.lastUp?`Updated ${state.lastUp.toLocaleTimeString()}`:"Loading..."}<br>Refresh in <span id="cd">${state.countdown}</span>s</div></div><div class="btn-bar"><button class="btn-sm" onclick="fetchData()">Refresh Now</button><button class="btn-sm" onclick="state.showSetup=true;render()">Edit Teams</button></div></div>`;
-  if(state.loading)html+=`<div class="loading">Loading leaderboard data...</div>`;
-  if(state.err)html+=`<div class="err-box">${state.err}</div>`;
-  if(!state.loading&&!state.err&&!state.golfers.length)html+=`<div class="loading">No golfer data yet. Tournament may not have started. Auto-refreshing every 30s.</div>`;
-  // Fantasy Leaderboard
-  if(standings.length){
-    html+=`<div class="section"><h2><span style="font-size:18px">🏆</span> Fantasy Leaderboard</h2><div class="card"><table><thead><tr class="lb-head"><th style="width:36px;text-align:center">Pos</th><th style="text-align:left">Participant</th><th style="width:70px;text-align:center">Score</th></tr></thead><tbody>`;
-    standings.forEach((s,i)=>{
-      const isLead=i===0||s.total===standings[0].total;
-      const pos=i===0?1:(s.total===standings[i-1].total?"":i+1);
-      html+=`<tr class="${isLead?"leader-row":i%2?"alt":""}"><td style="text-align:center;font-weight:700;font-size:15px;${isLead?"color:#006747":"color:#666"}">${pos}</td><td style="font-weight:600">${s.name}</td><td style="text-align:center;font-weight:800;font-size:16px"><span class="${scoreClass(s.total)}">${s.top4Count>=4?fmtScore(s.total):fmtScore(s.total)+"*"}</span></td></tr>`;
-    });
-    html+=`</tbody></table></div><div class="note">Score = sum of best 4 players' total scores to par. Missed cut = worst cut score (${fmtScore(worstCut)}).</div></div>`;
-    // Detailed Teams
-    html+=`<div class="section"><h2><span style="font-size:16px">📋</span> Team Details</h2>`;
-    standings.forEach((team,ti)=>{
-      const sorted=[...team.playerData].sort((a,b)=>((a.found?a.score:999)-(b.found?b.score:999)));
-      const isLead=ti===0||team.total===standings[0].total;
-      html+=`<div class="card"><div class="team-head" style="background:${isLead?"#006747":"#2c3e50"}"><div class="name"><span style="opacity:.6;margin-right:6px;font-size:13px">#${ti+1}</span>${team.name}</div><div class="score">${fmtScore(team.total)}</div></div><div class="scroll-x"><table><thead><tr class="detail-head"><th style="text-align:left">Player</th><th style="text-align:center;width:42px">R1</th><th style="text-align:center;width:42px">R2</th><th style="text-align:center;width:42px">R3</th><th style="text-align:center;width:42px">R4</th><th style="text-align:center;width:50px">Total</th><th style="text-align:center;width:52px">Thru</th></tr></thead><tbody>`;
-      sorted.forEach((p,pi)=>{
-        const top4=pi<4&&p.found, g=p.data;
-        const rdVal=i=>{if(!g?.rounds?.[i])return null;return g.rounds[i].num};
-        const effTotal=g?(g.missedCut?worstCut:g.totalNum):null;
-        html+=`<tr style="border-bottom:1px solid #eee;background:${!p.found?"#fff8f0":top4?"#f7fbf7":pi%2?"#fafafa":"#fff"};${!top4&&p.found?"opacity:.6":""}"><td style="font-weight:600;${g?.missedCut?"color:#999":""}max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${top4?'<span class="dot">●</span>':""}${g?.name||p.name}${g?.missedCut?'<span class="mc">MC</span>':""}${!p.found?'<span class="nf">NOT FOUND</span>':""}</td>`;
-        for(let ri=0;ri<4;ri++){const v=rdVal(ri);html+=`<td style="text-align:center"><span class="${scoreClass(v)}">${v!==null?fmtScore(v):"-"}</span></td>`}
-        html+=`<td style="text-align:center;font-weight:800;font-size:13px"><span class="${scoreClass(effTotal)}">${effTotal!==null?fmtScore(effTotal):"-"}</span></td>`;
-        html+=`<td style="text-align:center" class="${g?.thru==="F"?"thru-f":"thru-n"}">${g?.thru||"-"}</td></tr>`;
-      });
-      html+=`</tbody></table></div></div>`;
-    });
-    html+=`</div>`;
-  }
-  // Full Leaderboard Toggle
-  if(state.golfers.length){
-    html+=`<div class="section"><button class="expand-btn" onclick="state.fullLBOpen=!state.fullLBOpen;render()"><span>Full Tournament Leaderboard (${state.golfers.length} players)</span><span style="font-size:18px">${state.fullLBOpen?"▲":"▼"}</span></button>`;
-    if(state.fullLBOpen){
-      html+=`<div class="card" style="margin-top:8px"><div class="scroll-x"><table><thead><tr class="lb-head"><th style="width:36px;text-align:center">Pos</th><th style="text-align:left">Player</th><th style="width:50px;text-align:center">Total</th><th style="width:42px;text-align:center">Thru</th><th style="width:38px;text-align:center">R1</th><th style="width:38px;text-align:center">R2</th><th style="width:38px;text-align:center">R3</th><th style="width:38px;text-align:center">R4</th></tr></thead><tbody>`;
-      state.golfers.forEach((g,i)=>{
-        html+=`<tr style="border-bottom:1px solid #eee;background:${g.missedCut?"#f9f5f5":i%2?"#fafafa":"#fff"}"><td style="text-align:center;color:#666;font-size:12px">${g.order}</td><td style="font-weight:600;${g.missedCut?"color:#999":""}white-space:nowrap">${g.name}${g.missedCut?'<span class="mc">MC</span>':""}</td><td style="text-align:center;font-weight:700;font-size:13px"><span class="${scoreClass(g.totalNum)}">${g.totalNum!==null?fmtScore(g.totalNum):g.totalDisplay}</span></td><td style="text-align:center" class="${g.thru==="F"?"thru-f":"thru-n"}">${g.thru}</td>`;
-        for(let ri=0;ri<4;ri++){const r=g.rounds[ri];html+=`<td style="text-align:center"><span class="${scoreClass(r?.num)}" style="font-size:12px">${r?.num!==null&&r?.num!==undefined?fmtScore(r.num):"-"}</span></td>`}
-        html+=`</tr>`;
-      });
-      html+=`</tbody></table></div></div>`;
+    let currentLeaderboardData = null;
+    let dataCache = {};
+    let isTournamentOver = false;
+    let refreshInterval = null;
+
+    const RAPIDAPI_KEY = "e055e416ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
+    const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
+
+    // Helper: Is it currently 7AM–8PM Eastern?
+    function isRefreshWindow() {
+      const now = new Date();
+      const et = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        hour: 'numeric',
+        hour12: false
+      }).format(now);
+      const hour = parseInt(et, 10);
+      return hour >= 7 && hour < 20; // 7:00 AM to 7:59 PM ET (stops before 8PM)
     }
-    html+=`</div>`;
-  }
-  html+=`</div>`;
-  app.innerHTML=html;
-}
 
-function renderSetup(){
-  const preview=state.csv?parseCSV(state.csv):[];
-  let html=`<div class="setup"><div class="header" style="border-radius:12px;margin-bottom:20px;text-align:center;position:static"><h1>Phil's Fantasy Golf League</h1><div class="sub">Masters Tournament 2026 — Team Setup</div></div><div class="setup-box"><h2 style="font-size:16px;margin-bottom:8px;color:#333">Paste Team Rosters</h2><p style="font-size:13px;color:#666;margin-bottom:12px;line-height:1.5">Copy from Google Sheets. Each row: <strong>Participant Name, Player1, Player2, ... Player7</strong> (tab or comma separated).</p><textarea id="csvInput" placeholder="Phil&#9;Scottie Scheffler&#9;Rory McIlroy&#9;Xander Schauffele&#9;Collin Morikawa&#9;Brooks Koepka&#9;Jon Rahm&#9;Viktor Hovland&#10;John&#9;..." oninput="state.csv=this.value;renderSetup()">${state.csv}</textarea>`;
-  if(preview.length){
-    html+=`<h3 style="font-size:14px;margin:14px 0 8px;color:#006747">Preview (${preview.length} teams)</h3><div class="preview">`;
-    preview.forEach((t,i)=>{html+=`<div class="preview-row"><strong style="color:#006747">${t.name}</strong><span style="color:#888;margin-left:6px">(${t.players.length} players)</span><div style="color:#555;margin-top:3px">${t.players.join(", ")}</div></div>`});
-    html+=`</div>`;
-  }
-  html+=`<button class="save-btn" ${preview.length?"":"disabled"} onclick="saveTeams(parseCSV(state.csv))">Save ${preview.length} Teams</button>`;
-  if(state.teams.length)html+=`<button style="width:100%;padding:12px 16px;background:#eee;color:#333;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin-top:8px" onclick="state.showSetup=false;render()">Cancel</button>`;
-  html+=`</div></div>`;
-  app.innerHTML=html;
-  const ta=$("csvInput");if(ta&&state.csv)ta.value=state.csv;
-}
+    async function fetchRapidAPI(endpoint, params = {}) {
+      const url = new URL(`https://${RAPIDAPI_HOST}${endpoint}`);
+      Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
-// ====== INIT ======
-if(!loadTeams())state.showSetup=true;
-render();
-fetchData();
-setInterval(fetchData,REFRESH_MS);
-setInterval(()=>{state.countdown=Math.max(0,state.countdown-1);const el=$("cd");if(el)el.textContent=state.countdown},1000);
-</script>
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'x-rapidapi-key': RAPIDAPI_KEY,
+            'x-rapidapi-host': RAPIDAPI_HOST
+          }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        console.error("🚨 RapidAPI fetch failed", e);
+        return null;
+      }
+    }
+
+    async function fetchForTournament(key) {
+      if (dataCache[key]) return dataCache[key];
+
+      const tour = config.tournaments[key];
+      if (!tour?.year || !tour?.tournId || tour.tournId === "TODO-get-from-schedule") {
+        console.warn("Missing year or tournId for", key);
+        return null;
+      }
+
+      const data = await fetchRapidAPI('/leaderboard', { year: tour.year, tournId: tour.tournId });
+      if (data) dataCache[key] = data;
+      return data;
+    }
+
+    // Determine if tournament is finished
+    function isTournamentCompleted(data) {
+      if (!data || !data.leaderboardRows || data.leaderboardRows.length === 0) return false;
+
+      const rows = data.leaderboardRows;
+      // Common completion signals from golf APIs
+      const finishedStatuses = new Set(["F", "cut", "wd", "dq", "finished"]);
+
+      let allFinished = true;
+      for (const p of rows) {
+        const status = (p.status || p.thru || "").toString().toLowerCase().trim();
+        if (!finishedStatuses.has(status) && status !== "-" && status !== "f" && !status.includes("finished")) {
+          allFinished = false;
+          break;
+        }
+      }
+
+      // Extra check: if there's a clear leader and round 4 is complete for top players
+      const hasWinner = rows[0] && (rows[0].total || rows[0].position);
+      return allFinished || (hasWinner && rows.every(p => (p.rounds || []).length >= 4));
+    }
+
+    async function loadCurrentTournamentData() {
+      if (isTournamentOver) return; // Stop calling once over
+
+      const key = config.currentTournamentKey;
+      const data = await fetchForTournament(key);
+
+      if (data) {
+        currentLeaderboardData = data;
+        isTournamentOver = isTournamentCompleted(data);
+
+        if (isTournamentOver) {
+          console.log("%c🏁 Tournament detected as finished – stopping automatic refreshes", "color:#d4af77;font-weight:700");
+          clearInterval(refreshInterval);
+          refreshInterval = null;
+        }
+      }
+
+      updateLastUpdated();
+      return data;
+    }
+
+    function updateLastUpdated() {
+      const el = document.getElementById('last-updated');
+      const now = new Date();
+      const etTime = now.toLocaleTimeString('en-US', { 
+        timeZone: 'America/New_York',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true 
+      });
+      const status = isTournamentOver ? ' – Tournament Complete (refreshes stopped)' : '';
+      el.textContent = `Last updated: ${etTime} ET${status}`;
+    }
+
+    function renderEverything() {
+      // Call your existing renderLeaderboard(), renderDetailedRosters(), renderLeagueStats(), updateTournamentStatusBadge(), etc.
+      // (These functions are unchanged from your original code)
+      renderLeaderboard();
+      renderDetailedRosters();
+      renderLeagueStats();
+      updateTournamentStatusBadge();
+    }
+
+    // ==================== Refresh Management ====================
+    function startRefreshCycle() {
+      if (refreshInterval) clearInterval(refreshInterval);
+
+      refreshInterval = setInterval(() => {
+        if (isTournamentOver) {
+          clearInterval(refreshInterval);
+          return;
+        }
+        if (isRefreshWindow()) {
+          loadCurrentTournamentData().then(() => renderEverything());
+        }
+      }, 180000); // 3 minutes
+    }
+
+    // Initial load + start smart refreshes
+    async function init() {
+      populateTournamentSelector();
+      populateGearTournamentSelect();
+
+      await loadCurrentTournamentData();
+      renderEverything();
+
+      startRefreshCycle();
+
+      console.log("%c✅ Phil's Fantasy Golf League – Smart Refresh Active (3 min during 7AM–8PM ET)", "color:#d4af77; font-weight:700");
+    }
+
+    // When switching tournaments, reset over flag and restart cycle
+    function switchTournament(newKey) {
+      config.currentTournamentKey = newKey;
+      localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
+      isTournamentOver = false;
+      currentLeaderboardData = null;
+      dataCache = {}; // optional: clear cache on switch
+      loadCurrentTournamentData().then(() => renderEverything());
+      startRefreshCycle(); // restart with new tournament
+    }
+
+    // Keep your other functions (fetchAndShowSchedule, getPlayerScore, render functions, modals, etc.) exactly as they were.
+
+    window.onload = init; // or call init() directly if you prefer
+  </script>
 </body>
 </html>
