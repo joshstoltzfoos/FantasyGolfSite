@@ -3,65 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phil's Fantasy Golf League</title>
+  <title>Phil's Fantasy Golf League | 2026 Masters</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background-image: linear-gradient(rgba(10, 61, 42, 0.88), rgba(10, 61, 42, 0.92)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Amen_Corner_Augusta_National.jpg/1920px-Amen_Corner_Augusta_National.jpg');
+      background-image: linear-gradient(rgba(10, 61, 42, 0.9), rgba(10, 61, 42, 0.95)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Amen_Corner_Augusta_National.jpg/1920px-Amen_Corner_Augusta_National.jpg');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
     }
-    .card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .card:hover { transform: translateY(-2px); }
+    .card { transition: all 0.3s ease; }
+    .card:hover { transform: translateY(-2px); border-color: rgba(212, 175, 119, 0.4); }
     .rank-1 { color: #d4af77; } .rank-2 { color: #c0c0c0; } .rank-3 { color: #cd7f32; }
-    .under-par { color: #ef4444 !important; font-weight: 600; }
+    .under-par { color: #ef4444 !important; font-weight: 700; }
   </style>
 </head>
 <body class="text-white min-h-screen">
   <div class="max-w-6xl mx-auto p-4 md:p-6">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-      <div class="flex items-center gap-3">
-        <i class="fa-solid fa-golf-ball text-5xl text-[#d4af77]"></i>
+      <div class="flex items-center gap-4">
+        <div class="bg-[#d4af77] p-3 rounded-2xl">
+            <i class="fa-solid fa-golf-ball-tee text-3xl text-[#0a3d2a]"></i>
+        </div>
         <div>
-          <h1 class="text-4xl font-bold tracking-tight">Phil's Fantasy Golf League</h1>
-          <div class="flex items-center gap-2">
-             <p class="text-green-300 text-sm">2026 Masters • Best 4 scores count</p>
-             <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50">Initializing...</span>
+          <h1 class="text-4xl font-bold tracking-tight">Phil's Fantasy League</h1>
+          <div class="flex items-center gap-2 mt-1">
+             <p class="text-green-300 text-sm font-medium">2026 Masters Tournament</p>
+             <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50">Syncing...</span>
           </div>
         </div>
       </div>
       <button onclick="manualRefresh()" 
-              class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium">
-        <i class="fa-solid fa-rotate"></i>
-        <span>Refresh Now</span>
+              class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/20 rounded-2xl px-6 py-3 text-white transition-all">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        <span class="font-semibold uppercase tracking-wider text-xs">Refresh Data</span>
       </button>
     </div>
 
-    <div id="last-updated" class="text-sm text-green-300 font-medium mb-8 text-right"></div>
+    <div id="last-updated" class="text-xs text-green-300/60 font-medium mb-8 text-right italic"></div>
 
     <div class="mb-12">
-      <h2 class="text-3xl font-semibold mb-4">Leaderboard</h2>
-      <div class="card bg-white/10 backdrop-blur-xl rounded-3xl p-1 shadow-2xl overflow-hidden">
-        <table class="w-full bg-transparent rounded-3xl">
-          <thead class="bg-gradient-to-r from-green-800 to-[#0a3d2a]">
+      <div class="flex items-baseline justify-between mb-4">
+        <h2 class="text-2xl font-bold uppercase tracking-widest">Standings</h2>
+        <span class="text-xs text-white/40 italic">*Best 4 scores count</span>
+      </div>
+      <div class="card bg-black/30 backdrop-blur-xl rounded-3xl p-1 shadow-2xl border border-white/10 overflow-hidden">
+        <table class="w-full bg-transparent">
+          <thead class="bg-white/5 text-green-300 uppercase text-xs tracking-widest">
             <tr>
-              <th class="px-6 py-5 text-left font-medium w-16">Rank</th>
-              <th class="px-6 py-5 text-left font-medium">Team</th>
-              <th class="px-6 py-5 text-right font-medium">Score (best 4)</th>
+              <th class="px-6 py-4 text-left font-bold w-16">Pos</th>
+              <th class="px-6 py-4 text-left font-bold">Manager</th>
+              <th class="px-6 py-4 text-right font-bold">Total Score</th>
             </tr>
           </thead>
-          <tbody id="leaderboard-body" class="text-xl"></tbody>
+          <tbody id="leaderboard-body" class="text-lg"></tbody>
         </table>
       </div>
     </div>
 
     <div>
-      <h2 class="text-3xl font-semibold mb-4">Detailed Team Rosters</h2>
-      <div id="detailed-rosters" class="space-y-8"></div>
+      <h2 class="text-2xl font-bold uppercase tracking-widest mb-6">Team Details</h2>
+      <div id="detailed-rosters" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
     </div>
   </div>
 
@@ -82,15 +87,16 @@
     const teamNames = Object.keys(teamRosters);
     let currentLeaderboardData = null;
 
-    // UPDATED API CONFIG
     const RAPIDAPI_KEY = "e055e416ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
-    const RAPIDAPI_HOST = "golf-leaderboard-data.p.rapidapi.com";
-    const TOURNAMENT_ID = "220"; 
+    const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
+    const TOURN_ID = "014"; 
+    const YEAR = "2026";
 
     async function loadCurrentTournamentData() {
       const statusEl = document.getElementById('api-status');
       try {
-        const res = await fetch(`https://${RAPIDAPI_HOST}/leaderboard/${TOURNAMENT_ID}`, {
+        const url = `https://${RAPIDAPI_HOST}/leaderboard?year=${YEAR}&tournId=${TOURN_ID}`;
+        const res = await fetch(url, {
           headers: {
             'x-rapidapi-key': RAPIDAPI_KEY,
             'x-rapidapi-host': RAPIDAPI_HOST
@@ -98,17 +104,16 @@
         });
         const data = await res.json();
         
-        // This API returns results inside data.results.leaderboard
-        if (data && data.results && data.results.leaderboard) {
-          currentLeaderboardData = data.results.leaderboard;
-          statusEl.textContent = "🟢 API Online";
+        if (data && data.leaderboardRows) {
+          currentLeaderboardData = data.leaderboardRows;
+          statusEl.textContent = "🟢 LIVE DATA";
           statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/50";
         } else {
-          throw new Error("Invalid data format");
+          throw new Error("Data format mismatch");
         }
       } catch (e) {
         console.error("API Error:", e);
-        statusEl.textContent = "🔴 API Sync Error";
+        statusEl.textContent = "🔴 CONNECTION ERROR";
         statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50";
       }
       updateLastUpdated();
@@ -116,72 +121,68 @@
 
     function normalize(str) {
       if (!str) return "";
-      return str.toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") 
-        .replace(/\(a\)/i, '')
-        .replace(/[^a-z0-9 ]/g, "")
-        .trim();
+      return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(a\)/i, '').replace(/[^a-z0-9 ]/g, "").trim();
     }
 
     function findPlayer(name, rows) {
       if (!rows) return null;
       const target = normalize(name);
       return rows.find(p => {
-        // This API uses "first_name" and "last_name"
-        const rowName = normalize(`${p.first_name || ''} ${p.last_name || ''}`);
+        const rowName = normalize(`${p.firstName || ''} ${p.lastName || ''}`);
         return rowName === target || rowName.includes(target) || target.includes(rowName);
       });
     }
 
     function getPlayerScore(playerName) {
-      const defaultState = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "Awaiting", teeTime: "TBD", isMC: false, isDefault: true };
-      
-      if (!currentLeaderboardData) return defaultState;
-      
+      const fallback = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "Awaiting", teeTime: "—", isMC: false, isDefault: true };
+      if (!currentLeaderboardData) return fallback;
       const p = findPlayer(playerName, currentLeaderboardData);
-      if (!p) return defaultState;
+      if (!p) return fallback;
 
-      // This API uses total_to_par
-      let total = p.total_to_par; 
-      if (total === null || total === undefined) total = 0;
+      let scoreVal = 0;
+      if (p.total === "E" || p.total === "even") scoreVal = 0;
+      else {
+        scoreVal = parseInt(p.total);
+        if (isNaN(scoreVal)) scoreVal = 0;
+      }
 
-      const rounds = [p.r1 || "—", p.r2 || "—", p.r3 || "—", p.r4 || "—"];
-      const isMC = p.status === "cut" || p.status === "WD" || p.status === "DQ";
-      
+      const rounds = ["—","—","—","—"];
+      if (p.rounds && Array.isArray(p.rounds)) {
+        p.rounds.forEach(r => {
+          const idx = parseInt(r.roundId) - 1;
+          if (idx >= 0 && idx < 4) rounds[idx] = r.scoreToPar;
+        });
+      }
+
       return {
-        totalToPar: total,
-        rounds,
-        thru: p.thru || "F",
-        teeTime: p.tee_time || "—",
-        isMC,
+        totalToPar: scoreVal,
+        rounds: rounds,
+        thru: p.thru || "—",
+        teeTime: p.teeTime || "—",
+        isMC: ["cut", "wd", "dq"].includes((p.status || "").toLowerCase()),
         isDefault: false
       };
     }
 
     function getCutLine() {
       if (!currentLeaderboardData) return 0;
-      // Filter for players who made the cut to find the "worst" made-cut score
       const activeScores = currentLeaderboardData
-        .filter(p => p.status === "active" || p.status === "finish")
-        .map(p => p.total_to_par)
-        .filter(s => s !== null);
+        .filter(p => !["cut", "wd", "dq"].includes((p.status || "").toLowerCase()))
+        .map(p => (p.total === "E" || p.total === "even") ? 0 : parseInt(p.total))
+        .filter(s => !isNaN(s));
       return activeScores.length ? Math.max(...activeScores) : 0;
     }
 
     function calculateTeamScore(teamName) {
       const roster = teamRosters[teamName] || [];
       const cutLine = getCutLine();
-      
       const players = roster.map(name => {
         const s = getPlayerScore(name);
         const adjusted = s.isMC ? cutLine : s.totalToPar;
         return { ...s, name, adjusted };
       });
-
       players.sort((a, b) => a.adjusted - b.adjusted);
       const score = players.slice(0, 4).reduce((sum, p) => sum + p.adjusted, 0);
-      
       return { score, players };
     }
 
@@ -195,10 +196,10 @@
       tbody.innerHTML = sorted.map((team, i) => {
         const rank = i === 0 ? `<span class="rank-1">1</span>` : i === 1 ? `<span class="rank-2">2</span>` : i === 2 ? `<span class="rank-3">3</span>` : i + 1;
         const scoreDisp = team.score > 0 ? `+${team.score}` : (team.score === 0 ? 'E' : team.score);
-        return `<tr class="border-b border-white/10 hover:bg-white/5">
-          <td class="px-6 py-5 font-semibold">${rank}</td>
+        return `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+          <td class="px-6 py-5 font-bold">${rank}</td>
           <td class="px-6 py-5 font-medium">${team.name}</td>
-          <td class="px-6 py-5 text-right font-semibold">${scoreDisp}</td>
+          <td class="px-6 py-5 text-right font-bold text-xl">${scoreDisp}</td>
         </tr>`;
       }).join('');
     }
@@ -208,34 +209,39 @@
       container.innerHTML = teamNames.map(teamName => {
         const res = calculateTeamScore(teamName);
         const playersHTML = res.players.map(p => {
-          const scoreClass = p.isMC ? 'line-through text-red-400' : (p.adjusted < 0 ? 'under-par' : '');
-          const mcTag = p.isMC ? ' <span class="text-[10px] bg-red-500/70 px-1.5 py-0.5 rounded">MC</span>' : '';
-          const status = p.isDefault ? `<span class="text-white/40">Searching...</span>` : 
-                        (p.thru === "—" || p.thru === "F") ? `<span class="text-amber-300">${p.teeTime !== "—" ? 'Tee: ' + p.teeTime : 'Finished'}</span>` : `Thru: ${p.thru}`;
+          const scoreClass = p.isMC ? 'line-through text-red-400 opacity-60' : (p.adjusted < 0 ? 'under-par' : '');
+          const status = p.isDefault ? `<span class="text-white/20">Syncing...</span>` : 
+                        (p.thru === "—" || p.thru === "F") ? `<span class="text-[#d4af77] text-xs font-bold uppercase tracking-tighter">Tee Time: ${p.teeTime}</span>` : `<span class="text-green-400 font-bold uppercase text-xs">Thru: ${p.thru}</span>`;
           
-          return `<div class="flex flex-col sm:flex-row gap-4 bg-white/5 rounded-3xl px-6 py-4 items-center">
-            <div class="font-medium flex-1">${p.name}${mcTag}</div>
-            <div class="text-sm text-white/70">${status}</div>
-            <div class="flex gap-4 text-xs">${p.rounds.map((r,i) => `<div class="text-center"><span class="block text-white/50">R${i+1}</span>${r}</div>`).join('')}</div>
-            <div class="font-semibold text-lg ${scoreClass}">${p.adjusted > 0 ? '+' : ''}${p.adjusted === 0 && !p.isDefault ? 'E' : (p.isDefault ? '—' : p.adjusted)}</div>
+          return `<div class="bg-white/5 border border-white/10 rounded-2xl px-5 py-3 flex items-center justify-between">
+            <div class="flex flex-col">
+                <span class="font-bold text-sm uppercase tracking-tight">${p.name} ${p.isMC ? '⛳' : ''}</span>
+                ${status}
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex gap-2 text-[10px] text-white/30 uppercase font-bold">
+                    ${p.rounds.map((r,i) => `<span>R${i+1}:${r}</span>`).join('')}
+                </div>
+                <div class="font-black text-lg min-w-[40px] text-right ${scoreClass}">${p.adjusted > 0 ? '+' : ''}${p.adjusted === 0 && !p.isDefault ? 'E' : (p.isDefault ? '—' : p.adjusted)}</div>
+            </div>
           </div>`;
       }).join('');
 
-      return `<div class="card bg-white/10 backdrop-blur-xl rounded-3xl p-6">
-          <div class="flex justify-between mb-5">
-            <h3 class="text-2xl font-semibold">${teamName}</h3>
+      return `<div class="card bg-black/20 backdrop-blur-md rounded-3xl p-6 border border-white/5">
+          <div class="flex justify-between items-start mb-6">
+            <h3 class="text-xl font-black uppercase text-white/90">${teamName}</h3>
             <div class="text-right">
-              <div class="text-sm text-green-300">Team Score</div>
-              <div class="text-4xl font-bold">${res.score > 0 ? '+' : ''}${res.score === 0 ? 'E' : res.score}</div>
+              <div class="text-[10px] uppercase font-bold text-green-300 tracking-widest">Total</div>
+              <div class="text-4xl font-black text-white leading-none">${res.score > 0 ? '+' : ''}${res.score === 0 ? 'E' : res.score}</div>
             </div>
           </div>
-          <div class="space-y-2">${playersHTML}</div>
+          <div class="space-y-3">${playersHTML}</div>
         </div>`;
       }).join('');
     }
 
     function updateLastUpdated() {
-      document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleTimeString()} ET`;
+      document.getElementById('last-updated').textContent = `Last server sync: ${new Date().toLocaleTimeString()} ET`;
     }
 
     function renderEverything() {
@@ -244,7 +250,12 @@
     }
 
     function manualRefresh() {
-      loadCurrentTournamentData().then(renderEverything);
+      const btn = document.querySelector('button i');
+      btn.classList.add('fa-spin');
+      loadCurrentTournamentData().then(() => {
+          renderEverything();
+          setTimeout(() => btn.classList.remove('fa-spin'), 1000);
+      });
     }
 
     async function init() {
