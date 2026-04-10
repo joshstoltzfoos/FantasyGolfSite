@@ -16,12 +16,9 @@
       background-attachment: fixed;
     }
     .card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2); }
-    .leaderboard-table tr:hover { background-color: #f3f4f6; }
+    .card:hover { transform: translateY(-2px); }
     .rank-1 { color: #d4af77; } .rank-2 { color: #c0c0c0; } .rank-3 { color: #cd7f32; }
     .under-par { color: #ef4444 !important; font-weight: 600; }
-    .modal { animation: modalPop 0.3s ease-out forwards; }
-    @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
   </style>
 </head>
 <body class="text-white min-h-screen">
@@ -32,18 +29,18 @@
         <i class="fa-solid fa-golf-ball text-5xl text-[#d4af77]"></i>
         <div>
           <h1 class="text-4xl font-bold tracking-tight">Phil's Fantasy Golf League</h1>
-          <p class="text-green-300 text-sm -mt-1">2026 Masters • Best 4 scores count • MC = worst made-cut score</p>
+          <p class="text-green-300 text-sm">2026 Masters • Best 4 scores count</p>
         </div>
       </div>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
         <button onclick="openBulkUploadModal()" 
-                class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium transition-colors">
+                class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl px-6 py-3 text-white font-medium">
           <i class="fa-solid fa-file-import"></i>
           <span>Bulk Upload Rosters</span>
         </button>
         <button onclick="manualRefresh()" 
                 class="flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl text-[#d4af77]">
-          <i class="fa-solid fa-rotate text-xl"></i>
+          <i class="fa-solid fa-rotate"></i>
         </button>
       </div>
     </div>
@@ -54,7 +51,7 @@
     <div class="mb-12">
       <h2 class="text-3xl font-semibold mb-4">Leaderboard</h2>
       <div class="card bg-white/10 backdrop-blur-xl rounded-3xl p-1 shadow-2xl overflow-hidden">
-        <table class="w-full leaderboard-table bg-transparent rounded-3xl">
+        <table class="w-full bg-transparent rounded-3xl">
           <thead class="bg-gradient-to-r from-green-800 to-[#0a3d2a]">
             <tr>
               <th class="px-6 py-5 text-left font-medium w-16">Rank</th>
@@ -67,7 +64,7 @@
       </div>
     </div>
 
-    <!-- Detailed Team Rosters -->
+    <!-- Detailed Rosters -->
     <div>
       <h2 class="text-3xl font-semibold mb-4">Detailed Team Rosters</h2>
       <div id="detailed-rosters" class="space-y-8"></div>
@@ -76,13 +73,14 @@
 
   <!-- Bulk Upload Modal -->
   <div id="bulk-modal" onclick="if(event.target===this)hideBulkModal()" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div onclick="event.stopImmediatePropagation()" class="modal card bg-[#0a3d2a] border border-[#d4af77] rounded-3xl p-8 w-full max-w-2xl mx-4">
-      <h3 class="text-3xl font-bold mb-6">Bulk Upload Rosters</h3>
-      <p class="text-green-300 mb-4 text-sm">Paste from Google Sheets (one line per player):</p>
-      <p class="text-xs text-white/60 mb-3">Team, Player Name<br>Example: Gerald, Scottie Scheffler</p>
+    <div onclick="event.stopImmediatePropagation()" class="bg-[#0a3d2a] border border-[#d4af77] rounded-3xl p-8 w-full max-w-2xl mx-4">
+      <h3 class="text-3xl font-bold mb-4">Bulk Upload Rosters</h3>
+      <p class="text-green-300 text-sm mb-2">Paste from Google Sheets (one player per line):</p>
+      <p class="text-xs text-white/60 mb-4">Format: <span class="font-mono">Team, Player Name</span></p>
       <textarea id="bulk-textarea" rows="14" 
-                class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white font-mono text-sm resize-y"
-                placeholder="Gerald, Scottie Scheffler&#10;Gerald, Rory McIlroy&#10;Josh, Jon Rahm&#10;..."></textarea>
+                class="w-full bg-white/10 border border-white/30 rounded-3xl px-6 py-4 text-white font-mono text-sm"
+                placeholder="Gerald, Scottie Scheffler&#10;Gerald, Rory McIlroy&#10;Josh, Jon Rahm&#10;Josh, Bryson DeChambeau"></textarea>
+      
       <div class="flex gap-4 mt-8">
         <button onclick="hideBulkModal()" class="flex-1 py-4 rounded-3xl border border-white/30 font-medium">Cancel</button>
         <button onclick="processBulkUpload()" class="flex-1 py-4 bg-[#d4af77] hover:bg-amber-300 text-[#0a3d2a] rounded-3xl font-semibold">Upload & Replace All Rosters</button>
@@ -93,11 +91,6 @@
   <script>
     // ==================== CONFIG ====================
     const teamNames = ["Gerald", "Josh", "Phil", "Patrick", "Wallace", "Ricky", "Roger", "Graham", "Doug", "Nick"];
-    const createTeamsObj = () => {
-      const obj = {};
-      teamNames.forEach(n => obj[n] = []);
-      return obj;
-    };
 
     let config = JSON.parse(localStorage.getItem('fantasyGolfConfig')) || {
       currentTournamentKey: "2026-masters",
@@ -106,7 +99,7 @@
           name: "2026 Masters",
           year: "2026",
           tournId: "536",
-          teams: createTeamsObj()
+          teams: {}  // Will be populated via bulk upload
         }
       }
     };
@@ -120,186 +113,106 @@
     const RAPIDAPI_KEY = "e055e416ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
     const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
 
-    // ==================== REFRESH LOGIC (exactly as requested) ====================
+    // ==================== REFRESH (3 min, 7AM-8PM ET) ====================
     function isRefreshWindow() {
-      const now = new Date();
-      const etHour = parseInt(new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/New_York',
-        hour: 'numeric',
-        hour12: false
-      }).format(now), 10);
-      return etHour >= 7 && etHour < 20; // 7AM–7:59PM ET
+      const hour = parseInt(new Intl.DateTimeFormat('en-US', {timeZone: 'America/New_York', hour: 'numeric', hour12: false}).format(new Date()), 10);
+      return hour >= 7 && hour < 20;
     }
 
-    async function fetchRapidAPI(endpoint, params = {}) {
+    async function fetchRapidAPI(endpoint, params) {
       const url = new URL(`https://${RAPIDAPI_HOST}${endpoint}`);
-      Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+      Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
       try {
-        const res = await fetch(url, {
-          headers: { 'x-rapidapi-key': RAPIDAPI_KEY, 'x-rapidapi-host': RAPIDAPI_HOST }
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.json();
-      } catch (e) {
-        console.error("API error", e);
-        return null;
-      }
-    }
-
-    async function fetchForTournament() {
-      const key = config.currentTournamentKey;
-      if (dataCache[key]) return dataCache[key];
-
-      const tour = config.tournaments[key];
-      if (!tour?.year || !tour?.tournId) return null;
-
-      const data = await fetchRapidAPI('/leaderboard', { year: tour.year, tournId: tour.tournId });
-      if (data) dataCache[key] = data;
-      return data;
-    }
-
-    function isTournamentCompleted(data) {
-      if (!data?.leaderboardRows?.length) return false;
-      const finished = new Set(["f", "finished", "cut", "wd", "dq"]);
-      return data.leaderboardRows.every(p => {
-        const status = (p.status || p.thru || "").toString().toLowerCase().trim();
-        return finished.has(status) || status === "f" || status === "-";
-      });
+        const res = await fetch(url, { headers: {'x-rapidapi-key': RAPIDAPI_KEY, 'x-rapidapi-host': RAPIDAPI_HOST} });
+        return res.ok ? await res.json() : null;
+      } catch (e) { return null; }
     }
 
     async function loadCurrentTournamentData() {
       if (isTournamentOver) return;
-      const data = await fetchForTournament();
+      const tour = config.tournaments["2026-masters"];
+      const data = await fetchRapidAPI('/leaderboard', { year: tour.year, tournId: tour.tournId });
       if (data) {
         currentLeaderboardData = data;
-        isTournamentOver = isTournamentCompleted(data);
-        if (isTournamentOver) {
-          console.log("%c🏁 Tournament finished – automatic refreshes stopped", "color:#d4af77;font-weight:700");
-          if (refreshInterval) clearInterval(refreshInterval);
-        }
+        dataCache["2026-masters"] = data;
+        // Simple check if tournament is over
+        isTournamentOver = data.leaderboardRows?.every(p => ["f","cut","wd"].includes((p.status||"").toLowerCase()));
       }
       updateLastUpdated();
-      return data;
     }
 
     function updateLastUpdated() {
       const el = document.getElementById('last-updated');
-      const now = new Date();
-      const etTime = now.toLocaleTimeString('en-US', {
-        timeZone: 'America/New_York',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-      const status = isTournamentOver ? ' – Tournament Complete (refreshes stopped)' : '';
-      el.textContent = `Last updated: ${etTime} ET${status}`;
+      const time = new Date().toLocaleTimeString('en-US', {timeZone: 'America/New_York', hour:'numeric', minute:'2-digit', hour12:true});
+      el.textContent = `Last updated: ${time} ET`;
     }
 
     function startRefreshCycle() {
       if (refreshInterval) clearInterval(refreshInterval);
       refreshInterval = setInterval(() => {
-        if (isTournamentOver) return;
-        if (isRefreshWindow()) {
-          loadCurrentTournamentData().then(() => renderEverything());
+        if (!isTournamentOver && isRefreshWindow()) {
+          loadCurrentTournamentData().then(renderEverything);
         }
       }, 180000); // 3 minutes
     }
 
-    // ==================== FUZZY NAME MATCHING ====================
+    // ==================== FUZZY MATCHING ====================
     function normalize(str) {
-      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+      return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
 
-    function findPlayerInLeaderboard(desiredName, rows) {
+    function findPlayer(desiredName, rows) {
       if (!rows) return null;
-      const normInput = normalize(desiredName);
-
-      // Exact match first
-      let match = rows.find(pl => {
+      const norm = normalize(desiredName);
+      return rows.find(pl => {
         const full = normalize(`${pl.firstName || ''} ${pl.lastName || ''}`);
-        return full === normInput;
-      });
-      if (match) return match;
-
-      // Fuzzy match: substring or word overlap
-      match = rows.find(pl => {
-        const full = normalize(`${pl.firstName || ''} ${pl.lastName || ''}`);
-        if (full.includes(normInput) || normInput.includes(full)) return true;
-        const inputWords = normInput.split(' ').filter(Boolean);
-        return inputWords.every(word => full.includes(word));
-      });
-      if (match) return match;
-
-      // Last resort: best partial match
-      let best = null;
-      let bestScore = 0;
-      rows.forEach(pl => {
-        const full = normalize(`${pl.firstName || ''} ${pl.lastName || ''}`);
-        const score = Math.max(
-          (full.includes(normInput) ? 1 : 0),
-          normInput.split(' ').filter(w => full.includes(w)).length / Math.max(normInput.split(' ').length, 1)
-        );
-        if (score > bestScore) {
-          bestScore = score;
-          best = pl;
-        }
-      });
-      return bestScore > 0.6 ? best : null;
+        return full === norm || full.includes(norm) || norm.includes(full);
+      }) || null;
     }
 
-    function getPlayerScore(playerName, data) {
-      if (!data?.leaderboardRows) return { totalToPar: 999, rounds: ["—","—","—","—"], thru: "—", teeTime: "—", isMC: true };
-
-      const p = findPlayerInLeaderboard(playerName, data.leaderboardRows);
-      if (!p) return { totalToPar: 999, rounds: ["—","—","—","—"], thru: "—", teeTime: "—", isMC: true };
+    function getPlayerScore(playerName) {
+      if (!currentLeaderboardData?.leaderboardRows) return {totalToPar: 999, rounds: ["—","—","—","—"], thru: "—", teeTime: "—", isMC: true};
+      
+      const p = findPlayer(playerName, currentLeaderboardData.leaderboardRows);
+      if (!p) return {totalToPar: 999, rounds: ["—","—","—","—"], thru: "—", teeTime: "—", isMC: true};
 
       let totalToPar = p.total === "E" ? 0 : parseInt(p.total) || 0;
-      const roundsData = p.rounds || [];
       const rounds = Array(4).fill("—");
-      roundsData.forEach(r => {
+      (p.rounds || []).forEach(r => {
         const idx = (r.roundId || 1) - 1;
         if (idx >= 0 && idx < 4) rounds[idx] = r.scoreToPar === "E" ? "E" : (parseInt(r.scoreToPar) || 0);
       });
 
-      const isMC = ["cut", "wd", "dq"].includes((p.status || "").toLowerCase()) || (p.thru || "").toLowerCase() === "cut";
-
-      return {
-        totalToPar,
-        rounds,
-        thru: p.thru === "-" ? "F" : (p.thru || "—"),
-        teeTime: p.teeTime || "—",
-        isMC
-      };
+      const isMC = ["cut","wd","dq"].includes((p.status||"").toLowerCase());
+      return {totalToPar, rounds, thru: p.thru || "—", teeTime: p.teeTime || "—", isMC};
     }
 
-    function getCutLineWorstToPar(data) {
-      if (!data?.leaderboardRows?.length) return 999;
-      const madeCut = data.leaderboardRows
+    function getCutLine() {
+      if (!currentLeaderboardData) return 999;
+      const madeCutScores = currentLeaderboardData.leaderboardRows
         .map(p => {
-          const score = getPlayerScore(`${p.firstName} ${p.lastName}`, data);
+          const score = getPlayerScore(`${p.firstName} ${p.lastName}`);
           return score.isMC ? null : score.totalToPar;
         })
         .filter(s => s !== null);
-      return madeCut.length ? Math.max(...madeCut) : 999;
+      return madeCutScores.length ? Math.max(...madeCutScores) : 999;
     }
 
-    function calculateTeamScore(teamName, data) {
-      if (!data) return { score: 999, players: [] };
-      const roster = config.tournaments[config.currentTournamentKey]?.teams?.[teamName] || [];
-      if (!roster.length) return { score: 999, players: [] };
+    function calculateTeamScore(teamName) {
+      const roster = config.tournaments["2026-masters"].teams[teamName] || [];
+      if (!roster.length || !currentLeaderboardData) return {score: 999, players: []};
 
-      const cutLine = getCutLineWorstToPar(data);
+      const cutLine = getCutLine();
       const playerScores = roster.map(name => {
-        const scoreObj = getPlayerScore(name, data);
+        let scoreObj = getPlayerScore(name);
         const adjusted = scoreObj.isMC ? cutLine : scoreObj.totalToPar;
-        return { name, adjusted, ...scoreObj };
+        return {...scoreObj, name, adjusted};
       });
 
-      playerScores.sort((a, b) => a.adjusted - b.adjusted);
-      const best4 = playerScores.slice(0, 4);
-      const total = best4.reduce((sum, p) => sum + p.adjusted, 0);
+      playerScores.sort((a,b) => a.adjusted - b.adjusted);
+      const best4Total = playerScores.slice(0,4).reduce((sum, p) => sum + p.adjusted, 0);
 
-      return { score: total, players: playerScores };
+      return {score: best4Total, players: playerScores};
     }
 
     // ==================== RENDERING ====================
@@ -307,20 +220,20 @@
       const tbody = document.getElementById('leaderboard-body');
       tbody.innerHTML = '';
 
-      const teamsData = teamNames.map(name => {
-        const result = calculateTeamScore(name, currentLeaderboardData);
-        return { name, score: result.score };
-      }).sort((a, b) => a.score - b.score);
+      const data = teamNames.map(name => {
+        const res = calculateTeamScore(name);
+        return {name, score: res.score};
+      }).sort((a,b) => a.score - b.score);
 
-      teamsData.forEach((team, i) => {
+      data.forEach((team, i) => {
+        const rankHTML = i === 0 ? `<span class="rank-1">1</span>` : i === 1 ? `<span class="rank-2">2</span>` : i === 2 ? `<span class="rank-3">3</span>` : i+1;
+        const scoreDisplay = team.score === 999 ? '—' : (team.score > 0 ? `+${team.score}` : team.score);
         const row = document.createElement('tr');
-        row.className = 'border-b border-white/10 last:border-none';
-        const rankHTML = i === 0 ? `<span class="rank-1">1</span>` : i === 1 ? `<span class="rank-2">2</span>` : i === 2 ? `<span class="rank-3">3</span>` : `<span>${i + 1}</span>`;
-        const displayScore = team.score === 999 ? '—' : (team.score > 0 ? `+${team.score}` : team.score);
+        row.className = "border-b border-white/10 last:border-none hover:bg-white/5";
         row.innerHTML = `
-          <td class="px-6 py-6 font-semibold">${rankHTML}</td>
-          <td class="px-6 py-6 font-medium">${team.name}</td>
-          <td class="px-6 py-6 text-right font-semibold">${displayScore}</td>
+          <td class="px-6 py-5 font-semibold">${rankHTML}</td>
+          <td class="px-6 py-5 font-medium">${team.name}</td>
+          <td class="px-6 py-5 text-right font-semibold">${scoreDisplay}</td>
         `;
         tbody.appendChild(row);
       });
@@ -331,42 +244,36 @@
       container.innerHTML = '';
 
       teamNames.forEach(teamName => {
-        const result = calculateTeamScore(teamName, currentLeaderboardData);
-        const playersHTML = result.players.map(p => {
+        const result = calculateTeamScore(teamName);
+        let html = '';
+
+        result.players.forEach(p => {
           const scoreClass = p.isMC ? 'line-through text-red-400' : (p.adjusted < 0 ? 'under-par' : '');
-          const mcLabel = p.isMC ? `<span class="text-xs bg-red-500/80 px-2 py-px rounded ml-2">MC</span>` : '';
-          
-          let statusHTML = '';
-          if (p.teeTime && (p.thru === "—" || p.thru === "F")) {
-            statusHTML = `<div class="text-sm text-amber-300">Tee: ${p.teeTime}</div>`;
-          } else {
-            statusHTML = `<div class="text-sm text-white/70">Thru: ${p.thru}</div>`;
-          }
+          const mcTag = p.isMC ? ' <span class="text-xs bg-red-500/70 px-1.5 py-0.5 rounded">MC</span>' : '';
+          const status = p.teeTime && p.thru === "—" ? `<span class="text-amber-300">Tee: ${p.teeTime}</span>` : `Thru: ${p.thru}`;
 
-          const roundsHTML = p.rounds.map((r, i) => 
-            `<div class="text-center"><span class="text-xs text-white/50">R${i+1}</span><br><span class="${typeof r === 'number' && r < 0 ? 'under-par' : ''}">${r}</span></div>`
-          ).join('');
-
-          return `
-            <div class="flex flex-col md:flex-row md:items-center justify-between bg-white/5 rounded-3xl px-6 py-4 gap-4">
+          html += `
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 bg-white/5 rounded-3xl px-6 py-4">
               <div class="font-medium flex-1">${p.name}</div>
-              <div class="flex-1">${statusHTML}</div>
-              <div class="flex gap-6 text-sm">${roundsHTML}</div>
-              <div class="font-semibold text-xl ${scoreClass}">${p.adjusted > 0 ? '+' : ''}${p.adjusted}${mcLabel}</div>
+              <div class="text-sm text-white/70">${status}</div>
+              <div class="flex gap-4 text-xs">
+                ${p.rounds.map((r,i) => `<div class="text-center"><span class="block text-white/50">R${i+1}</span>${r}</div>`).join('')}
+              </div>
+              <div class="font-semibold text-lg ${scoreClass}">${p.adjusted > 0 ? '+' : ''}${p.adjusted}${mcTag}</div>
             </div>`;
-        }).join('');
+        });
 
         const card = document.createElement('div');
-        card.className = 'card bg-white/10 backdrop-blur-xl rounded-3xl p-6';
+        card.className = "card bg-white/10 backdrop-blur-xl rounded-3xl p-6";
         card.innerHTML = `
-          <div class="flex justify-between items-baseline mb-6">
+          <div class="flex justify-between mb-5">
             <h3 class="text-2xl font-semibold">${teamName}</h3>
             <div class="text-right">
-              <div class="text-sm text-green-300">Best 4 total</div>
+              <div class="text-sm text-green-300">Best 4</div>
               <div class="text-4xl font-bold">${result.score === 999 ? '—' : (result.score > 0 ? `+${result.score}` : result.score)}</div>
             </div>
           </div>
-          <div class="space-y-3">${playersHTML || '<p class="text-white/40 italic py-8 text-center">No players yet – use Bulk Upload above</p>'}</div>
+          <div class="space-y-2">${html || '<p class="text-white/40 py-8 text-center">No players loaded yet</p>'}</div>
         `;
         container.appendChild(card);
       });
@@ -377,44 +284,63 @@
       renderDetailedRosters();
     }
 
-    // ==================== BULK UPLOAD ====================
+    // ==================== BULK UPLOAD (FIXED) ====================
     function openBulkUploadModal() {
       document.getElementById('bulk-modal').classList.remove('hidden');
       document.getElementById('bulk-modal').classList.add('flex');
     }
 
     function hideBulkModal() {
-      const modal = document.getElementById('bulk-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      const m = document.getElementById('bulk-modal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
     }
 
     function processBulkUpload() {
       const text = document.getElementById('bulk-textarea').value.trim();
-      if (!text) return alert("Paste your data first");
+      if (!text) {
+        alert("Please paste your roster data");
+        return;
+      }
+
+      const newTeams = {};
+      teamNames.forEach(t => newTeams[t] = []);
 
       const lines = text.split('\n');
-      const newTeams = createTeamsObj();
-
       lines.forEach(line => {
-        const [team, ...playerParts] = line.split(',').map(s => s.trim());
-        const player = playerParts.join(',').trim();
-        if (teamNames.includes(team) && player) {
-          if (!newTeams[team].includes(player)) newTeams[team].push(player);
+        if (!line.trim()) return;
+        // Support comma or tab
+        let parts = line.split(',').map(s => s.trim());
+        if (parts.length < 2) parts = line.split('\t').map(s => s.trim());
+        
+        if (parts.length >= 2) {
+          let team = parts[0].trim();
+          let player = parts.slice(1).join(', ').trim();
+          if (teamNames.includes(team) && player) {
+            if (!newTeams[team].includes(player)) {
+              newTeams[team].push(player);
+            }
+          }
         }
       });
 
-      config.tournaments[config.currentTournamentKey].teams = newTeams;
+      // Save
+      config.tournaments["2026-masters"].teams = newTeams;
       localStorage.setItem('fantasyGolfConfig', JSON.stringify(config));
 
       hideBulkModal();
       renderEverything();
-      alert("✅ Rosters updated from Google Sheet!");
+      
+      // Success feedback
+      const successMsg = document.createElement('div');
+      successMsg.className = "fixed bottom-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-3xl shadow-xl text-sm";
+      successMsg.textContent = "✅ Rosters updated successfully!";
+      document.body.appendChild(successMsg);
+      setTimeout(() => successMsg.remove(), 3000);
     }
 
-    // Manual refresh
     function manualRefresh() {
-      loadCurrentTournamentData().then(() => renderEverything());
+      loadCurrentTournamentData().then(renderEverything);
     }
 
     // ==================== INIT ====================
@@ -422,7 +348,7 @@
       await loadCurrentTournamentData();
       renderEverything();
       startRefreshCycle();
-      console.log("%c✅ Phil's Fantasy Golf League – 2026 Masters • 3-min refresh (7AM–8PM ET) • Fuzzy name matching enabled", "color:#d4af77; font-weight:700");
+      console.log("%c✅ Phil's Fantasy Golf League ready • Bulk upload fixed", "color:#d4af77; font-weight:700");
     }
 
     window.onload = init;
