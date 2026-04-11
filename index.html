@@ -30,17 +30,18 @@
           <h1 class="text-4xl font-black uppercase tracking-tighter">Phil's Fantasy Golf League</h1>
           <div class="flex items-center gap-2 mt-1">
              <p class="text-green-300 text-sm font-bold tracking-widest uppercase">2026 Masters Tournament</p>
-             <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 uppercase font-bold">Syncing...</span>
+             <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 uppercase font-bold">Loading...</span>
           </div>
+          <div id="last-updated" class="text-[10px] text-white/50 mt-1"></div>
         </div>
       </div>
       <button onclick="manualRefresh()" class="bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl px-6 py-3 transition-all active:scale-95 font-bold text-xs uppercase tracking-widest">
-        <i class="fa-solid fa-arrows-rotate mr-2"></i>Refresh
+        <i class="fa-solid fa-arrows-rotate mr-2"></i>Force Refresh
       </button>
     </div>
 
     <div id="debug-box" class="hidden mb-8 p-4 bg-red-900/40 border border-red-500/50 rounded-2xl">
-        <h3 class="text-xs font-bold uppercase mb-2 text-red-300"><i class="fa-solid fa-circle-exclamation mr-2"></i>API Troubleshooting Info:</h3>
+        <h3 class="text-xs font-bold uppercase mb-2 text-red-300"><i class="fa-solid fa-circle-exclamation mr-2"></i>API Troubleshooting:</h3>
         <p id="debug-text" class="text-sm font-mono text-red-200"></p>
     </div>
 
@@ -78,20 +79,95 @@
       "Wallace": ["Max Greyserman", "Dustin Johnson", "Sergio Garcia", "Nicolas Echavarria", "Andrew Novak", "Rory McIlroy", "Jason Day"]
     };
 
-    // KEY UPDATED TO THE 'f' VERSION FROM YOUR CURL
     const RAPIDAPI_KEY = "e055e4f6ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
     const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
-    const TOURN_ID = "014"; 
+    const TOURN_ID = "014";
     const YEAR = "2026";
 
-    let currentLeaderboardData = null;
+    const TOURNAMENT_END_DATE = new Date('2026-04-13T00:00:00-04:00'); // April 13 Eastern (after final round)
 
-    async function loadCurrentTournamentData() {
+    let currentLeaderboardData = null;
+    let lastRefreshTime = 0;
+
+    function isTournamentOver() {
+      return Date.now() > TOURNAMENT_END_DATE.getTime();
+    }
+
+    function isWithinRefreshWindow() {
+      if (isTournamentOver()) return false;
+      const now = new Date();
+      const hour = now.getHours(); // Local time of visitor — but we'll adjust for Eastern
+      // Better: convert to Eastern Time
+      const easternNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+      const easternHour = easternNow.getHours();
+      return easternHour >= 7 && easternHour < 20; // 7 AM – 8 PM Eastern
+    }
+
+    function shouldRefresh() {
+      if (!isWithinRefreshWindow()) return false;
+      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+      return lastRefreshTime < fiveMinutesAgo;
+    }
+
+    function saveToCache(data) {
+      const cache = {
+        leaderboard: data,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('mastersLeaderboardCache', JSON.stringify(cache));
+    }
+
+    function loadFromCache() {
+      const cached = localStorage.getItem('mastersLeaderboardCache');
+      if (!cached) return null;
+      const parsed = JSON.parse(cached);
+      currentLeaderboardData = parsed.leaderboard;
+      lastRefreshTime = parsed.timestamp;
+      return parsed.leaderboard;
+    }
+
+    function updateLastUpdated() {
+      const el = document.getElementById('last-updated');
+      if (!lastRefreshTime) {
+        el.textContent = '';
+        return;
+      }
+      const date = new Date(lastRefreshTime);
+      const timeStr = date.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        timeZone: 'America/New_York',
+        hour12: true 
+      });
+      el.textContent = `Last updated: ${timeStr} ET`;
+    }
+
+    async function loadCurrentTournamentData(force = false) {
       const statusEl = document.getElementById('api-status');
       const debugBox = document.getElementById('debug-box');
       const debugText = document.getElementById('debug-text');
 
+      // Use cache first for instant load
+      if (!force && currentLeaderboardData) {
+        statusEl.textContent = "🟢 Cached";
+        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/50 uppercase font-bold";
+        renderEverything();
+        updateLastUpdated();
+        return;
+      }
+
+      if (!force && !shouldRefresh()) {
+        statusEl.textContent = isTournamentOver() ? "🏁 Tournament Over" : "🟡 Waiting for window";
+        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/50 uppercase font-bold";
+        renderEverything();
+        updateLastUpdated();
+        return;
+      }
+
       try {
+        statusEl.textContent = "🔄 Syncing...";
+        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 uppercase font-bold";
+
         const url = `https://${RAPIDAPI_HOST}/leaderboard?year=${YEAR}&tournId=${TOURN_ID}&orgId=1`;
         const res = await fetch(url, {
           headers: {
@@ -100,28 +176,35 @@
           }
         });
 
-        const data = await res.json();
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        if (data.message) {
-            throw new Error(data.message);
-        }
+        const data = await res.json();
+        if (data.message) throw new Error(data.message);
 
         if (data && data.leaderboardRows) {
           currentLeaderboardData = data.leaderboardRows;
+          lastRefreshTime = Date.now();
+          saveToCache(currentLeaderboardData);
+
           statusEl.textContent = "🟢 Live";
           statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/50 uppercase font-bold";
           debugBox.classList.add('hidden');
         } else {
-          throw new Error("API connected but no leaderboard data found.");
+          throw new Error("No leaderboard data returned");
         }
       } catch (e) {
+        console.error(e);
         statusEl.textContent = "🔴 Error";
         statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50 uppercase font-bold";
         debugBox.classList.remove('hidden');
-        debugText.textContent = e.message;
+        debugText.textContent = e.message || "Failed to fetch data";
       }
+
+      renderEverything();
+      updateLastUpdated();
     }
 
+    // Rest of your helper functions (normalize, getPlayerScore, getCutLine, renderEverything) remain unchanged
     function normalize(str) {
       return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(a\)/i, '').replace(/[^a-z0-9 ]/g, "").trim();
     }
@@ -129,13 +212,12 @@
     function getPlayerScore(playerName) {
       const fallback = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "TBD", teeTime: "—", isMC: false, isDefault: true };
       if (!currentLeaderboardData) return fallback;
-      
+     
       const target = normalize(playerName);
       const p = currentLeaderboardData.find(row => {
           const rowName = normalize(`${row.firstName} ${row.lastName}`);
           return rowName.includes(target) || target.includes(rowName);
       });
-
       if (!p) return fallback;
 
       let scoreVal = (p.total === "E" || p.total === "even") ? 0 : parseInt(p.total);
@@ -176,7 +258,7 @@
           return { name, total, players };
       }).sort((a,b) => a.total - b.total);
 
-      // Render Table
+      // Leaderboard table
       document.getElementById('leaderboard-body').innerHTML = standings.map((team, i) => `
         <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
           <td class="px-6 py-5 font-black text-white/50">${i+1}</td>
@@ -184,7 +266,7 @@
           <td class="px-6 py-5 text-right font-black text-2xl">${team.total > 0 ? '+'+team.total : (team.total === 0 ? 'E' : team.total)}</td>
         </tr>`).join('');
 
-      // Render Rosters
+      // Detailed rosters
       document.getElementById('detailed-rosters').innerHTML = standings.map(team => `
         <div class="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10">
           <div class="flex justify-between items-start mb-6">
@@ -211,11 +293,30 @@
     }
 
     async function manualRefresh() {
-      await loadCurrentTournamentData();
-      renderEverything();
+      await loadCurrentTournamentData(true); // force = true
     }
 
-    window.onload = manualRefresh;
+    // Auto-refresh loop
+    function startAutoRefresh() {
+      setInterval(() => {
+        if (shouldRefresh()) {
+          loadCurrentTournamentData();
+        }
+      }, 30000); // Check every 30 seconds (cheap), but only fetch every 5 min
+    }
+
+    // Initial load
+    window.onload = async () => {
+      // Try cache first for instant display
+      loadFromCache();
+      renderEverything();
+      updateLastUpdated();
+
+      // Then do the first real load if needed
+      await loadCurrentTournamentData();
+
+      startAutoRefresh();
+    };
   </script>
 </body>
 </html>
