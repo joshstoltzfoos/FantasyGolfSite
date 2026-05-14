@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phil's Fantasy Golf | 2026 Masters</title>
+  <title>Phil's Fantasy Golf | 2026 PGA Championship</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(rgba(10, 61, 42, 0.9), rgba(10, 61, 42, 0.95)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Amen_Corner_Augusta_National.jpg/1920px-Amen_Corner_Augusta_National.jpg');
+      /* PGA Championship Theme: Dark Navy Blue */
+      background: linear-gradient(rgba(12, 35, 64, 0.92), rgba(12, 35, 64, 0.98)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/PGA_National_Resort_%26_Spa_-_The_Champion_Course.jpg/1920px-PGA_National_Resort_%26_Spa_-_The_Champion_Course.jpg');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -24,12 +25,12 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
       <div class="flex items-center gap-4">
         <div class="bg-[#d4af77] p-3 rounded-2xl shadow-xl">
-            <i class="fa-solid fa-golf-ball-tee text-3xl text-[#0a3d2a]"></i>
+            <i class="fa-solid fa-trophy text-3xl text-[#0c2340]"></i>
         </div>
         <div>
           <h1 class="text-4xl font-black uppercase tracking-tighter">Phil's Fantasy Golf League</h1>
           <div class="flex items-center gap-2 mt-1">
-             <p class="text-green-300 text-sm font-bold tracking-widest uppercase">2026 Masters Tournament</p>
+             <p class="text-blue-300 text-sm font-bold tracking-widest uppercase">2026 PGA Championship</p>
              <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 uppercase font-bold">Loading...</span>
           </div>
           <div id="last-updated" class="text-[10px] text-white/50 mt-1"></div>
@@ -49,7 +50,7 @@
       <h2 class="text-2xl font-black uppercase tracking-tighter mb-4 ml-2">Standings</h2>
       <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-1 shadow-2xl border border-white/10 overflow-hidden">
         <table class="w-full">
-          <thead class="bg-white/5 text-green-300 uppercase text-[10px] tracking-[0.2em]">
+          <thead class="bg-white/5 text-blue-300 uppercase text-[10px] tracking-[0.2em]">
             <tr>
               <th class="px-6 py-4 text-left w-16">Pos</th>
               <th class="px-6 py-4 text-left">Manager</th>
@@ -66,25 +67,31 @@
   </div>
 
   <script>
+    // ------------------------------------------------------------------------
+    // UPDATE THESE TEAMS WITH YOUR PGA CHAMPIONSHIP AUCTION RESULTS
+    // ------------------------------------------------------------------------
     const teamRosters = {
-      "Christine": ["Aldrich Potgieter", "Justin Thomas", "Wyndham Clark", "Harris English", "Sepp Straka", "Alex Noren", "Min Woo Lee"],
-      "Doug": ["Rasmus Neergaard-Petersen", "Nicolai Højgaard", "Marco Penge", "Scottie Scheffler", "Chris Gotterup", "Jon Rahm", "Ryan Fox"],
-      "Gerald": ["Robert MacIntyre", "Tyrrell Hatton", "Cameron Young", "Jordan Spieth", "Ludvig Åberg", "Justin Rose", "Zach Johnson"],
-      "Josh": ["Patrick Cantlay", "Keegan Bradley", "Brooks Koepka", "Cameron Smith", "Collin Morikawa", "Adam Scott", "Max Homa"],
-      "Nick": ["Maverick McNealy", "Ryan Gerard", "Tommy Fleetwood", "Brian Harman", "Matt Fitzpatrick", "Harry Hall", "Sami Välimäki"],
-      "Patrick": ["Jacob Bridgeman", "Jake Knapp", "Aaron Rai", "Bubba Watson", "Brandon Holtz", "Sungjae Im", "Fred Couples"],
-      "Phil": ["Hideki Matsuyama", "Russell Henley", "Gary Woodland", "Kristoffer Reitan", "Michael Kim", "Nick Taylor", "Sam Burns"],
-      "Ricky": ["Rasmus Højgaard", "Corey Conners", "Shane Lowry", "Xander Schauffele", "Viktor Hovland", "Matt McCarty", "Patrick Reed"],
-      "Roger": ["Bryson DeChambeau", "Kurt Kitayama", "Akshay Bhatia", "Si Woo Kim", "Ben Griffin", "Daniel Berger", "J.J. Spaun"],
-      "Wallace": ["Max Greyserman", "Dustin Johnson", "Sergio Garcia", "Nicolas Echavarria", "Andrew Novak", "Rory McIlroy", "Jason Day"]
+      "Christine": ["Sepp Straka", "Marco Penge", "Matt McCarty", "Jordan Smith", "Justin Rose", "Collin Morikawa", "Xander Schauffele"],
+      "Doug": ["Sungjae Im", "Tyrrell Hatton", "Matt Fitzpatrick", "Scottie Scheffler", "Alex Fitzpatrick", "Michael Block", "Haotong Li"],
+      "Gerald": ["Tommy Fleetwood", "Sudarshan Yellamaraju", "Rasmus Højgaard", "Jon Rahm", "Jordan Spieth", "Rickie Fowler", "Nicolai Højgaard"],
+      "Josh": ["Max Homa", "Brooks Koepka", "Alex Smalley", "Viktor Hovland", "Hideki Matsuyama", "Keegan Bradley", "Dustin Johnson"],
+      "Nick": ["Bud Cauley", "Brian Harman", "Keith Mitchell", "Daniel Berger", "Harry Hall", "Kristoffer Reitan", "Michael Thorbjornsen"],
+      "Patrick": ["David Puig", "Sam Burns", "Ludvig Åberg", "Chris Gotterup", "Si Woo Kim", "Patrick Reed", "Cameron Young"],
+      "Phil": ["J.J. Spaun", "Adam Scott", "Shane Lowry", "Thomas Detry", "Maverick McNealy", "Robert MacIntyre", "Kurt Kitayama"],
+      "Ricky": ["Justin Thomas", "Jacob Bridgeman", "Nick Taylor", "Corey Conners", "Ryan Gerard", "J.T. Poston", "Pierceson Coody"],
+      "Roger": ["Patrick Cantlay", "Ben Griffin", "Min Woo Lee", "Harris English", "Jason Day", "Bryson DeChambeau", "Joaquín Niemann"],
+      "Wallace": ["Aaron Rai", "Rory McIlroy", "Gary Woodland", "Akshay Bhatia", "Wyndham Clark", "Sahith Theegala", "Russell Henley"]
     };
 
     const RAPIDAPI_KEY = "e055e4f6ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
     const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
-    const TOURN_ID = "014";
+    
+    // PGA Championship is usually ID 033 on the PGA Tour
+    const TOURN_ID = "033"; 
     const YEAR = "2026";
 
-    const TOURNAMENT_END_DATE = new Date('2026-04-13T00:00:00-04:00'); // April 13 Eastern (after final round)
+    // Shut off date: Monday after the tournament (May 18, 2026)
+    const TOURNAMENT_END_DATE = new Date('2026-05-18T00:00:00-04:00'); 
 
     let currentLeaderboardData = null;
     let lastRefreshTime = 0;
@@ -96,8 +103,6 @@
     function isWithinRefreshWindow() {
       if (isTournamentOver()) return false;
       const now = new Date();
-      const hour = now.getHours(); // Local time of visitor — but we'll adjust for Eastern
-      // Better: convert to Eastern Time
       const easternNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
       const easternHour = easternNow.getHours();
       return easternHour >= 7 && easternHour < 20; // 7 AM – 8 PM Eastern
@@ -114,11 +119,12 @@
         leaderboard: data,
         timestamp: Date.now()
       };
-      localStorage.setItem('mastersLeaderboardCache', JSON.stringify(cache));
+      // Changed cache key so it doesn't conflict with the Masters one
+      localStorage.setItem('pgaLeaderboardCache26', JSON.stringify(cache));
     }
 
     function loadFromCache() {
-      const cached = localStorage.getItem('mastersLeaderboardCache');
+      const cached = localStorage.getItem('pgaLeaderboardCache26');
       if (!cached) return null;
       const parsed = JSON.parse(cached);
       currentLeaderboardData = parsed.leaderboard;
@@ -147,7 +153,6 @@
       const debugBox = document.getElementById('debug-box');
       const debugText = document.getElementById('debug-text');
 
-      // Use cache first for instant load
       if (!force && currentLeaderboardData) {
         statusEl.textContent = "🟢 Cached";
         statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/50 uppercase font-bold";
@@ -204,7 +209,6 @@
       updateLastUpdated();
     }
 
-    // Rest of your helper functions (normalize, getPlayerScore, getCutLine, renderEverything) remain unchanged
     function normalize(str) {
       return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(a\)/i, '').replace(/[^a-z0-9 ]/g, "").trim();
     }
@@ -212,7 +216,7 @@
     function getPlayerScore(playerName) {
       const fallback = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "TBD", teeTime: "—", isMC: false, isDefault: true };
       if (!currentLeaderboardData) return fallback;
-     
+      
       const target = normalize(playerName);
       const p = currentLeaderboardData.find(row => {
           const rowName = normalize(`${row.firstName} ${row.lastName}`);
@@ -272,7 +276,7 @@
           <div class="flex justify-between items-start mb-6">
             <h3 class="text-xl font-black uppercase tracking-tighter">${team.name}</h3>
             <div class="text-right">
-              <div class="text-[9px] uppercase font-black text-green-300 tracking-widest">Total</div>
+              <div class="text-[9px] uppercase font-black text-blue-300 tracking-widest">Total</div>
               <div class="text-4xl font-black">${team.total > 0 ? '+'+team.total : (team.total === 0 ? 'E' : team.total)}</div>
             </div>
           </div>
@@ -293,28 +297,22 @@
     }
 
     async function manualRefresh() {
-      await loadCurrentTournamentData(true); // force = true
+      await loadCurrentTournamentData(true);
     }
 
-    // Auto-refresh loop
     function startAutoRefresh() {
       setInterval(() => {
         if (shouldRefresh()) {
           loadCurrentTournamentData();
         }
-      }, 30000); // Check every 30 seconds (cheap), but only fetch every 5 min
+      }, 30000); 
     }
 
-    // Initial load
     window.onload = async () => {
-      // Try cache first for instant display
       loadFromCache();
       renderEverything();
       updateLastUpdated();
-
-      // Then do the first real load if needed
       await loadCurrentTournamentData();
-
       startAutoRefresh();
     };
   </script>
