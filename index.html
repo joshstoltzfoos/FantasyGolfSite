@@ -10,7 +10,6 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
     body {
       font-family: 'Inter', sans-serif;
-      /* U.S. Open Theme: Classic dark with Shinnecock vibes */
       background: linear-gradient(rgba(12, 35, 64, 0.92), rgba(12, 35, 64, 0.98)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Shinnecock_Hills_Golf_Club_%28aerial%29.jpg/1920px-Shinnecock_Hills_Golf_Club_%28aerial%29.jpg');
       background-size: cover;
       background-position: center;
@@ -30,7 +29,7 @@
         <div>
           <h1 class="text-4xl font-black uppercase tracking-tighter">Phil's Fantasy Golf League</h1>
           <div class="flex items-center gap-2 mt-1">
-             <p class="text-blue-300 text-sm font-bold tracking-widest uppercase">2026 U.S. Open</p>
+             <p class="text-red-300 text-sm font-bold tracking-widest uppercase">2026 U.S. OPEN</p>
              <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 uppercase font-bold">Loading...</span>
           </div>
           <div id="last-updated" class="text-[10px] text-white/50 mt-1"></div>
@@ -40,10 +39,12 @@
         <i class="fa-solid fa-arrows-rotate mr-2"></i>Force Refresh
       </button>
     </div>
-    <div id="debug-box" class="hidden mb-8 p-4 bg-red-900/40 border border-red-500/50 rounded-2xl">
-        <h3 class="text-xs font-bold uppercase mb-2 text-red-300"><i class="fa-solid fa-circle-exclamation mr-2"></i>API Troubleshooting:</h3>
+
+    <div id="debug-box" class="mb-8 p-4 bg-red-900/40 border border-red-500/50 rounded-2xl">
+        <h3 class="text-xs font-bold uppercase mb-2 text-red-300"><i class="fa-solid fa-circle-exclamation mr-2"></i>API Debug:</h3>
         <p id="debug-text" class="text-sm font-mono text-red-200"></p>
     </div>
+
     <div class="mb-12">
       <h2 class="text-2xl font-black uppercase tracking-tighter mb-4 ml-2">Standings</h2>
       <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-1 shadow-2xl border border-white/10 overflow-hidden">
@@ -62,9 +63,10 @@
     <h2 class="text-2xl font-black uppercase tracking-tighter mb-6 ml-2">Roster Breakdown</h2>
     <div id="detailed-rosters" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
   </div>
+
   <script>
     // ------------------------------------------------------------------------
-    // UPDATED TEAMS FOR 2026 U.S. OPEN
+    // TEAMS FOR 2026 US OPEN
     // ------------------------------------------------------------------------
     const teamRosters = {
       "Christine": ["Matt Fitzpatrick", "Russell Henley", "Sam Burns", "J.T. Poston", "Bud Cauley", "Davis Thompson", "Harry Hall"],
@@ -78,17 +80,16 @@
       "Roger": ["Tommy Fleetwood", "Si Woo Kim", "Viktor Hovland", "Tyrrell Hatton", "Adam Scott", "Kurt Kitayama", "Alex Smalley"],
       "Wallace": ["Rory McIlroy", "Alex Fitzpatrick", "Akshay Bhatia", "Ryan Gerard", "Aaron Rai", "Keegan Bradley", "Corey Conners", "Ryan Fox"]
     };
+
     const RAPIDAPI_KEY = "e055e4f6ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
     const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
    
-    // US Open tournament ID (verify in API docs or test; common value ~"002" or check schedule endpoint)
-    // Update this if the API returns no data — you may need to fetch from /schedules to confirm tournId
-    const TOURN_ID = "002";  
     const YEAR = "2026";
-    // Tournament runs June 18-21, 2026; end date Monday after
     const TOURNAMENT_END_DATE = new Date('2026-06-23T00:00:00-04:00');
     let currentLeaderboardData = null;
     let lastRefreshTime = 0;
+    let currentTournId = null;
+
     function isTournamentOver() {
       return Date.now() > TOURNAMENT_END_DATE.getTime();
     }
@@ -97,7 +98,7 @@
       const now = new Date();
       const easternNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
       const easternHour = easternNow.getHours();
-      return easternHour >= 7 && easternHour < 23; // Extended for major weekend
+      return easternHour >= 7 && easternHour < 23;
     }
     function shouldRefresh() {
       if (!isWithinRefreshWindow()) return false;
@@ -105,10 +106,7 @@
       return lastRefreshTime < fiveMinutesAgo;
     }
     function saveToCache(data) {
-      const cache = {
-        leaderboard: data,
-        timestamp: Date.now()
-      };
+      const cache = { leaderboard: data, timestamp: Date.now(), tournId: currentTournId };
       localStorage.setItem('usOpenLeaderboardCache26', JSON.stringify(cache));
     }
     function loadFromCache() {
@@ -117,74 +115,72 @@
       const parsed = JSON.parse(cached);
       currentLeaderboardData = parsed.leaderboard;
       lastRefreshTime = parsed.timestamp;
+      currentTournId = parsed.tournId;
       return parsed.leaderboard;
     }
     function updateLastUpdated() {
       const el = document.getElementById('last-updated');
-      if (!lastRefreshTime) {
-        el.textContent = '';
-        return;
-      }
+      if (!lastRefreshTime) return;
       const date = new Date(lastRefreshTime);
-      const timeStr = date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        timeZone: 'America/New_York',
-        hour12: true
-      });
-      el.textContent = `Last updated: ${timeStr} ET`;
+      const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York', hour12: true });
+      el.textContent = `Last updated: ${timeStr} ET ${currentTournId ? `(ID:${currentTournId})` : ''}`;
     }
-    async function loadCurrentTournamentData(force = false) {
-      const statusEl = document.getElementById('api-status');
-      const debugBox = document.getElementById('debug-box');
-      const debugText = document.getElementById('debug-text');
-      if (!force && currentLeaderboardData) {
-        statusEl.textContent = "🟢 Cached";
-        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/50 uppercase font-bold";
-        renderEverything();
-        updateLastUpdated();
-        return;
-      }
-      if (!force && !shouldRefresh()) {
-        statusEl.textContent = isTournamentOver() ? "🏁 Tournament Over" : "🟡 Waiting for window";
-        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/50 uppercase font-bold";
-        renderEverything();
-        updateLastUpdated();
-        return;
-      }
+
+    async function tryTournId(id) {
       try {
-        statusEl.textContent = "🔄 Syncing...";
-        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 uppercase font-bold";
-        const url = `https://${RAPIDAPI_HOST}/leaderboard?year=${YEAR}&tournId=${TOURN_ID}&orgId=1`;
+        const url = `https://${RAPIDAPI_HOST}/leaderboard?year=${YEAR}&tournId=${id}&orgId=1`;
         const res = await fetch(url, {
           headers: {
             'x-rapidapi-key': RAPIDAPI_KEY,
             'x-rapidapi-host': RAPIDAPI_HOST
           }
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) return null;
         const data = await res.json();
-        if (data.message) throw new Error(data.message);
-        if (data && data.leaderboardRows) {
-          currentLeaderboardData = data.leaderboardRows;
-          lastRefreshTime = Date.now();
-          saveToCache(currentLeaderboardData);
-          statusEl.textContent = "🟢 Live";
-          statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/50 uppercase font-bold";
-          debugBox.classList.add('hidden');
-        } else {
-          throw new Error("No leaderboard data returned. Check TOURN_ID.");
+        if (data && data.leaderboardRows && data.leaderboardRows.length > 10) {
+          return data.leaderboardRows;
         }
-      } catch (e) {
-        console.error(e);
-        statusEl.textContent = "🔴 Error";
-        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50 uppercase font-bold";
-        debugBox.classList.remove('hidden');
-        debugText.textContent = e.message || "Failed to fetch data. Verify TOURN_ID for US Open.";
-      }
-      renderEverything();
-      updateLastUpdated();
+      } catch(e) {}
+      return null;
     }
+
+    async function loadCurrentTournamentData(force = false) {
+      const statusEl = document.getElementById('api-status');
+      const debugBox = document.getElementById('debug-box');
+      const debugText = document.getElementById('debug-text');
+
+      if (!force && currentLeaderboardData) {
+        statusEl.textContent = "🟢 Cached";
+        renderEverything();
+        updateLastUpdated();
+        return;
+      }
+
+      statusEl.textContent = "🔄 Testing IDs...";
+      debugBox.classList.remove('hidden');
+
+      const possibleIds = ["002", "004", "026", "040", "033", "010"]; // common major IDs
+      for (let id of possibleIds) {
+        const data = await tryTournId(id);
+        if (data) {
+          currentTournId = id;
+          currentLeaderboardData = data;
+          lastRefreshTime = Date.now();
+          saveToCache(data);
+          statusEl.textContent = `🟢 Live (ID: ${id})`;
+          statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/50 uppercase font-bold";
+          debugText.textContent = `Success with tournId = ${id}`;
+          renderEverything();
+          updateLastUpdated();
+          return;
+        }
+      }
+
+      statusEl.textContent = "🔴 Failed";
+      debugText.textContent = "Could not find working tournId. Check browser console (F12) and your RapidAPI dashboard for the correct US Open ID.";
+      renderEverything();
+    }
+
     function normalize(str) {
       return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(a\)/i, '').replace(/[^a-z0-9 ]/g, "").trim();
     }
@@ -231,14 +227,14 @@
           const total = players.slice(0, 4).reduce((sum, p) => sum + p.adjusted, 0);
           return { name, total, players };
       }).sort((a,b) => a.total - b.total);
-      // Leaderboard table
+
       document.getElementById('leaderboard-body').innerHTML = standings.map((team, i) => `
         <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
           <td class="px-6 py-5 font-black text-white/50">${i+1}</td>
           <td class="px-6 py-5 font-bold uppercase text-sm">${team.name}</td>
           <td class="px-6 py-5 text-right font-black text-2xl">${team.total > 0 ? '+'+team.total : (team.total === 0 ? 'E' : team.total)}</td>
         </tr>`).join('');
-      // Detailed rosters
+
       document.getElementById('detailed-rosters').innerHTML = standings.map(team => `
         <div class="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10">
           <div class="flex justify-between items-start mb-6">
@@ -268,9 +264,7 @@
     }
     function startAutoRefresh() {
       setInterval(() => {
-        if (shouldRefresh()) {
-          loadCurrentTournamentData();
-        }
+        if (shouldRefresh()) loadCurrentTournamentData();
       }, 30000);
     }
     window.onload = async () => {
