@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phil's Fantasy Golf | 2026 U.S. Open</title>
+  <title>Phil's Fantasy Golf | 2026 Open Championship</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(rgba(10, 25, 47, 0.94), rgba(10, 25, 47, 0.98)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Shinnecock_Hills_Golf_Club_%28aerial%29.jpg/1920px-Shinnecock_Hills_Golf_Club_%28aerial%29.jpg');
+      background: linear-gradient(rgba(10, 25, 47, 0.94), rgba(10, 25, 47, 0.98)), url('https://upload.wikimedia.org/wikipedia/commons/8/8a/Royal_Birkdale_-_geograph.org.uk_-_874236.jpg');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -29,7 +29,7 @@
         <div>
           <h1 class="text-4xl font-black uppercase tracking-tighter">Phil's Fantasy Golf League</h1>
           <div class="flex items-center gap-2 mt-1">
-             <p class="text-blue-400 text-sm font-bold tracking-widest uppercase">2026 U.S. OPEN</p>
+             <p class="text-blue-400 text-sm font-bold tracking-widest uppercase">2026 OPEN CHAMPIONSHIP</p>
              <span id="api-status" class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/20 uppercase font-bold">Loading...</span>
           </div>
           <div id="last-updated" class="text-[10px] text-white/50 mt-1"></div>
@@ -39,7 +39,6 @@
         <i class="fa-solid fa-arrows-rotate mr-2"></i>Force Refresh
       </button>
     </div>
-
     <!-- Main Standings -->
     <div class="mb-12">
       <h2 class="text-2xl font-black uppercase tracking-tighter mb-4 ml-2 flex items-center gap-2 text-white">
@@ -58,49 +57,48 @@
         </table>
       </div>
     </div>
-
     <!-- Roster Grid -->
     <h2 class="text-2xl font-black uppercase tracking-tighter mb-6 ml-2 flex items-center gap-2 text-white">
       <span class="w-1.5 h-6 bg-blue-600 rounded-full"></span>Roster Breakdown
     </h2>
     <div id="detailed-rosters" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
   </div>
-
   <script>
     // ------------------------------------------------------------------------
-    // TEAMS FOR 2026 US OPEN
+    // TEAMS FOR 2026 OPEN CHAMPIONSHIP (Royal Birkdale)
     // ------------------------------------------------------------------------
     const teamRosters = {
-      "Christine": ["Matt Fitzpatrick", "Russell Henley", "Sam Burns", "J.T. Poston", "Bud Cauley", "Davis Thompson", "Harry Hall"],
-      "Doug": ["Scottie Scheffler", "Ludvig Åberg", "Collin Morikawa", "Robert MacIntyre", "Ben Griffin", "Nick Taylor", "Billy Horschel"],
-      "Gerald": ["Min Woo Lee", "Jordan Spieth", "Harris English", "Rickie Fowler", "Cameron Smith", "Daniel Berger", "Jackson Koivun (a)"],
-      "Josh": ["Brooks Koepka", "Joaquín Niemann", "Hideki Matsuyama", "Shane Lowry", "David Puig", "Alex Noren", "Sahith Theegala"],
-      "Nick": ["Xander Schauffele", "Wyndham Clark", "Sepp Straka", "Sungjae Im", "Jacob Bridgeman", "Nicolai Højgaard", "Gary Woodland"],
-      "Patrick": ["Jon Rahm", "Patrick Reed", "Justin Rose", "Chris Gotterup", "Justin Thomas", "Kristoffer Reitan", "J.J. Spaun"],
-      "Phil": ["Ryo Hisatsune", "Jackson Suber", "Jayden Schaper", "Lucas Herbert", "Max Greyserman", "Andrew Novak", "Michael Kim"],
-      "Ricky": ["Bryson DeChambeau", "Cameron Young", "Patrick Cantlay", "Maverick McNealy", "Jason Day", "Jake Knapp", "Sudarshan Yellamaraju"],
-      "Roger": ["Tommy Fleetwood", "Si Woo Kim", "Viktor Hovland", "Tyrrell Hatton", "Adam Scott", "Kurt Kitayama", "Alex Smalley"],
-      "Wallace": ["Rory McIlroy", "Alex Fitzpatrick", "Akshay Bhatia", "Aaron Rai", "Keegan Bradley", "Corey Conners", "Ryan Fox"]
+      "Christine": ["Ryan Gerard", "Gary Woodland", "J.T. Poston", "Jake Knapp", "Andrew Novak", "Michael Kim", "Sepp Straka"],
+      "Doug": ["Matt Fitzpatrick", "Tommy Fleetwood", "Tom Kim", "Brian Harman", "Cameron Smith", "Nicolai Hojgaard", "Harris English"],
+      "Gerald": ["Jordan Spieth", "Justin Rose", "Rickie Fowler", "Russell Henley", "Patrick Reed", "Brooks Koepka", "Ryan Fox"],
+      "Josh": ["Xander Schauffele", "Shane Lowry", "Wyndham Clark", "Keegan Bradley", "Daniel Berger", "Max Greyserman", "Tom McKibbin"],
+      "Nick": ["Min Woo Lee", "Akshay Bhatia", "Jordan Smith", "Haotong Li", "Michael Thorbjornsen", "Matthew Jordan", "Sam Stevens"],
+      "Patrick": ["Tyrrell Hatton", "Ludvig Aberg", "Collin Morikawa", "Joaquin Niemann", "Robert MacIntyre", "Eric Cole", "Jacob Bridgeman"],
+      "Phil": ["Cameron Young", "Si Woo Kim", "Ben Griffin", "Kurt Kitayama", "Alex Noren", "Kristoffer Reitan", "David Puig"],
+      "Ricky": ["Chris Gotterup", "Jon Rahm", "Sam Burns", "Justin Thomas", "Hideki Matsuyama", "Maverick McNealy", "Corey Conners"],
+      "Roger": ["Scottie Scheffler", "Alex Fitzpatrick", "Bryson DeChambeau", "Patrick Cantlay", "Aaron Rai", "J.J. Spaun", "Eugenio Chacarra"],
+      "Wallace": ["Rory McIlroy", "Viktor Hovland", "Adam Scott", "Jason Day", "Victor Perez", "Sungjae Im", "Bud Cauley"]
     };
-
     const RAPIDAPI_KEY = "e055e4f6ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
     const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
-    
+   
     const YEAR = "2026";
-    const TOURNAMENT_END_DATE = new Date('2026-06-23T00:00:00-04:00');
+    // Tournament ends after Sunday July 19, 2026 (UK time). Use end of day ET equivalent.
+    const TOURNAMENT_END_DATE = new Date('2026-07-20T00:00:00-04:00');
     let currentLeaderboardData = null;
     let lastRefreshTime = 0;
     let currentTournId = null;
-
     function isTournamentOver() {
       return Date.now() > TOURNAMENT_END_DATE.getTime();
     }
+    // Refresh window based on UK time (Europe/London) since rounds are played in the UK.
+    // Typical Open play: ~6:30am - ~8:00pm BST. Window 5am-10pm UK covers all rounds + buffer.
     function isWithinRefreshWindow() {
       if (isTournamentOver()) return false;
       const now = new Date();
-      const easternNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
-      const easternHour = easternNow.getHours();
-      return easternHour >= 7 && easternHour < 23;
+      // Get current hour in UK (BST/GMT)
+      const ukHour = parseInt(now.toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false }));
+      return ukHour >= 5 && ukHour < 22;
     }
     function shouldRefresh() {
       if (!isWithinRefreshWindow()) return false;
@@ -109,10 +107,10 @@
     }
     function saveToCache(data) {
       const cache = { leaderboard: data, timestamp: Date.now(), tournId: currentTournId };
-      localStorage.setItem('usOpenLeaderboardCache26', JSON.stringify(cache));
+      localStorage.setItem('openChampionshipLeaderboardCache26', JSON.stringify(cache));
     }
     function loadFromCache() {
-      const cached = localStorage.getItem('usOpenLeaderboardCache26');
+      const cached = localStorage.getItem('openChampionshipLeaderboardCache26');
       if (!cached) return null;
       const parsed = JSON.parse(cached);
       currentLeaderboardData = parsed.leaderboard;
@@ -127,10 +125,11 @@
         return;
       }
       const date = new Date(lastRefreshTime);
-      const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York', hour12: true });
-      el.textContent = `Last updated: ${timeStr} ET ${currentTournId ? `(ID:${currentTournId})` : ''}`;
+      // Show both ET and UK time for clarity during UK event
+      const timeStrET = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York', hour12: true });
+      const timeStrUK = date.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', timeZone: 'Europe/London', hour12: true });
+      el.textContent = `Last updated: ${timeStrET} ET / ${timeStrUK} UK ${currentTournId ? `(ID:${currentTournId})` : ''}`;
     }
-
     async function tryTournId(id) {
       try {
         const url = `https://${RAPIDAPI_HOST}/leaderboard?year=${YEAR}&tournId=${id}&orgId=1`;
@@ -148,10 +147,8 @@
       } catch(e) {}
       return null;
     }
-
     async function loadCurrentTournamentData(force = false) {
       const statusEl = document.getElementById('api-status');
-
       if (!force && currentLeaderboardData) {
         statusEl.textContent = "🟢 Cached";
         statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/50 uppercase font-bold";
@@ -159,12 +156,11 @@
         updateLastUpdated();
         return;
       }
-
-      statusEl.textContent = "🔄 Fetching US Open...";
+      statusEl.textContent = "🔄 Fetching The Open...";
       statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/20 uppercase font-bold";
-
-      const possibleIds = ["026"]; 
-      
+      // PGA Tour event ID for The Open Championship is 100
+      const possibleIds = ["100"];
+     
       for (let id of possibleIds) {
         const data = await tryTournId(id);
         if (data) {
@@ -179,11 +175,10 @@
           return;
         }
       }
-
       currentLeaderboardData = null;
       statusEl.textContent = "🔴 API Failed";
       statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50 uppercase font-bold";
-      
+     
       document.getElementById('leaderboard-body').innerHTML = `
         <tr>
           <td colspan="3" class="px-6 py-8 text-center text-red-400 font-bold uppercase tracking-widest text-sm">
@@ -195,14 +190,13 @@
       document.getElementById('detailed-rosters').innerHTML = '';
       updateLastUpdated();
     }
-
     function normalize(str) {
       return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(a\)/i, '').replace(/[^a-z0-9 ]/g, "").trim();
     }
     function getPlayerScore(playerName) {
       const fallback = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "TBD", teeTime: "—", isMC: false, isDefault: true };
       if (!currentLeaderboardData) return fallback;
-      
+     
       const target = normalize(playerName);
       const p = currentLeaderboardData.find(row => {
           const rowName = normalize(`${row.firstName} ${row.lastName}`);
@@ -232,7 +226,6 @@
     }
     function renderEverything() {
       if (!currentLeaderboardData) return;
-
       const cutLine = getCutLine();
       const standings = Object.keys(teamRosters).map(name => {
           const players = teamRosters[name].map(pName => {
@@ -244,14 +237,12 @@
           const total = players.slice(0, 4).reduce((sum, p) => sum + p.adjusted, 0);
           return { name, total, players };
       }).sort((a,b) => a.total - b.total);
-
       document.getElementById('leaderboard-body').innerHTML = standings.map((team, i) => `
         <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
           <td class="px-6 py-5 font-black text-white/40">${i+1}</td>
           <td class="px-6 py-5 font-bold uppercase text-sm tracking-wider">${team.name}</td>
           <td class="px-6 py-5 text-right font-black text-2xl ${team.total < 0 ? 'text-red-400' : 'text-white'}">${team.total > 0 ? '+'+team.total : (team.total === 0 ? 'E' : team.total)}</td>
         </tr>`).join('');
-
       document.getElementById('detailed-rosters').innerHTML = standings.map(team => `
         <div class="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10 hover:border-blue-500/30 transition-all shadow-xl">
           <div class="flex justify-between items-start mb-6 border-b border-white/5 pb-4">
@@ -276,23 +267,22 @@
           </div>
         </div>`).join('');
     }
-    
+   
     async function manualRefresh() {
-      localStorage.removeItem('usOpenLeaderboardCache26');
+      localStorage.removeItem('openChampionshipLeaderboardCache26');
       currentLeaderboardData = null;
       currentTournId = null;
       lastRefreshTime = 0;
-      
-      document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-white/50 font-bold uppercase tracking-widest text-sm"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block text-blue-400"></i>Wiping cache and fetching U.S. Open...</td></tr>';
+     
+      document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-white/50 font-bold uppercase tracking-widest text-sm"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block text-blue-400"></i>Wiping cache and fetching The Open...</td></tr>';
       document.getElementById('detailed-rosters').innerHTML = '';
-      
+     
       await loadCurrentTournamentData(true);
     }
-
     function startAutoRefresh() {
       setInterval(() => {
         if (shouldRefresh()) loadCurrentTournamentData();
-      }, 30000);
+      }, 30000); // check every 30s; actual refresh every 5 min when in window
     }
     window.onload = async () => {
       loadFromCache();
