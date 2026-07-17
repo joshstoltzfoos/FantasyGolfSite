@@ -16,16 +16,15 @@
       background-attachment: fixed;
     }
     .under-par { color: #ef4444 !important; font-weight: 700; }
-    /* Open Championship Theme - Navy Blue + Official Gold/Yellow */
     .open-blue { color: #00205B; }
-    .open-gold { color: #D4AF37; } /* Rich, classic gold/yellow used in Open branding */
+    .open-gold { color: #D4AF37; }
     .bg-open-blue { background-color: #00205B; }
     .border-open-gold { border-color: #D4AF37; }
   </style>
 </head>
 <body class="text-white min-h-screen pb-12">
   <div class="max-w-6xl mx-auto p-4 md:p-6">
-    <!-- Header Section -->
+    <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-white/10 pb-6">
       <div class="flex items-center gap-4">
         <div class="bg-open-blue p-3 rounded-2xl shadow-xl shadow-open-gold/20 border border-open-gold">
@@ -44,7 +43,8 @@
         <i class="fa-solid fa-arrows-rotate mr-2"></i>Force Refresh
       </button>
     </div>
-    <!-- Main Standings -->
+
+    <!-- Standings -->
     <div class="mb-12">
       <h2 class="text-2xl font-black uppercase tracking-tighter mb-4 ml-2 flex items-center gap-2 text-open-gold">
         <span class="w-1.5 h-6 bg-open-gold rounded-full"></span>Standings
@@ -62,238 +62,342 @@
         </table>
       </div>
     </div>
-    <!-- Roster Grid -->
+
+    <!-- Roster Breakdown -->
     <h2 class="text-2xl font-black uppercase tracking-tighter mb-6 ml-2 flex items-center gap-2 text-open-gold">
       <span class="w-1.5 h-6 bg-open-gold rounded-full"></span>Roster Breakdown
     </h2>
     <div id="detailed-rosters" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
   </div>
-  <script>
-    // ------------------------------------------------------------------------
-    // TEAMS FOR 2026 OPEN CHAMPIONSHIP (Royal Birkdale)
-    // ------------------------------------------------------------------------
-    const teamRosters = {
-      "Christine": ["Ryan Gerard", "Gary Woodland", "J.T. Poston", "Jake Knapp", "Andrew Novak", "Michael Kim", "Sepp Straka"],
-      "Doug": ["Matt Fitzpatrick", "Tommy Fleetwood", "Tom Kim", "Brian Harman", "Cameron Smith", "Nicolai Hojgaard", "Harris English"],
-      "Gerald": ["Jordan Spieth", "Justin Rose", "Rickie Fowler", "Russell Henley", "Patrick Reed", "Brooks Koepka", "Ryan Fox"],
-      "Josh": ["Xander Schauffele", "Shane Lowry", "Wyndham Clark", "Keegan Bradley", "Daniel Berger", "Max Greyserman", "Tom McKibbin"],
-      "Nick": ["Min Woo Lee", "Akshay Bhatia", "Jordan Smith", "Haotong Li", "Michael Thorbjornsen", "Matthew Jordan", "Sam Stevens"],
-      "Patrick": ["Tyrrell Hatton", "Ludvig Aberg", "Collin Morikawa", "Joaquin Niemann", "Robert MacIntyre", "Eric Cole", "Jacob Bridgeman"],
-      "Phil": ["Cameron Young", "Si Woo Kim", "Ben Griffin", "Kurt Kitayama", "Alex Noren", "Kristoffer Reitan", "David Puig"],
-      "Ricky": ["Chris Gotterup", "Jon Rahm", "Sam Burns", "Justin Thomas", "Hideki Matsuyama", "Maverick McNealy", "Corey Conners"],
-      "Roger": ["Scottie Scheffler", "Alex Fitzpatrick", "Bryson DeChambeau", "Patrick Cantlay", "Aaron Rai", "J.J. Spaun", "Eugenio Chacarra"],
-      "Wallace": ["Rory McIlroy", "Viktor Hovland", "Adam Scott", "Jason Day", "Victor Perez", "Sungjae Im", "Bud Cauley"]
-    };
-    const RAPIDAPI_KEY = "e055e4f6ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
-    const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
-   
-    const YEAR = "2026";
-    // Tournament ends after Sunday July 19, 2026 (UK time).
-    const TOURNAMENT_END_DATE = new Date('2026-07-20T00:00:00-04:00');
-    let currentLeaderboardData = null;
-    let lastRefreshTime = 0;
-    let currentTournId = null;
-    function isTournamentOver() {
-      return Date.now() > TOURNAMENT_END_DATE.getTime();
-    }
-    // Refresh window based on UK time (Europe/London) since rounds are played in the UK.
-    function isWithinRefreshWindow() {
-      if (isTournamentOver()) return false;
-      const now = new Date();
-      const ukHour = parseInt(now.toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false }));
-      return ukHour >= 5 && ukHour < 22;
-    }
-    function shouldRefresh() {
-      if (!isWithinRefreshWindow()) return false;
-      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-      return lastRefreshTime < fiveMinutesAgo;
-    }
-    function saveToCache(data) {
-      const cache = { leaderboard: data, timestamp: Date.now(), tournId: currentTournId };
-      localStorage.setItem('openChampionshipLeaderboardCache26', JSON.stringify(cache));
-    }
-    function loadFromCache() {
-      const cached = localStorage.getItem('openChampionshipLeaderboardCache26');
-      if (!cached) return null;
-      const parsed = JSON.parse(cached);
-      currentLeaderboardData = parsed.leaderboard;
-      lastRefreshTime = parsed.timestamp;
-      currentTournId = parsed.tournId;
-      return parsed.leaderboard;
-    }
-    function updateLastUpdated() {
-      const el = document.getElementById('last-updated');
-      if (!lastRefreshTime) {
-        el.textContent = "";
-        return;
+
+<script>
+// ====================== CONFIG & DATA ======================
+const teamRosters = {
+  "Christine": ["Ryan Gerard", "Gary Woodland", "J.T. Poston", "Jake Knapp", "Andrew Novak", "Michael Kim", "Sepp Straka"],
+  "Doug": ["Matt Fitzpatrick", "Tommy Fleetwood", "Tom Kim", "Brian Harman", "Cameron Smith", "Nicolai Hojgaard", "Harris English"],
+  "Gerald": ["Jordan Spieth", "Justin Rose", "Rickie Fowler", "Russell Henley", "Patrick Reed", "Brooks Koepka", "Ryan Fox"],
+  "Josh": ["Xander Schauffele", "Shane Lowry", "Wyndham Clark", "Keegan Bradley", "Daniel Berger", "Max Greyserman", "Tom McKibbin"],
+  "Nick": ["Min Woo Lee", "Akshay Bhatia", "Jordan Smith", "Haotong Li", "Michael Thorbjornsen", "Matthew Jordan", "Sam Stevens"],
+  "Patrick": ["Tyrrell Hatton", "Ludvig Aberg", "Collin Morikawa", "Joaquin Niemann", "Robert MacIntyre", "Eric Cole", "Jacob Bridgeman"],
+  "Phil": ["Cameron Young", "Si Woo Kim", "Ben Griffin", "Kurt Kitayama", "Alex Noren", "Kristoffer Reitan", "David Puig"],
+  "Ricky": ["Chris Gotterup", "Jon Rahm", "Sam Burns", "Justin Thomas", "Hideki Matsuyama", "Maverick McNealy", "Corey Conners"],
+  "Roger": ["Scottie Scheffler", "Alex Fitzpatrick", "Bryson DeChambeau", "Patrick Cantlay", "Aaron Rai", "J.J. Spaun", "Eugenio Chacarra"],
+  "Wallace": ["Rory McIlroy", "Viktor Hovland", "Adam Scott", "Jason Day", "Victor Perez", "Sungjae Im", "Bud Cauley"]
+};
+
+const RAPIDAPI_KEY = "e055e4f6ddmsh5f6b17a6f1eb52dp19a93cjsncf505c7264e2";
+const RAPIDAPI_HOST = "live-golf-data.p.rapidapi.com";
+const YEAR = "2026";
+const TOURNAMENT_END_DATE = new Date('2026-07-20T00:00:00-04:00');
+
+let currentLeaderboardData = null;
+let lastRefreshTime = 0;
+let currentTournId = null;
+
+// ====================== HELPERS ======================
+function isTournamentOver() {
+  return Date.now() > TOURNAMENT_END_DATE.getTime();
+}
+
+function isWithinRefreshWindow() {
+  if (isTournamentOver()) return false;
+  const now = new Date();
+  const ukHour = parseInt(now.toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false }));
+  return ukHour >= 5 && ukHour < 22;
+}
+
+function shouldRefresh() {
+  if (!isWithinRefreshWindow()) return false;
+  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+  return lastRefreshTime < fiveMinutesAgo;
+}
+
+function saveToCache(data) {
+  const cache = { leaderboard: data, timestamp: Date.now(), tournId: currentTournId };
+  localStorage.setItem('openChampionshipLeaderboardCache26', JSON.stringify(cache));
+}
+
+function loadFromCache() {
+  const cached = localStorage.getItem('openChampionshipLeaderboardCache26');
+  if (!cached) return null;
+  const parsed = JSON.parse(cached);
+  currentLeaderboardData = parsed.leaderboard;
+  lastRefreshTime = parsed.timestamp;
+  currentTournId = parsed.tournId;
+  return parsed.leaderboard;
+}
+
+function updateLastUpdated() {
+  const el = document.getElementById('last-updated');
+  if (!lastRefreshTime) { el.textContent = ""; return; }
+  const date = new Date(lastRefreshTime);
+  const timeStrET = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York', hour12: true });
+  const timeStrUK = date.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', timeZone: 'Europe/London', hour12: true });
+  el.textContent = `Last updated: ${timeStrET} ET / ${timeStrUK} UK ${currentTournId ? `(ID: ${currentTournId})` : ''}`;
+}
+
+function normalize(str) {
+  return (str || "").toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/\(a\)/i, '')
+    .replace(/[^a-z0-9 ]/g, "").trim();
+}
+
+// ====================== DYNAMIC TOURNAMENT ID ======================
+async function getOpenTournId() {
+  try {
+    const url = `https://${RAPIDAPI_HOST}/schedule?orgId=1&year=${YEAR}`;
+    const res = await fetch(url, {
+      headers: {
+        'x-rapidapi-key': RAPIDAPI_KEY,
+        'x-rapidapi-host': RAPIDAPI_HOST
       }
-      const date = new Date(lastRefreshTime);
-      const timeStrET = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York', hour12: true });
-      const timeStrUK = date.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', timeZone: 'Europe/London', hour12: true });
-      el.textContent = `Last updated: ${timeStrET} ET / ${timeStrUK} UK ${currentTournId ? `(ID:${currentTournId})` : ''}`;
-    }
-    async function tryTournId(id) {
-      try {
-        const url = `https://${RAPIDAPI_HOST}/leaderboard?year=${YEAR}&tournId=${id}&orgId=1`;
-        const res = await fetch(url, {
-          headers: {
-            'x-rapidapi-key': RAPIDAPI_KEY,
-            'x-rapidapi-host': RAPIDAPI_HOST
-          }
-        });
-        if (!res.ok) return null;
-        const data = await res.json();
-        if (data && data.leaderboardRows && data.leaderboardRows.length > 10) {
-          return data.leaderboardRows;
-        }
-      } catch(e) {}
+    });
+    if (!res.ok) {
+      console.warn('Schedule fetch failed:', res.status);
       return null;
     }
-    async function loadCurrentTournamentData(force = false) {
-      const statusEl = document.getElementById('api-status');
-      if (!force && currentLeaderboardData) {
-        statusEl.textContent = "🟢 Cached";
-        statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-open-blue/30 text-open-gold border border-open-gold/50 uppercase font-bold";
-        renderEverything();
-        updateLastUpdated();
-        return;
-      }
-      statusEl.textContent = "🔄 Fetching The Open...";
-      statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/20 uppercase font-bold";
-      const possibleIds = ["100"];
-     
-      for (let id of possibleIds) {
-        const data = await tryTournId(id);
-        if (data) {
-          currentTournId = id;
-          currentLeaderboardData = data;
-          lastRefreshTime = Date.now();
-          saveToCache(data);
-          statusEl.textContent = `🟢 Live (ID: ${id})`;
-          statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-open-blue/30 text-open-gold border border-open-gold/50 uppercase font-bold";
-          renderEverything();
-          updateLastUpdated();
-          return;
-        }
-      }
-      currentLeaderboardData = null;
-      statusEl.textContent = "🔴 API Failed";
-      statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50 uppercase font-bold";
-     
-      document.getElementById('leaderboard-body').innerHTML = `
-        <tr>
-          <td colspan="3" class="px-6 py-8 text-center text-red-400 font-bold uppercase tracking-widest text-sm">
-            <i class="fa-solid fa-triangle-exclamation text-2xl mb-2 block"></i>
-            No Data Available
-          </td>
-        </tr>
-      `;
-      document.getElementById('detailed-rosters').innerHTML = '';
-      updateLastUpdated();
-    }
-    function normalize(str) {
-      return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(a\)/i, '').replace(/[^a-z0-9 ]/g, "").trim();
-    }
-    function getPlayerScore(playerName) {
-      const fallback = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "TBD", teeTime: "—", isMC: false, isDefault: true };
-      if (!currentLeaderboardData) return fallback;
-     
-      const target = normalize(playerName);
-      const p = currentLeaderboardData.find(row => {
-          const rowName = normalize(`${row.firstName} ${row.lastName}`);
-          return rowName.includes(target) || target.includes(rowName);
+    const data = await res.json();
+    console.log('Schedule response sample:', data);
+
+    if (data && Array.isArray(data.schedule)) {
+      const openTourn = data.schedule.find(t => {
+        const name = (t.name || t.tournamentName || t.eventName || '').toLowerCase();
+        return name.includes('open championship') || name.includes('the open') || name.includes('open champ');
       });
-      if (!p) return fallback;
-      let scoreVal = (p.total === "E" || p.total === "even") ? 0 : parseInt(p.total);
-      if (isNaN(scoreVal)) scoreVal = 0;
-      const rounds = ["—","—","—","—"];
-      if (p.rounds) p.rounds.forEach(r => { rounds[r.roundId - 1] = r.scoreToPar; });
-      return {
-        totalToPar: scoreVal,
-        rounds,
-        thru: p.thru || "—",
-        teeTime: p.teeTime || "—",
-        isMC: ["cut", "wd", "dq"].includes((p.status || "").toLowerCase()),
-        isDefault: false
-      };
+      if (openTourn) {
+        const id = openTourn.tournId || openTourn.id || openTourn.tournamentId;
+        console.log('✅ Found Open Championship tournId:', id, 'Name:', openTourn.name || openTourn.tournamentName);
+        return id ? String(id) : null;
+      }
     }
-    function getCutLine() {
-      if (!currentLeaderboardData) return 0;
-      const scores = currentLeaderboardData
-        .filter(p => !["cut", "wd", "dq"].includes((p.status || "").toLowerCase()))
-        .map(p => (p.total === "E" || p.total === "even") ? 0 : parseInt(p.total))
-        .filter(s => !isNaN(s));
-      return scores.length ? Math.max(...scores) : 0;
+    console.warn('Could not find Open Championship in 2026 schedule');
+  } catch (e) {
+    console.error('Error fetching schedule:', e);
+  }
+  return null;
+}
+
+// ====================== LEADERBOARD FETCH ======================
+async function tryTournId(id) {
+  try {
+    const url = `https://${RAPIDAPI_HOST}/leaderboard?orgId=1&tournId=${id}&year=${YEAR}`;
+    const res = await fetch(url, {
+      headers: {
+        'x-rapidapi-key': RAPIDAPI_KEY,
+        'x-rapidapi-host': RAPIDAPI_HOST
+      }
+    });
+    if (!res.ok) {
+      console.warn(`Leaderboard ${id} HTTP ${res.status}`);
+      return null;
     }
-    function renderEverything() {
-      if (!currentLeaderboardData) return;
-      const cutLine = getCutLine();
-      const standings = Object.keys(teamRosters).map(name => {
-          const players = teamRosters[name].map(pName => {
-              const s = getPlayerScore(pName);
-              const adjusted = s.isMC ? cutLine : s.totalToPar;
-              return { ...s, name: pName, adjusted };
-          });
-          players.sort((a,b) => a.adjusted - b.adjusted);
-          const total = players.slice(0, 4).reduce((sum, p) => sum + p.adjusted, 0);
-          return { name, total, players };
-      }).sort((a,b) => a.total - b.total);
-      document.getElementById('leaderboard-body').innerHTML = standings.map((team, i) => `
-        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-          <td class="px-6 py-5 font-black text-white/40">${i+1}</td>
-          <td class="px-6 py-5 font-bold uppercase text-sm tracking-wider">${team.name}</td>
-          <td class="px-6 py-5 text-right font-black text-2xl ${team.total < 0 ? 'text-red-400' : 'text-open-gold'}">${team.total > 0 ? '+'+team.total : (team.total === 0 ? 'E' : team.total)}</td>
-        </tr>`).join('');
-      document.getElementById('detailed-rosters').innerHTML = standings.map(team => `
-        <div class="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10 hover:border-open-gold/30 transition-all shadow-xl">
-          <div class="flex justify-between items-start mb-6 border-b border-white/5 pb-4">
-            <h3 class="text-xl font-black uppercase tracking-tighter text-open-gold">${team.name}</h3>
-            <div class="text-right">
-              <div class="text-[9px] uppercase font-black text-open-gold tracking-widest">Total</div>
-              <div class="text-4xl font-black ${team.total < 0 ? 'text-red-400' : 'text-open-gold'}">${team.total > 0 ? '+'+team.total : (team.total === 0 ? 'E' : team.total)}</div>
+    const data = await res.json();
+    console.log(`Leaderboard data for tournId=${id}:`, data);
+
+    // Support multiple possible response shapes
+    let rows = null;
+    if (data.leaderboardRows && Array.isArray(data.leaderboardRows)) rows = data.leaderboardRows;
+    else if (data.leaderboard && Array.isArray(data.leaderboard)) rows = data.leaderboard;
+    else if (data.players && Array.isArray(data.players)) rows = data.players;
+    else if (Array.isArray(data)) rows = data;
+
+    if (rows && rows.length > 5) {   // relaxed threshold
+      return rows;
+    }
+    console.warn(`tournId ${id} returned too few rows (${rows ? rows.length : 0})`);
+  } catch (e) {
+    console.error('tryTournId error for', id, e);
+  }
+  return null;
+}
+
+async function loadCurrentTournamentData(force = false) {
+  const statusEl = document.getElementById('api-status');
+
+  if (!force && currentLeaderboardData) {
+    statusEl.textContent = "🟢 Cached";
+    statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-open-blue/30 text-open-gold border border-open-gold/50 uppercase font-bold";
+    renderEverything();
+    updateLastUpdated();
+    return;
+  }
+
+  statusEl.textContent = "🔄 Finding 2026 Open...";
+  statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/20 uppercase font-bold";
+
+  // 1. Try to get the correct tournId dynamically
+  let possibleIds = ["100"]; // fallback
+  const dynamicId = await getOpenTournId();
+  if (dynamicId) {
+    possibleIds = [dynamicId];
+  } else {
+    console.warn('Dynamic ID lookup failed — using fallback "100"');
+    statusEl.textContent = "🔄 Trying fallback ID...";
+  }
+
+  // 2. Try fetching leaderboard
+  for (let id of possibleIds) {
+    const rows = await tryTournId(id);
+    if (rows) {
+      currentTournId = id;
+      currentLeaderboardData = rows;
+      lastRefreshTime = Date.now();
+      saveToCache(rows);
+
+      statusEl.textContent = `🟢 Live (ID: ${id})`;
+      statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-open-blue/30 text-open-gold border border-open-gold/50 uppercase font-bold";
+      renderEverything();
+      updateLastUpdated();
+      return;
+    }
+  }
+
+  // All attempts failed
+  currentLeaderboardData = null;
+  statusEl.textContent = "🔴 API Failed";
+  statusEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/50 uppercase font-bold";
+
+  document.getElementById('leaderboard-body').innerHTML = `
+    <tr>
+      <td colspan="3" class="px-6 py-8 text-center text-red-400 font-bold uppercase tracking-widest text-sm">
+        <i class="fa-solid fa-triangle-exclamation text-2xl mb-2 block"></i>
+        No Data Available<br>
+        <span class="text-xs text-white/50 font-normal">Check browser console (F12) for details</span>
+      </td>
+    </tr>
+  `;
+  document.getElementById('detailed-rosters').innerHTML = '';
+  updateLastUpdated();
+}
+
+// ====================== SCORING & RENDER ======================
+function getPlayerScore(playerName) {
+  const fallback = { totalToPar: 0, rounds: ["—","—","—","—"], thru: "TBD", teeTime: "—", isMC: false, isDefault: true };
+  if (!currentLeaderboardData) return fallback;
+
+  const target = normalize(playerName);
+  const p = currentLeaderboardData.find(row => {
+    const rowName = normalize(`${row.firstName || row.first_name || ''} ${row.lastName || row.last_name || ''}`);
+    return rowName.includes(target) || target.includes(rowName);
+  });
+  if (!p) return fallback;
+
+  let scoreVal = (p.total === "E" || p.total === "even") ? 0 : parseInt(p.total);
+  if (isNaN(scoreVal)) scoreVal = 0;
+
+  const rounds = ["—","—","—","—"];
+  const roundData = p.rounds || p.round_scores || [];
+  roundData.forEach(r => {
+    const rid = r.roundId || r.round_id || r.round;
+    if (rid) rounds[rid - 1] = r.scoreToPar ?? r.score_to_par ?? r.toPar ?? "—";
+  });
+
+  return {
+    totalToPar: scoreVal,
+    rounds,
+    thru: p.thru || p.current_hole || p.hole || "—",
+    teeTime: p.teeTime || p.tee_time || "—",
+    isMC: ["cut", "wd", "dq", "missed_cut"].includes((p.status || p.player_status || "").toLowerCase()),
+    isDefault: false
+  };
+}
+
+function getCutLine() {
+  if (!currentLeaderboardData) return 0;
+  const scores = currentLeaderboardData
+    .filter(p => !["cut", "wd", "dq", "missed_cut"].includes((p.status || p.player_status || "").toLowerCase()))
+    .map(p => (p.total === "E" || p.total === "even") ? 0 : parseInt(p.total))
+    .filter(s => !isNaN(s));
+  return scores.length ? Math.max(...scores) : 0;
+}
+
+function renderEverything() {
+  if (!currentLeaderboardData) return;
+  const cutLine = getCutLine();
+
+  const standings = Object.keys(teamRosters).map(name => {
+    const players = teamRosters[name].map(pName => {
+      const s = getPlayerScore(pName);
+      const adjusted = s.isMC ? cutLine : s.totalToPar;
+      return { ...s, name: pName, adjusted };
+    });
+    players.sort((a, b) => a.adjusted - b.adjusted);
+    const total = players.slice(0, 4).reduce((sum, p) => sum + p.adjusted, 0);
+    return { name, total, players };
+  }).sort((a, b) => a.total - b.total);
+
+  // Standings table
+  document.getElementById('leaderboard-body').innerHTML = standings.map((team, i) => `
+    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+      <td class="px-6 py-5 font-black text-white/40">${i + 1}</td>
+      <td class="px-6 py-5 font-bold uppercase text-sm tracking-wider">${team.name}</td>
+      <td class="px-6 py-5 text-right font-black text-2xl ${team.total < 0 ? 'text-red-400' : 'text-open-gold'}">
+        ${team.total > 0 ? '+' + team.total : (team.total === 0 ? 'E' : team.total)}
+      </td>
+    </tr>`).join('');
+
+  // Detailed rosters
+  document.getElementById('detailed-rosters').innerHTML = standings.map(team => `
+    <div class="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10 hover:border-open-gold/30 transition-all shadow-xl">
+      <div class="flex justify-between items-start mb-6 border-b border-white/5 pb-4">
+        <h3 class="text-xl font-black uppercase tracking-tighter text-open-gold">${team.name}</h3>
+        <div class="text-right">
+          <div class="text-[9px] uppercase font-black text-open-gold tracking-widest">Total</div>
+          <div class="text-4xl font-black ${team.total < 0 ? 'text-red-400' : 'text-open-gold'}">
+            ${team.total > 0 ? '+' + team.total : (team.total === 0 ? 'E' : team.total)}
+          </div>
+        </div>
+      </div>
+      <div class="space-y-2">
+        ${team.players.map(p => `
+          <div class="bg-open-blue/40 rounded-xl px-4 py-3 flex items-center justify-between border border-white/5">
+            <div>
+              <div class="text-xs font-black uppercase tracking-wide text-white/90">${p.name} ${p.isMC ? '⛳' : ''}</div>
+              <div class="text-[10px] font-bold text-white/40 uppercase">${p.thru === "—" ? 'Tee: ' + p.teeTime : 'Thru: ' + p.thru}</div>
+            </div>
+            <div class="font-black text-lg ${p.isMC ? 'line-through text-white/20' : (p.adjusted < 0 ? 'under-par' : 'text-open-gold')}">
+              ${p.adjusted > 0 ? '+' + p.adjusted : (p.adjusted === 0 && !p.isDefault ? 'E' : p.adjusted)}
             </div>
           </div>
-          <div class="space-y-2">
-            ${team.players.map(p => `
-              <div class="bg-open-blue/40 rounded-xl px-4 py-3 flex items-center justify-between border border-white/5">
-                <div>
-                  <div class="text-xs font-black uppercase tracking-wide text-white/90">${p.name} ${p.isMC ? '⛳' : ''}</div>
-                  <div class="text-[10px] font-bold text-white/40 uppercase">${p.thru === "—" ? 'Tee: '+p.teeTime : 'Thru: '+p.thru}</div>
-                </div>
-                <div class="font-black text-lg ${p.isMC ? 'line-through text-white/20' : (p.adjusted < 0 ? 'under-par' : 'text-open-gold')}">
-                  ${p.adjusted > 0 ? '+'+p.adjusted : (p.adjusted === 0 && !p.isDefault ? 'E' : p.adjusted)}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>`).join('');
-    }
-   
-    async function manualRefresh() {
-      localStorage.removeItem('openChampionshipLeaderboardCache26');
-      currentLeaderboardData = null;
-      currentTournId = null;
-      lastRefreshTime = 0;
-     
-      document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-white/50 font-bold uppercase tracking-widest text-sm"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block text-open-gold"></i>Wiping cache and fetching The Open...</td></tr>';
-      document.getElementById('detailed-rosters').innerHTML = '';
-     
-      await loadCurrentTournamentData(true);
-    }
-    function startAutoRefresh() {
-      setInterval(() => {
-        if (shouldRefresh()) loadCurrentTournamentData();
-      }, 30000);
-    }
-    window.onload = async () => {
-      loadFromCache();
-      if (currentLeaderboardData) {
-        renderEverything();
-        updateLastUpdated();
-      }
-      await loadCurrentTournamentData();
-      startAutoRefresh();
-    };
-  </script>
+        `).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ====================== REFRESH LOGIC ======================
+async function manualRefresh() {
+  localStorage.removeItem('openChampionshipLeaderboardCache26');
+  currentLeaderboardData = null;
+  currentTournId = null;
+  lastRefreshTime = 0;
+
+  document.getElementById('leaderboard-body').innerHTML = `
+    <tr><td colspan="3" class="px-6 py-8 text-center text-white/50 font-bold uppercase tracking-widest text-sm">
+      <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block text-open-gold"></i>
+      Wiping cache and fetching The Open...
+    </td></tr>`;
+  document.getElementById('detailed-rosters').innerHTML = '';
+
+  await loadCurrentTournamentData(true);
+}
+
+function startAutoRefresh() {
+  setInterval(() => {
+    if (shouldRefresh()) loadCurrentTournamentData();
+  }, 30000);
+}
+
+// ====================== BOOT ======================
+window.onload = async () => {
+  loadFromCache();
+  if (currentLeaderboardData) {
+    renderEverything();
+    updateLastUpdated();
+  }
+  await loadCurrentTournamentData();
+  startAutoRefresh();
+};
+</script>
 </body>
 </html>
